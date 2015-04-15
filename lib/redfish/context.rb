@@ -1,0 +1,2 @@
+module Redfish
+end
