@@ -1,0 +1,8 @@
+.idea
+pkg
+pkg/*
+rdoc
+/*.iml
+/*.ipr
+/*.iws
+/Gemfile.lock
