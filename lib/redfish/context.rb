@@ -21,9 +21,9 @@ module Redfish
       !!@echo
     end
 
-    # The user that the domain executes as.
+    # The user that the asadmin command executes as.
     attr_reader :system_user
-    # The group that the domain executes as.
+    # The group that the asadmin command executes as.
     attr_reader :system_group
 
     def initialize(domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
