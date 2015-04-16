@@ -1,6 +1,6 @@
 module Redfish
   class Executor
-    def exec(context, asadmin_command, args, options = {})
+    def exec(context, asadmin_command, args = [], options = {})
 
       cmd = build_command(context, asadmin_command, args, options)
 
