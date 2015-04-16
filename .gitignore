@@ -6,3 +6,4 @@ rdoc
 /*.ipr
 /*.iws
 /Gemfile.lock
+/.rakeTasks
