@@ -1,6 +1,7 @@
 module Redfish
   class Executor
     def exec(context, asadmin_command, args = [], options = {})
+      raise 'args should be an array' unless args.is_a?(Array)
 
       cmd = build_command(context, asadmin_command, args, options)
 
