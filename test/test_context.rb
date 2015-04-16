@@ -3,6 +3,7 @@ require File.expand_path('../helper', __FILE__)
 class TestContext < Redfish::TestCase
 
   def test_basic_workflow
+    install_dir = '/opt/glassfish'
     domain_name = 'appserver'
     domain_admin_port = 4848
     domain_secure = true
@@ -11,7 +12,8 @@ class TestContext < Redfish::TestCase
     system_user = 'glassfish'
     system_group = 'glassfish_group'
 
-    context = Redfish::Context.new(domain_name,
+    context = Redfish::Context.new(install_dir,
+                                   domain_name,
                                    domain_admin_port,
                                    domain_secure,
                                    domain_username,

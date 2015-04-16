@@ -1,5 +1,8 @@
 module Redfish
   class Context
+    # The directory in which glassfish has been installed.
+    attr_reader :install_dir
+
     # The name of the domain.
     attr_reader :domain_name
     # The port on which the management application is bound.
@@ -26,9 +29,9 @@ module Redfish
     # The group that the asadmin command executes as.
     attr_reader :system_group
 
-    def initialize(domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
-      @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
-        domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
+    def initialize(install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
+      @install_dir, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
+        install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
       @echo = options[:echo].nil? ? false : !!options[:echo]
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]
