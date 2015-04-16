@@ -73,6 +73,15 @@ class TestExecutor < Redfish::TestCase
     assert_equal false, executor.send(:needs_user_change?, context_with_users)
   end
 
+  def test_exec
+    executor = Redfish::Executor.new
+
+    cmd = ['/opt/payara-4.1.151//glassfish/bin/asadmin', '--terse=false', '--echo=true', '--user', 'admin', '--port', '4848', 'set', 'a=1:b=2']
+    IO.expects(:popen).with(equals(cmd),equals('r'),anything)
+
+    executor.exec(new_context(executor), 'set', ['a=1:b=2'])
+  end
+
   def new_context(executor)
     Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, :terse => false, :echo => true)
   end
