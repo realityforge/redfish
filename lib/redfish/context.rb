@@ -29,9 +29,9 @@ module Redfish
     # The group that the asadmin command executes as.
     attr_reader :system_group
 
-    def initialize(install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
-      @install_dir, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
-        install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
+    def initialize(executor, install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
+      @executor, @install_dir, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
+        executor, install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
       @echo = options[:echo].nil? ? false : !!options[:echo]
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]
@@ -51,6 +51,10 @@ module Redfish
     def cache_properties(properties)
       raise 'Property cache already defined' if property_cache?
       @property_cache = PropertyCache.new(properties)
+    end
+
+    def exec(label, asadmin_command, args, options = {})
+      @executor.exec(self, label, asadmin_command, args, options)
     end
   end
 end

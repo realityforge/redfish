@@ -12,7 +12,8 @@ class TestContext < Redfish::TestCase
     system_user = 'glassfish'
     system_group = 'glassfish_group'
 
-    context = Redfish::Context.new(install_dir,
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   install_dir,
                                    domain_name,
                                    domain_admin_port,
                                    domain_secure,
