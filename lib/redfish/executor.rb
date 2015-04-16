@@ -1,13 +1,11 @@
 module Redfish
   class Executor
-    def exec(context, label, asadmin_command, args, options = {})
+    def exec(context, asadmin_command, args, options = {})
 
       cmd = build_command(context, asadmin_command, args, options)
 
-      command = cmd[0]
-
       output = nil
-      IO.popen([[command, label], *cmd[1...cmd.length]],'r') do |pipe|
+      IO.popen(cmd,'r') do |pipe|
         output = pipe.read
       end
 
