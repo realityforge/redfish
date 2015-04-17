@@ -21,6 +21,10 @@ module Redfish
     Logger.debug(message)
   end
 
+  def self.info(message)
+    Logger.info(message)
+  end
+
   def self.warn(message)
     Logger.warn(message)
   end
