@@ -7,3 +7,4 @@ rdoc
 /*.iws
 /Gemfile.lock
 /.rakeTasks
+/tmp
