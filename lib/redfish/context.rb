@@ -58,7 +58,7 @@ module Redfish
       @property_cache = nil
     end
 
-    def exec(asadmin_command, args, options = {})
+    def exec(asadmin_command, args = [], options = {})
       @executor.exec(self, asadmin_command, args, options)
     end
   end
