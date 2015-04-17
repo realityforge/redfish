@@ -1,3 +1,0 @@
-# TODO
-
-* Delete test blah
