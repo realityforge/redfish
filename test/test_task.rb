@@ -5,7 +5,7 @@ class TestTask < Redfish::TestCase
     attribute :a, :kind_of => String, :required => true
     attribute :b, :kind_of => [TrueClass, FalseClass], :default => false
     attribute :c, :equal_to => [true, false, 'true', 'false'], :default => 'false'
-    attribute :d, :kind_of => String
+    attribute :d, :kind_of => String, :regex => /^X+$/
 
     attr_accessor :action1_ran
     attr_accessor :action2_ran
@@ -65,6 +65,17 @@ class TestTask < Redfish::TestCase
     end
 
     fail('Expected to fail due to bad type')
+  end
+
+  def test_invalid_value_by_regex
+    begin
+      new_task.d = 'X1'
+    rescue => e
+      assert_equal e.to_s, "Invalid value passed to attribute 'd' expected to match regex /^X+$/ but is \"X1\""
+      return
+    end
+
+    fail('Expected to fail due to bad value not matching regex')
   end
 
   def test_set

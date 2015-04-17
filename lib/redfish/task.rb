@@ -19,6 +19,10 @@ module Redfish
             if !equal_to.empty? && !equal_to.any? { |v| value == v }
               raise "Invalid value passed to attribute '#{key}' expected to be one of #{equal_to.inspect} but is #{value.inspect}"
             end
+            regex = options[:regex]
+            if regex && !value.nil? && !(regex =~ value.to_s)
+              raise "Invalid value passed to attribute '#{key}' expected to match regex #{regex.inspect} but is #{value.inspect}"
+            end
             instance_variable_set("@#{key}", value)
           end
 
