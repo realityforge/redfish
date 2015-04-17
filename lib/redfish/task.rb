@@ -12,11 +12,11 @@ module Redfish
         def attribute(key, options)
           define_method("#{key}=") do |value|
             kind_of = ([options[:kind_of]] || []).compact.flatten
-            if !kind_of.empty? && !kind_of.any?{|k| value.is_a?(k)}
+            if !kind_of.empty? && !kind_of.any? { |k| value.is_a?(k) }
               raise "Invalid value passed to attribute '#{key}' expected to be one of #{kind_of.inspect} but is of type #{value.class.name}"
             end
             equal_to = options[:equal_to] || []
-            if !equal_to.empty? && !equal_to.any?{|v| value == v}
+            if !equal_to.empty? && !equal_to.any? { |v| value == v }
               raise "Invalid value passed to attribute '#{key}' expected to be one of #{equal_to.inspect} but is #{value.inspect}"
             end
             instance_variable_set("@#{key}", value)
