@@ -78,6 +78,7 @@ class TestExecutor < Redfish::TestCase
 
     cmd = ['/opt/payara-4.1.151//glassfish/bin/asadmin', '--terse=false', '--echo=true', '--user', 'admin', '--port', '4848', 'set', 'a=1:b=2']
     IO.expects(:popen).with(equals(cmd),equals('r'),anything)
+    executor.expects(:last_exitstatus).returns(0)
 
     executor.exec(new_context(executor), 'set', ['a=1:b=2'])
   end

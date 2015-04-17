@@ -10,11 +10,15 @@ module Redfish
         output = pipe.read
       end
 
-      raise "Asadmin command failed #{asadmin_command} with exist status #{$?.exitstatus}" if 0 != $?.exitstatus
+      raise "Asadmin command failed #{asadmin_command} with exist status #{last_exitstatus}" if 0 != last_exitstatus
       output
     end
 
     private
+
+    def last_exitstatus
+      $?.exitstatus
+    end
 
     def build_command(context, asadmin_command, args, options)
       cmd = []
