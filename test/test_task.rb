@@ -1,6 +1,6 @@
 require File.expand_path('../helper', __FILE__)
 
-class TestTask < Redfish::TestCase
+class Redfish::TestTask < Redfish::TestCase
   class MyTestTask < Redfish::Task
     attribute :a, :kind_of => String, :required => true
     attribute :b, :kind_of => [TrueClass, FalseClass], :default => false

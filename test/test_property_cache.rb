@@ -1,6 +1,6 @@
 require File.expand_path('../helper', __FILE__)
 
-class TestPropertyCache < Redfish::TestCase
+class Redfish::TestPropertyCache < Redfish::TestCase
   def test_properties_are_duplicated
     input_data = {'a' => '1', 'b' => '2'}
 

@@ -1,6 +1,6 @@
 require File.expand_path('../helper', __FILE__)
 
-class TestContext < Redfish::TestCase
+class Redfish::TestContext < Redfish::TestCase
 
   def test_basic_workflow
     install_dir = '/opt/glassfish'

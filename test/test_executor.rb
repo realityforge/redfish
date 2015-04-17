@@ -1,6 +1,6 @@
 require File.expand_path('../helper', __FILE__)
 
-class TestExecutor < Redfish::TestCase
+class Redfish::TestExecutor < Redfish::TestCase
   def test_asadmin_script
     executor = Redfish::Executor.new
     assert_equal '/opt/payara-4.1.151//glassfish/bin/asadmin', executor.send(:asadmin_script, new_context(executor))
