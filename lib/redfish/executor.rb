@@ -34,6 +34,8 @@ module Redfish
       cmd << asadmin_command
       cmd += args
 
+      Redfish.debug("Executing #{cmd.join(' ')}")
+
       cmd
     end
 
