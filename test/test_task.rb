@@ -137,6 +137,6 @@ class TestTask < Redfish::TestCase
   end
 
   def new_context
-    Redfish::Context.new('/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, :terse => false, :echo => true)
+    Redfish::Context.new(Redfish::Executor.new, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, :terse => false, :echo => true)
   end
 end
