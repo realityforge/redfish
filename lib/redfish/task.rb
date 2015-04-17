@@ -2,6 +2,9 @@ module Redfish
   module MetaDataHelper
     def self.included(base)
       class << base
+        def Task.inherited(mod)
+          TaskManager.register_task(mod)
+        end
 
         def action(key, &block)
           define_method("perform_#{key}") do
