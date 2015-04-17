@@ -10,7 +10,10 @@ module Redfish
         output = pipe.read
       end
 
-      raise "Asadmin command failed #{asadmin_command} with exist status #{last_exitstatus}" if 0 != last_exitstatus
+      if 0 != last_exitstatus
+        Redfish.info(output)
+        raise "Asadmin command failed #{asadmin_command} with exist status #{last_exitstatus}"
+      end
       output
     end
 
