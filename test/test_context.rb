@@ -36,11 +36,35 @@ class TestContext < Redfish::TestCase
     assert_equal context.system_group, system_group
 
     assert !context.property_cache?
+  end
 
+  def test_property_caching
+    context = Redfish::Context.new(Redfish::Executor.new, '/opt/glassfish', 'appserver', 4848, true, 'admin', nil)
+
+    assert !context.property_cache?
     context.cache_properties('a' => '1', 'b' => '2')
-
     assert context.property_cache?
     assert_equal context.property_cache['a'], '1'
     assert_equal context.property_cache['b'], '2'
+
+    error = false
+    begin
+      context.cache_properties('a' => '1', 'b' => '2')
+    rescue
+      error = true
+    end
+    fail('Expected to fail to re-cache properties') unless error
+
+    context.remove_property_cache
+
+    assert !context.property_cache?
+
+    error = false
+    begin
+      context.remove_property_cache
+    rescue
+      error = true
+    end
+    fail('Expected to fail to remove property cache') unless error
   end
 end

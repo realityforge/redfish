@@ -53,6 +53,11 @@ module Redfish
       @property_cache = PropertyCache.new(properties)
     end
 
+    def remove_property_cache
+      raise 'No property cache to remove' unless property_cache?
+      @property_cache = nil
+    end
+
     def exec(asadmin_command, args, options = {})
       @executor.exec(self, asadmin_command, args, options)
     end
