@@ -1,7 +1,9 @@
 require 'etc'
+require 'logger'
 
 require 'redfish/version'
 require 'redfish/naming'
+require 'redfish/core'
 require 'redfish/property_cache'
 require 'redfish/context'
 require 'redfish/executor'
