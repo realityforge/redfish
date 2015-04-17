@@ -139,11 +139,15 @@ module Redfish
           end
 
           sets.each_pair do |key, value|
-            context.task('property', 'key' => "#{property_prefix}#{key}", 'value' => as_property_value(value)).perform_action(:set)
+            t = context.task('property', 'key' => "#{property_prefix}#{key}", 'value' => as_property_value(value))
+            t.perform_action(:set)
+            updated_by_last_action if t.updated_by_last_action?
           end
         end
 
-        context.task('property', 'key' => "#{property_prefix}deployment-order", 'value' => self.deploymentorder.to_s).perform_action(:set)
+        t = context.task('property', 'key' => "#{property_prefix}deployment-order", 'value' => self.deploymentorder.to_s)
+        t.perform_action(:set)
+        updated_by_last_action if t.updated_by_last_action?
       end
 
       def as_property_value(value)
