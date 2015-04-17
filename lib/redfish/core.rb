@@ -17,6 +17,10 @@ module Redfish
   Logger.level = ::Logger::WARN
   Logger.formatter = proc { |severity, datetime, progname, msg| "#{msg}\n"}
 
+  def self.debug(message)
+    Logger.debug(message)
+  end
+
   def self.warn(message)
     Logger.warn(message)
   end
