@@ -12,3 +12,4 @@ require 'redfish/task'
 
 require 'redfish/tasks/property_cache'
 require 'redfish/tasks/property'
+require 'redfish/tasks/jdbc_connection_pool'
