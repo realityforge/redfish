@@ -40,12 +40,13 @@ module Redfish
     end
   end
 
-  class Task
+  class Task < Redfish::BaseElement
     include MetaDataHelper
 
     attr_writer :context
 
-    def initialize
+    def initialize(options = {})
+      super(options)
       @updated_by_last_action = false
       yield self if block_given?
     end
