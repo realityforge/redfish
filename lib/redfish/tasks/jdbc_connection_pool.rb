@@ -121,7 +121,11 @@ module Redfish
               end
               context.property_cache["#{property_prefix}object-type"] = 'user'
               context.property_cache["#{property_prefix}name"] = self.pool_name
+              context.property_cache["#{property_prefix}description"] = self.description
               context.property_cache["#{property_prefix}deployment-order"] = self.deploymentorder.to_s
+              self.properties.each_pair do |key, value|
+                context.property_cache["#{property_prefix}property.#{key}"] = as_property_value(value)
+              end
             end
           end
         end
