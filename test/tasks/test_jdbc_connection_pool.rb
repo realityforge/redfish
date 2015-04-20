@@ -1,6 +1,6 @@
 require File.expand_path('../../helper', __FILE__)
 
-class Redfish::Tasks::TestProperty < Redfish::TestCase
+class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
   def test_no_cache_and_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
