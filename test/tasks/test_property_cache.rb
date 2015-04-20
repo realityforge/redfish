@@ -1,6 +1,6 @@
 require File.expand_path('../../helper', __FILE__)
 
-class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
+class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
   def test_create_no_existing
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -79,11 +79,5 @@ class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
     t.perform_action(:destroy)
     assert_equal t.updated_by_last_action?, false
     assert_equal t.context.property_cache?, false
-  end
-
-  def new_task(executor)
-    t = Redfish::Tasks::PropertyCache.new
-    t.context = create_simple_context(executor)
-    t
   end
 end

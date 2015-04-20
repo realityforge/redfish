@@ -1,6 +1,6 @@
 require File.expand_path('../../helper', __FILE__)
 
-class Redfish::Tasks::TestIiopListener < Redfish::TestCase
+class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
   def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -32,12 +32,12 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
     expected_local_properties.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
-                                   equals(["configs.config.server-config.iiop-service.iiop-listener.myThing.#{k}"]),
+                                   equals(["#{property_prefix}#{k}"]),
                                    equals(:terse => true, :echo => false)).
-        returns("configs.config.server-config.iiop-service.iiop-listener.myThing.#{k}=#{v}\n")
+        returns("#{property_prefix}#{k}=#{v}\n")
     end
 
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(configs.config.server-config.iiop-service.iiop-listener.myThing.property.*)), equals(:terse => true, :echo => false)).
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
       returns('')
 
     t.perform_action(:create)
@@ -60,30 +60,30 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
     values.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
-                                   equals(["configs.config.server-config.iiop-service.iiop-listener.myThing.#{k}"]),
+                                   equals(["#{property_prefix}#{k}"]),
                                    equals(:terse => true, :echo => false)).
-        returns("configs.config.server-config.iiop-service.iiop-listener.myThing.#{k}=#{v}\n")
+        returns("#{property_prefix}#{k}=#{v}\n")
     end
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['configs.config.server-config.iiop-service.iiop-listener.myThing.port=1072']),
+                                 equals(["#{property_prefix}port=1072"]),
                                  equals(:terse => true, :echo => false))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('get'),
-                                 equals(%w(configs.config.server-config.iiop-service.iiop-listener.myThing.property.*)),
+                                 equals(%W(#{property_prefix}property.*)),
                                  equals(:terse => true, :echo => false)).
-      returns('configs.config.server-config.iiop-service.iiop-listener.myThing.property.DeleteMe=X')
+      returns("#{property_prefix}property.DeleteMe=X")
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('get'),
-                                 equals(%w(configs.config.server-config.iiop-service.iiop-listener.myThing.property.DeleteMe)),
+                                 equals(%W(#{property_prefix}property.DeleteMe)),
                                  equals(:terse => true, :echo => false)).
-        returns('configs.config.server-config.iiop-service.iiop-listener.myThing.property.DeleteMe=X')
+        returns("#{property_prefix}property.DeleteMe=X")
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(%w(configs.config.server-config.iiop-service.iiop-listener.myThing.property.DeleteMe=)),
+                                 equals(%W(#{property_prefix}property.DeleteMe=)),
                                  equals(:terse => true, :echo => false))
 
     t.perform_action(:create)
@@ -117,7 +117,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    cache_values['configs.config.server-config.iiop-service.iiop-listener.myThing.port'] = '101'
+    cache_values["#{property_prefix}port"] = '101'
 
     t.context.cache_properties(cache_values)
 
@@ -125,7 +125,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['configs.config.server-config.iiop-service.iiop-listener.myThing.port=1072']),
+                                 equals(["#{property_prefix}port=1072"]),
                                  equals(:terse => true, :echo => false))
 
     t.perform_action(:create)
@@ -202,7 +202,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
     t.perform_action(:destroy)
 
     assert_equal t.updated_by_last_action?, false
-    assert_equal t.context.property_cache.any_property_start_with?('configs.config.server-config.iiop-service.iiop-listener.myThing.'), false
+    assert_equal t.context.property_cache.any_property_start_with?(property_prefix), false
   end
 
   def test_delete_element_where_cache_present_and_element_present
@@ -223,24 +223,13 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
     t.perform_action(:destroy)
 
     assert_equal t.updated_by_last_action?, true
-    assert_equal t.context.property_cache.any_property_start_with?('configs.config.server-config.iiop-service.iiop-listener.myThing.'), false
+    assert_equal t.context.property_cache.any_property_start_with?(property_prefix), false
   end
 
   protected
 
-  def ensure_expected_cache_values(t)
-    expected_properties.each_pair do |key, value|
-      assert_equal t.context.property_cache[key], value, "Expected #{key}=#{value}"
-    end
-  end
-
-  def expected_properties
-    cache_values = {}
-
-    expected_local_properties.each_pair do |k, v|
-      cache_values["configs.config.server-config.iiop-service.iiop-listener.myThing.#{k}"] = "#{v}"
-    end
-    cache_values
+  def property_prefix
+    'configs.config.server-config.iiop-service.iiop-listener.myThing.'
   end
 
   # Properties in GlassFish properties directory
@@ -262,11 +251,5 @@ class Redfish::Tasks::TestIiopListener < Redfish::TestCase
       'enabled' => 'true',
       'securityenabled' => 'false'
     }
-  end
-
-  def new_task(executor)
-    t = Redfish::Tasks::IiopListener.new
-    t.context = create_simple_context(executor)
-    t
   end
 end

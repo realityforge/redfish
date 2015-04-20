@@ -1,11 +1,11 @@
 require File.expand_path('../../helper', __FILE__)
 
-class Redfish::Tasks::TestCustomResource < Redfish::TestCase
+class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
   def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    do_set_params(t)
+    t.options = resource_parameters
 
     executor.expects(:exec).with(equals(t.context), equals('list-custom-resources'), equals(%w()), equals(:terse => true, :echo => false)).
       returns('')
@@ -17,7 +17,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor.expects(:exec).with(equals(t.context), equals('get'),
                                  equals(['resources.custom-resource.myapp/env/Setting.deployment-order']),
                                  equals(:terse => true, :echo => false)).
-      returns("resources.custom-resource.myapp/env/Setting.deployment-order=100\n")
+      returns("#{property_prefix}deployment-order=100\n")
 
     t.perform_action(:create)
 
@@ -28,19 +28,19 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    do_set_params(t)
+    t.options = resource_parameters
 
     executor.expects(:exec).with(equals(t.context), equals('list-custom-resources'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("myapp/env/Setting\n")
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.custom-resource.myapp/env/Setting.property.*)), equals(:terse => true, :echo => false)).
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
       returns('')
 
     expected_local_properties.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
-                                   equals(["resources.custom-resource.myapp/env/Setting.#{k}"]),
+                                   equals(["#{property_prefix}#{k}"]),
                                    equals(:terse => true, :echo => false)).
-        returns("resources.custom-resource.myapp/env/Setting.#{k}=#{v}\n")
+        returns("#{property_prefix}#{k}=#{v}\n")
     end
 
     t.perform_action(:create)
@@ -52,13 +52,13 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    do_set_params(t)
+    t.options = resource_parameters
 
     executor.expects(:exec).with(equals(t.context), equals('list-custom-resources'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("myapp/env/Setting\n")
     # Return a property that should be deleted
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.custom-resource.myapp/env/Setting.property.*)), equals(:terse => true, :echo => false)).
-      returns("resources.custom-resource.myapp/env/Setting.property.Blah=Y\n")
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
+      returns("#{property_prefix}property.Blah=Y\n")
 
     values = expected_local_properties
     values['deployment-order'] = '101'
@@ -67,30 +67,30 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     values.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
-                                   equals(["resources.custom-resource.myapp/env/Setting.#{k}"]),
+                                   equals(["#{property_prefix}#{k}"]),
                                    equals(:terse => true, :echo => false)).
-        returns("resources.custom-resource.myapp/env/Setting.#{k}=#{v}\n")
+        returns("#{property_prefix}#{k}=#{v}\n")
     end
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.enabled=true']),
+                                 equals(["#{property_prefix}enabled=true"]),
                                  equals(:terse => true, :echo => false))
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.deployment-order=100']),
+                                 equals(["#{property_prefix}deployment-order=100"]),
                                  equals(:terse => true, :echo => false))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('get'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.property.Blah']),
+                                 equals(["#{property_prefix}property.Blah"]),
                                  equals(:terse => true, :echo => false)).
-      returns("resources.custom-resource.myapp/env/Setting.property.Blah=X\n")
+      returns("#{property_prefix}property.Blah=X\n")
 
     # This is the set to remove property that should not exist
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.property.Blah=']),
+                                 equals(["#{property_prefix}property.Blah="]),
                                  equals(:terse => true, :echo => false)).
       returns('')
 
@@ -105,7 +105,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
 
     t.context.cache_properties({})
 
-    do_set_params(t)
+    t.options = resource_parameters
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-custom-resource'),
@@ -125,32 +125,32 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    cache_values['resources.custom-resource.myapp/env/Setting.enabled'] = 'false'
-    cache_values['resources.custom-resource.myapp/env/Setting.description'] = 'XXX'
-    cache_values['resources.custom-resource.myapp/env/Setting.deployment-order'] = '101'
+    cache_values["#{property_prefix}enabled"] = 'false'
+    cache_values["#{property_prefix}description"] = 'XXX'
+    cache_values["#{property_prefix}deployment-order"] = '101'
 
     # This property should be removed
-    cache_values['resources.custom-resource.myapp/env/Setting.property.Blah'] = 'X'
+    cache_values["#{property_prefix}property.Blah"] = 'X'
 
     t.context.cache_properties(cache_values)
 
-    do_set_params(t)
+    t.options = resource_parameters
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.property.Blah=']),
+                                 equals(["#{property_prefix}property.Blah="]),
                                  equals(:terse => true, :echo => false))
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.deployment-order=100']),
+                                 equals(["#{property_prefix}deployment-order=100"]),
                                  equals(:terse => true, :echo => false))
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.description=My Env Setting']),
+                                 equals(["#{property_prefix}description=My Env Setting"]),
                                  equals(:terse => true, :echo => false))
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.enabled=true']),
+                                 equals(["#{property_prefix}enabled=true"]),
                                  equals(:terse => true, :echo => false))
 
     t.perform_action(:create)
@@ -168,7 +168,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
 
     t.context.cache_properties(cache_values)
 
-    do_set_params(t)
+    t.options = resource_parameters
 
     t.perform_action(:create)
 
@@ -227,7 +227,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     t.perform_action(:destroy)
 
     assert_equal t.updated_by_last_action?, false
-    assert_equal t.context.property_cache.any_property_start_with?('resources.custom-resource.myapp/env/Setting.'), false
+    assert_equal t.context.property_cache.any_property_start_with?(property_prefix), false
   end
 
   def test_delete_element_where_cache_present_and_element_present
@@ -248,33 +248,18 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     t.perform_action(:destroy)
 
     assert_equal t.updated_by_last_action?, true
-    assert_equal t.context.property_cache.any_property_start_with?('resources.custom-resource.myapp/env/Setting.'), false
+    assert_equal t.context.property_cache.any_property_start_with?(property_prefix), false
   end
 
   protected
 
-  def ensure_expected_cache_values(t)
-    expected_properties.each_pair do |key, value|
-      assert_equal t.context.property_cache[key], value, "Expected #{key}=#{value}"
-    end
-  end
-
-  def expected_properties
-    cache_values = {}
-
-    expected_local_properties.each_pair do |k, v|
-      cache_values["resources.custom-resource.myapp/env/Setting.#{k}"] = "#{v}"
-    end
-    cache_values
-  end
-
-  def do_set_params(t)
-    t.options = params
+  def property_prefix
+    'resources.custom-resource.myapp/env/Setting.'
   end
 
   # Properties in GlassFish properties directory
   def expected_local_properties
-    p = params
+    p = resource_parameters
     {
       'description' => p['description'],
       'enabled' => p['enabled'],
@@ -285,17 +270,13 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
   end
 
   # Resource parameters
-  def params
-    {'name' => 'myapp/env/Setting',
-     'enabled' => 'true',
-     'restype' => 'java.lang.String',
-     'description' => 'My Env Setting',
-     'deploymentorder' => 100}
-  end
-
-  def new_task(executor)
-    t = Redfish::Tasks::CustomResource.new
-    t.context = create_simple_context(executor)
-    t
+  def resource_parameters
+    {
+      'name' => 'myapp/env/Setting',
+      'enabled' => 'true',
+      'restype' => 'java.lang.String',
+      'description' => 'My Env Setting',
+      'deploymentorder' => 100
+    }
   end
 end
