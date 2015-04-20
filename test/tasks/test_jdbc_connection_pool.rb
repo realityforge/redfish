@@ -221,6 +221,42 @@ class Redfish::Tasks::TestProperty < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
+  def test_cache_and_no_present
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties({})
+
+    t.options = {'pool_name' => 'APool',
+                 'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
+                 'restype' => 'javax.sql.DataSource',
+                 'validationmethod' => 'auto-commit',
+                 'isconnectvalidatereq' => 'true',
+                 'ping' => 'true',
+                 'description' => 'Audit Connection Pool',
+                 'deploymentorder' => 100,
+                 'properties' =>
+                   {
+                     'Instance' => 'MSSQLSERVER',
+                     'ServerName' => 'db.example.com',
+                     'User' => 'sa',
+                     'Password' => 'password',
+                     'PortNumber' => '1234',
+                     'DatabaseName' => 'MYDB'
+                   }
+    }
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-jdbc-connection-pool'),
+                                 equals(['--datasourceclassname=net.sourceforge.jtds.jdbcx.JtdsDataSource', '--initsql=', '--sqltracelisteners=', '--driverclassname=', '--validationclassname=', '--validationtable=', '--steadypoolsize=8', '--maxpoolsize=32', '--maxwait=60000', '--poolresize=2', '--idletimeout=300', '--validateatmostonceperiod=0', '--leaktimeout=0', '--statementleaktimeout=0', '--creationretryattempts=0', '--creationretryinterval=10', '--statementtimeout=-1', '--maxconnectionusagecount=0', '--statementcachesize=0', '--isisolationguaranteed=true', '--isconnectvalidatereq=true', '--failconnection=false', '--allownoncomponentcallers=false', '--nontransactionalconnections=false', '--statementleakreclaim=false', '--leakreclaim=false', '--lazyconnectionenlistment=false', '--lazyconnectionassociation=false', '--associatewiththread=false', '--matchconnections=false', '--ping=true', '--pooling=true', '--wrapjdbcobjects=true', '--restype=javax.sql.DataSource', '--isolationlevel=', '--validationmethod=auto-commit', '--property', 'Instance=MSSQLSERVER:ServerName=db\\.example\\.com:User=sa:Password=password:PortNumber=1234:DatabaseName=MYDB', '--description', 'Audit Connection Pool', 'APool']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:create)
+
+    assert_equal t.updated_by_last_action?, true
+  end
+
   def new_task(executor)
     t = Redfish::Tasks::JdbcConnectionPool.new
     t.context = new_context(executor)
