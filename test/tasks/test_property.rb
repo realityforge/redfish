@@ -59,11 +59,7 @@ class Redfish::Tasks::TestProperty < Redfish::TestCase
 
   def new_property(executor)
     t = Redfish::Tasks::Property.new
-    t.context = new_context(executor)
+    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
     t
-  end
-
-  def new_context(executor)
-    Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
   end
 end
