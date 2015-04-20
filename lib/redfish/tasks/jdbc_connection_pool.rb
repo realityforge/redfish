@@ -109,9 +109,7 @@ module Redfish
           args << '--description' << self.description
           args << self.pool_name
 
-          pool_present = (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.pool_name)}$/)
-
-          unless pool_present
+          if cache_present || !pool_present?
             context.exec('create-jdbc-connection-pool', args)
             updated_by_last_action
             create_occurred = true
@@ -148,6 +146,10 @@ module Redfish
         t = context.task('property', 'key' => "#{property_prefix}deployment-order", 'value' => self.deploymentorder.to_s)
         t.perform_action(:set)
         updated_by_last_action if t.updated_by_last_action?
+      end
+
+      def pool_present?
+        (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.pool_name)}$/)
       end
 
       def as_property_value(value)
