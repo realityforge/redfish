@@ -65,6 +65,8 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("APool\n")
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.jdbc-connection-pool.APool.property.*)), equals(:terse => true, :echo => false)).
+      returns('')
 
     {
       'description' => 'Audit Connection Pool',
@@ -149,6 +151,9 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("APool\n")
+    # Return a property that should be deleted
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.jdbc-connection-pool.APool.property.*)), equals(:terse => true, :echo => false)).
+      returns("resources.jdbc-connection-pool.APool.property.DatabaseName2=MYDB\n")
 
     {
       'description' => 'X',
@@ -220,6 +225,19 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
                                  equals(['resources.jdbc-connection-pool.APool.ping=true']),
                                  equals(:terse => true, :echo => false))
 
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['resources.jdbc-connection-pool.APool.property.DatabaseName2']),
+                                 equals(:terse => true, :echo => false)).
+      returns("resources.jdbc-connection-pool.APool.DatabaseName2=MYDB\n")
+
+    # This is the set to remove property that should not exist
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(['resources.jdbc-connection-pool.APool.property.DatabaseName2=']),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
     t.perform_action(:create)
 
     assert_equal t.updated_by_last_action?, true
@@ -273,6 +291,9 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     cache_values['resources.jdbc-connection-pool.APool.deployment-order'] = '101'
     cache_values['resources.jdbc-connection-pool.APool.property.Password'] = 'secret'
 
+    # This property should be removed
+    cache_values['resources.jdbc-connection-pool.APool.property.DatabaseName2'] = 'MYDB'
+
     t.context.cache_properties(cache_values)
 
     t.options = {'pool_name' => 'APool',
@@ -310,6 +331,14 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
                                  equals('set'),
                                  equals(['resources.jdbc-connection-pool.APool.ping=true']),
                                  equals(:terse => true, :echo => false))
+
+    # This is the set to remove property that should not exist
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(['resources.jdbc-connection-pool.APool.property.DatabaseName2=']),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
     t.perform_action(:create)
 
     assert_equal t.updated_by_last_action?, true

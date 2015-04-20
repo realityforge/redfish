@@ -132,9 +132,7 @@ module Redfish
 
         unless create_occurred
           sets = {'description' => self.description}
-          self.properties.each_pair do |key, value|
-            sets["property.#{key}"] = as_property_value(value)
-          end
+          collect_property_sets(property_prefix, sets)
 
           ATTRIBUTES.each do |attr|
             sets[attr.arg] = self.send(attr.key)
