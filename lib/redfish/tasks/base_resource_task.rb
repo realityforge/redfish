@@ -6,11 +6,6 @@ module Redfish
 
       protected
 
-      attribute :pool_name, :kind_of => String, :required => true
-      attribute :description, :kind_of => String, :default => ''
-      attribute :properties, :kind_of => Hash, :default => {}
-      attribute :deploymentorder, :kind_of => Fixnum, :default => 100
-
       def create(property_prefix)
         cache_present = context.property_cache?
         may_need_create = cache_present ? !context.property_cache.any_property_start_with?(property_prefix) : true
