@@ -20,7 +20,6 @@ class Redfish::TestTask < Redfish::TestCase
       @action2_ran = true
       updated_by_last_action
     end
-
   end
 
   def test_required_raises_exception_if_unset
