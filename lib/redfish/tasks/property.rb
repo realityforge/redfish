@@ -1,6 +1,6 @@
 module Redfish
   module Tasks
-    class Property < Task
+    class Property < AsadminTask
 
       attribute :key, :kind_of => String, :required => true
       attribute :value, :kind_of => String, :required => true

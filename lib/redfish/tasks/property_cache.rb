@@ -1,6 +1,6 @@
 module Redfish
   module Tasks
-    class PropertyCache < Task
+    class PropertyCache < AsadminTask
 
       private
 
