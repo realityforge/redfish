@@ -6,8 +6,15 @@ module Redfish
     end
 
     def any_property_start_with?(prefix)
-      regex = /^#{Regexp.escape(prefix)}/
+      regex = prefix_regex(prefix)
       raw_properties.keys.any? { |k| k =~ regex }
+    end
+
+    def delete_all_with_prefix!(prefix)
+      regex = prefix_regex(prefix)
+      raw_properties.keys.each do |k|
+        raw_properties.delete(k) if k =~ regex
+      end
     end
 
     def []=(key, value)
@@ -23,6 +30,10 @@ module Redfish
     end
 
     private
+
+    def prefix_regex(prefix)
+      /^#{Regexp.escape(prefix)}/
+    end
 
     def raw_properties
       @properties

@@ -30,4 +30,29 @@ class Redfish::TestPropertyCache < Redfish::TestCase
     assert !cache.any_property_start_with?('x.')
     assert cache.any_property_start_with?('x')
   end
+
+  def test_delete_all_with_prefix!
+
+    cache = Redfish::PropertyCache.new('a.b.c' => '1', 'a.b.d' => '2', 'a.c.e' => '2', 'xx' => '2')
+
+    cache.delete_all_with_prefix!('a.c.f')
+
+    assert_equal cache.properties, {'a.b.c' => '1', 'a.b.d' => '2', 'a.c.e' => '2', 'xx' => '2'}
+
+    cache.delete_all_with_prefix!('xx')
+
+    assert_equal cache.properties, {'a.b.c' => '1', 'a.b.d' => '2', 'a.c.e' => '2'}
+
+    cache.delete_all_with_prefix!('a.c.f')
+
+    assert_equal cache.properties, {'a.b.c' => '1', 'a.b.d' => '2', 'a.c.e' => '2'}
+
+    cache.delete_all_with_prefix!('a.c')
+
+    assert_equal cache.properties, {'a.b.c' => '1', 'a.b.d' => '2'}
+
+    cache.delete_all_with_prefix!('a')
+
+    assert_equal cache.properties, {}
+  end
 end
