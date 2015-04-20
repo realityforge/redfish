@@ -5,7 +5,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'jdbc/MyDB',
+    t.options = {'name' => 'jdbc/MyDB',
                  'enabled' => 'true',
                  'connectionpoolid' => 'MyDBPool',
                  'description' => 'Audit DB',
@@ -32,7 +32,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'jdbc/MyDB',
+    t.options = {'name' => 'jdbc/MyDB',
                  'enabled' => 'true',
                  'connectionpoolid' => 'MyDBPool',
                  'description' => 'Audit DB',
@@ -60,7 +60,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'jdbc/MyDB',
+    t.options = {'name' => 'jdbc/MyDB',
                  'enabled' => 'true',
                  'connectionpoolid' => 'MyDBPool',
                  'description' => 'Audit DB',
@@ -117,7 +117,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
 
     t.context.cache_properties({})
 
-    t.options = {'resource_name' => 'jdbc/MyDB',
+    t.options = {'name' => 'jdbc/MyDB',
                  'enabled' => 'true',
                  'connectionpoolid' => 'MyDBPool',
                  'description' => 'Audit DB',
@@ -150,7 +150,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
 
     t.context.cache_properties(cache_values)
 
-    t.options = {'resource_name' => 'jdbc/MyDB',
+    t.options = {'name' => 'jdbc/MyDB',
                  'enabled' => 'true',
                  'connectionpoolid' => 'MyDBPool',
                  'description' => 'Audit DB',
@@ -188,7 +188,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
 
     t.context.cache_properties(cache_values)
 
-    t.options = {'resource_name' => 'jdbc/MyDB',
+    t.options = {'name' => 'jdbc/MyDB',
                  'enabled' => 'true',
                  'connectionpoolid' => 'MyDBPool',
                  'description' => 'Audit DB',
@@ -205,7 +205,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'jdbc/MyDB'}
+    t.options = {'name' => 'jdbc/MyDB'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-jdbc-resources'),
@@ -222,7 +222,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'jdbc/MyDB'}
+    t.options = {'name' => 'jdbc/MyDB'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-jdbc-resources'),
@@ -246,7 +246,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     t = new_task(executor)
 
     t.context.cache_properties({})
-    t.options = {'resource_name' => 'jdbc/MyDB'}
+    t.options = {'name' => 'jdbc/MyDB'}
 
     t.perform_action(:destroy)
 
@@ -261,7 +261,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::TestCase
     cache_values = get_expected_cache_values
 
     t.context.cache_properties(cache_values)
-    t.options = {'resource_name' => 'jdbc/MyDB'}
+    t.options = {'name' => 'jdbc/MyDB'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jdbc-resource'),

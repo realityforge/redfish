@@ -181,7 +181,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'myapp/env/Setting'}
+    t.options = {'name' => 'myapp/env/Setting'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-custom-resources'),
@@ -198,7 +198,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'resource_name' => 'myapp/env/Setting'}
+    t.options = {'name' => 'myapp/env/Setting'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-custom-resources'),
@@ -222,7 +222,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     t = new_task(executor)
 
     t.context.cache_properties({})
-    t.options = {'resource_name' => 'myapp/env/Setting'}
+    t.options = {'name' => 'myapp/env/Setting'}
 
     t.perform_action(:destroy)
 
@@ -237,7 +237,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     cache_values = get_expected_cache_values
 
     t.context.cache_properties(cache_values)
-    t.options = {'resource_name' => 'myapp/env/Setting'}
+    t.options = {'name' => 'myapp/env/Setting'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-custom-resource'),
@@ -284,7 +284,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
   end
 
   def params
-    {'resource_name' => 'myapp/env/Setting',
+    {'name' => 'myapp/env/Setting',
      'enabled' => 'true',
      'restype' => 'java.lang.String',
      'description' => 'My Env Setting',

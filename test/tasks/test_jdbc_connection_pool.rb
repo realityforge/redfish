@@ -5,7 +5,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'pool_name' => 'APool',
+    t.options = {'name' => 'APool',
                  'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
                  'restype' => 'javax.sql.DataSource',
                  'validationmethod' => 'auto-commit',
@@ -45,7 +45,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'pool_name' => 'APool',
+    t.options = {'name' => 'APool',
                  'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
                  'restype' => 'javax.sql.DataSource',
                  'validationmethod' => 'auto-commit',
@@ -131,7 +131,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'pool_name' => 'APool',
+    t.options = {'name' => 'APool',
                  'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
                  'restype' => 'javax.sql.DataSource',
                  'validationmethod' => 'auto-commit',
@@ -249,7 +249,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
     t.context.cache_properties({})
 
-    t.options = {'pool_name' => 'APool',
+    t.options = {'name' => 'APool',
                  'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
                  'restype' => 'javax.sql.DataSource',
                  'validationmethod' => 'auto-commit',
@@ -296,7 +296,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
     t.context.cache_properties(cache_values)
 
-    t.options = {'pool_name' => 'APool',
+    t.options = {'name' => 'APool',
                  'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
                  'restype' => 'javax.sql.DataSource',
                  'validationmethod' => 'auto-commit',
@@ -354,7 +354,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
     t.context.cache_properties(cache_values)
 
-    t.options = {'pool_name' => 'APool',
+    t.options = {'name' => 'APool',
                  'datasourceclassname' => 'net.sourceforge.jtds.jdbcx.JtdsDataSource',
                  'restype' => 'javax.sql.DataSource',
                  'validationmethod' => 'auto-commit',
@@ -383,7 +383,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'pool_name' => 'APool'}
+    t.options = {'name' => 'APool'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-jdbc-connection-pools'),
@@ -400,7 +400,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.options = {'pool_name' => 'APool'}
+    t.options = {'name' => 'APool'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-jdbc-connection-pools'),
@@ -424,7 +424,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     t = new_task(executor)
 
     t.context.cache_properties({})
-    t.options = {'pool_name' => 'APool'}
+    t.options = {'name' => 'APool'}
 
     t.perform_action(:destroy)
 
@@ -439,7 +439,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     cache_values = get_expected_cache_values
 
     t.context.cache_properties(cache_values)
-    t.options = {'pool_name' => 'APool'}
+    t.options = {'name' => 'APool'}
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jdbc-connection-pool'),

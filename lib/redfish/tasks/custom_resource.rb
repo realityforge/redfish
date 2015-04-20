@@ -2,7 +2,7 @@ module Redfish
   module Tasks
     class CustomResource < BaseResourceTask
 
-      attribute :resource_name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true
       attribute :restype, :kind_of => String, :default => 'java.lang.String'
       attribute :factoryclass,
                 :kind_of => String,
@@ -14,21 +14,21 @@ module Redfish
       attribute :deploymentorder, :kind_of => Fixnum, :default => 100
 
       action :create do
-        create("resources.custom-resource.#{self.resource_name}.")
+        create("resources.custom-resource.#{self.name}.")
       end
 
       action :destroy do
-        destroy("resources.custom-resource.#{self.resource_name}.")
+        destroy("resources.custom-resource.#{self.name}.")
       end
 
       def properties_to_record_in_create
-        {'object-type' => 'user', 'jndi-name' => self.resource_name, 'deployment-order' => '100'}
+        {'object-type' => 'user', 'jndi-name' => self.name, 'deployment-order' => '100'}
       end
 
       def properties_to_set_in_create
         property_map = {'description' => self.description}
 
-        collect_property_sets("resources.custom-resource.#{self.resource_name}.", property_map)
+        collect_property_sets("resources.custom-resource.#{self.name}.", property_map)
         property_map['property.value'] = self.value if self.value
 
         property_map['enabled'] = self.enabled
@@ -46,17 +46,17 @@ module Redfish
         args << '--factoryclass' << self.factoryclass.to_s
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
         args << '--description' << self.description.to_s
-        args << self.resource_name.to_s
+        args << self.name.to_s
 
         context.exec('create-custom-resource', args)
       end
 
       def do_destroy
-        context.exec('delete-custom-resource', [self.resource_name])
+        context.exec('delete-custom-resource', [self.name])
       end
 
       def present?
-        (context.exec('list-custom-resources', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.resource_name)}$/)
+        (context.exec('list-custom-resources', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end
     end
   end

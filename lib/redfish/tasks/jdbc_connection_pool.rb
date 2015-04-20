@@ -75,7 +75,7 @@ module Redfish
 
       public
 
-      attribute :pool_name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
       attribute :deploymentorder, :kind_of => Fixnum, :default => 100
@@ -93,20 +93,20 @@ module Redfish
       end
 
       action :create do
-        create("resources.jdbc-connection-pool.#{self.pool_name}.")
+        create("resources.jdbc-connection-pool.#{self.name}.")
       end
 
       action :destroy do
-        destroy("resources.jdbc-connection-pool.#{self.pool_name}.")
+        destroy("resources.jdbc-connection-pool.#{self.name}.")
       end
 
       def properties_to_record_in_create
-        {'object-type' => 'user', 'name' => self.pool_name, 'deployment-order' => '100'}
+        {'object-type' => 'user', 'name' => self.name, 'deployment-order' => '100'}
       end
 
       def properties_to_set_in_create
         property_map = {'description' => self.description}
-        collect_property_sets("resources.jdbc-connection-pool.#{self.pool_name}.", property_map)
+        collect_property_sets("resources.jdbc-connection-pool.#{self.name}.", property_map)
 
         ATTRIBUTES.each do |attr|
           property_map[attr.arg] = self.send(attr.key)
@@ -122,7 +122,7 @@ module Redfish
 
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
         args << '--description' << self.description
-        args << self.pool_name
+        args << self.name
 
         context.exec('create-jdbc-connection-pool', args)
       end
@@ -130,12 +130,12 @@ module Redfish
       def do_destroy
         args = []
         args << '--cascade=true'
-        args << self.pool_name
+        args << self.name
         context.exec('delete-jdbc-connection-pool', args)
       end
 
       def present?
-        (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.pool_name)}$/)
+        (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end
     end
   end
