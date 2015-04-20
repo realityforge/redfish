@@ -45,6 +45,17 @@ class Redfish::TestTaskManager < Redfish::TestCase
     assert_equal t.value, 'true'
   end
 
+  def test_create_abstract_task_produces_error
+    error = false
+    begin
+      Redfish::TaskManager.create_task(new_context, 'asadmin_task')
+    rescue => e
+      assert_equal e.to_s, "Attempted to instantiate abstract task with name 'asadmin_task'"
+      error = true
+    end
+    fail('Expected to fail as no such registration') unless error
+  end
+
   def new_context
     Redfish::Context.new(Redfish::Executor.new, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, :terse => false, :echo => true)
   end

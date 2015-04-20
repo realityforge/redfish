@@ -2,10 +2,6 @@ module Redfish
   module MetaDataHelper
     def self.included(base)
       class << base
-        def Task.inherited(mod)
-          TaskManager.register_task(mod)
-        end
-
         def action(key, &block)
           define_method("perform_#{key}") do
             instance_eval(&block)
@@ -44,6 +40,14 @@ module Redfish
   end
 
   class Task < Redfish::BaseElement
+    def Task.inherited(mod)
+      TaskManager.register_task(mod)
+    end
+
+    def Task.mark_as_abstract!
+      TaskManager.mark_as_abstract!(self)
+    end
+
     include MetaDataHelper
 
     attr_writer :context
