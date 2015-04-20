@@ -7,7 +7,7 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
 
     executor.
       expects(:exec).
-      with(equals(t.context),equals('get'),equals(%w(*)),equals(:terse => true, :echo => false)).
+      with(equals(t.context), equals('get'), equals(%w(*)), equals(:terse => true, :echo => false)).
       returns("a=1\nb=2\nc.d.e=345")
 
     properties = t.send(:load_properties, '*')
