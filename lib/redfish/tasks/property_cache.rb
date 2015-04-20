@@ -5,15 +5,7 @@ module Redfish
       private
 
       action :create do
-        output = context.exec('get', %w(*), :terse => true, :echo => false)
-
-        properties = {}
-        output.split("\n").each do |line|
-          index = line.index('=')
-          key = line[0, index]
-          value = line[index + 1, line.size]
-          properties[key] = value
-        end
+        properties = load_properties('*')
 
         skip = false
         if context.property_cache?

@@ -6,6 +6,22 @@ module Redfish
 
       protected
 
+      def load_properties(pattern)
+        output = context.exec('get', [pattern], :terse => true, :echo => false)
+        parse_properties(output)
+      end
+
+      def parse_properties(output)
+        properties = {}
+        output.split("\n").each do |line|
+          index = line.index('=')
+          key = line[0, index]
+          value = line[index + 1, line.size]
+          properties[key] = value
+        end
+        properties
+      end
+
       def as_property_value(value)
         value.nil? ? '' : value.to_s
       end
