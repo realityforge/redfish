@@ -10,6 +10,11 @@ module Redfish
       raw_properties.keys.any? { |k| k =~ regex }
     end
 
+    def get_keys_starting_with(prefix)
+      regex = prefix_regex(prefix)
+      raw_properties.keys.select { |k| k =~ regex }
+    end
+
     def delete_all_with_prefix!(prefix)
       regex = prefix_regex(prefix)
       raw_properties.keys.each do |k|

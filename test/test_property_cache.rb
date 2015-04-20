@@ -55,4 +55,12 @@ class Redfish::TestPropertyCache < Redfish::TestCase
 
     assert_equal cache.properties, {}
   end
+
+  def test_get_keys_starting_with
+    cache = Redfish::PropertyCache.new('a.b.c' => '1', 'a.b.d' => '2', 'a.c.e' => '2', 'xx' => '2')
+
+    assert_equal cache.get_keys_starting_with('a.c.').sort, %w(a.c.e)
+    assert_equal cache.get_keys_starting_with('a').sort, %w(a.b.c a.b.d a.c.e)
+    assert_equal cache.get_keys_starting_with('zz').sort, []
+  end
 end
