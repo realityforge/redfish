@@ -11,6 +11,7 @@ require 'redfish/task_manager'
 require 'redfish/task'
 
 require 'redfish/tasks/asadmin_task'
+require 'redfish/tasks/base_resource_task'
 require 'redfish/tasks/property_cache'
 require 'redfish/tasks/property'
 require 'redfish/tasks/jdbc_connection_pool'

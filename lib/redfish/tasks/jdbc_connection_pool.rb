@@ -1,6 +1,6 @@
 module Redfish
   module Tasks
-    class JdbcConnectionPool < AsadminTask
+    class JdbcConnectionPool < BaseResourceTask
 
       private
 
@@ -93,86 +93,48 @@ module Redfish
       end
 
       action :create do
-        property_prefix = "resources.jdbc-connection-pool.#{self.pool_name}."
-        cache_present = context.property_cache?
-        may_need_create = cache_present ? !context.property_cache.any_property_start_with?(property_prefix) : true
-
-        create_occurred = false
-
-        if may_need_create
-          args = []
-          ATTRIBUTES.each do |attr|
-            args << "--#{attr.key}=#{self.send(attr.key)}"
-          end
-
-          args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
-          args << '--description' << self.description
-          args << self.pool_name
-
-          if cache_present || !pool_present?
-            context.exec('create-jdbc-connection-pool', args)
-            updated_by_last_action
-            create_occurred = true
-
-            if cache_present
-              ATTRIBUTES.each do |attr|
-                v = self.send(attr.key)
-                context.property_cache["#{property_prefix}#{attr.arg}"] = as_property_value(v)
-              end
-              context.property_cache["#{property_prefix}object-type"] = 'user'
-              context.property_cache["#{property_prefix}name"] = self.pool_name
-              context.property_cache["#{property_prefix}description"] = self.description
-              context.property_cache["#{property_prefix}deployment-order"] = self.deploymentorder.to_s
-              self.properties.each_pair do |key, value|
-                context.property_cache["#{property_prefix}property.#{key}"] = as_property_value(value)
-              end
-            end
-          end
-        end
-
-        unless create_occurred
-          sets = {'description' => self.description}
-          collect_property_sets(property_prefix, sets)
-
-          ATTRIBUTES.each do |attr|
-            sets[attr.arg] = self.send(attr.key)
-          end
-
-          sets.each_pair do |key, value|
-            t = context.task('property', 'key' => "#{property_prefix}#{key}", 'value' => as_property_value(value))
-            t.perform_action(:set)
-            updated_by_last_action if t.updated_by_last_action?
-          end
-        end
-
-        t = context.task('property', 'key' => "#{property_prefix}deployment-order", 'value' => self.deploymentorder.to_s)
-        t.perform_action(:set)
-        updated_by_last_action if t.updated_by_last_action?
+        create("resources.jdbc-connection-pool.#{self.pool_name}.")
       end
 
       action :destroy do
-        property_prefix = "resources.jdbc-connection-pool.#{self.pool_name}."
-        cache_present = context.property_cache?
-        may_need_delete = cache_present ? context.property_cache.any_property_start_with?(property_prefix) : true
-
-        if may_need_delete
-          if cache_present || pool_present?
-
-            args = []
-            args << '--cascade=true'
-            args << self.pool_name
-            context.exec('delete-jdbc-connection-pool', args)
-
-            updated_by_last_action
-
-            if cache_present
-              context.property_cache.delete_all_with_prefix!(property_prefix)
-            end
-          end
-        end
+        destroy("resources.jdbc-connection-pool.#{self.pool_name}.")
       end
 
-      def pool_present?
+      def properties_to_record_in_create
+        {'object-type' => 'user', 'name' => self.pool_name, 'deployment-order' => '100'}
+      end
+
+      def properties_to_set_in_create
+        property_map = {'description' => self.description}
+        collect_property_sets("resources.jdbc-connection-pool.#{self.pool_name}.", property_map)
+
+        ATTRIBUTES.each do |attr|
+          property_map[attr.arg] = self.send(attr.key)
+        end
+        property_map
+      end
+
+      def do_create
+        args = []
+        ATTRIBUTES.each do |attr|
+          args << "--#{attr.key}=#{self.send(attr.key)}"
+        end
+
+        args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
+        args << '--description' << self.description
+        args << self.pool_name
+
+        context.exec('create-jdbc-connection-pool', args)
+      end
+
+      def do_destroy
+        args = []
+        args << '--cascade=true'
+        args << self.pool_name
+        context.exec('delete-jdbc-connection-pool', args)
+      end
+
+      def present?
         (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.pool_name)}$/)
       end
     end
