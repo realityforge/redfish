@@ -1,7 +1,7 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
-  def test_create_no_cache_and_not_present
+  def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -41,7 +41,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_create_no_cache_and_present
+  def test_create_element_where_cache_not_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -127,7 +127,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, false
   end
 
-  def test_create_no_cache_and_present_but_modified
+  def test_create_element_where_cache_not_present_and_element_present_but_modified
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -243,7 +243,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_create_cache_and_no_present
+  def test_create_element_where_cache_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -280,8 +280,8 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_create_cache_and_present_but_modified
-    cache_values = get_expected_cache_values
+  def test_create_element_where_cache_present_and_element_present_but_modified
+    cache_values = expected_properties
 
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -346,8 +346,8 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_create_cache_and_present
-    cache_values = get_expected_cache_values
+  def test_create_element_where_cache_present_and_element_present
+    cache_values = expected_properties
 
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -379,7 +379,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_delete_no_cache_and_not_present
+  def test_delete_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -396,7 +396,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, false
   end
 
-  def test_delete_no_cache_and_present
+  def test_delete_element_where_cache_not_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -419,7 +419,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_delete_cache_and_not_present
+  def test_delete_element_where_cache_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -432,11 +432,11 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.context.property_cache.any_property_start_with?('resources.jdbc-connection-pool.APool.'), false
   end
 
-  def test_delete_cache_and_present
+  def test_delete_element_where_cache_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    cache_values = get_expected_cache_values
+    cache_values = expected_properties
 
     t.context.cache_properties(cache_values)
     t.options = {'name' => 'APool'}
@@ -456,12 +456,12 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
   protected
 
   def ensure_expected_cache_values(t)
-    get_expected_cache_values.each_pair do |key, value|
+    expected_properties.each_pair do |key, value|
       assert_equal t.context.property_cache[key], value, "Expected #{key}=#{value}"
     end
   end
 
-  def get_expected_cache_values
+  def expected_properties
     cache_values = {}
 
     {
@@ -517,7 +517,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
   def new_task(executor)
     t = Redfish::Tasks::JdbcConnectionPool.new
-    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
+    t.context = create_simple_context(executor)
     t
   end
 end

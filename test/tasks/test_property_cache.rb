@@ -3,7 +3,7 @@ require File.expand_path('../../helper', __FILE__)
 class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
   def test_create_no_existing
     executor = Redfish::Executor.new
-    t = new_property_cache(executor)
+    t = new_task(executor)
 
     executor.
       expects(:exec).
@@ -21,7 +21,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
 
   def test_create_existing_no_match
     executor = Redfish::Executor.new
-    t = new_property_cache(executor)
+    t = new_task(executor)
 
     t.context.cache_properties('a' => '-1')
 
@@ -41,7 +41,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
 
   def test_create_existing_match
     executor = Redfish::Executor.new
-    t = new_property_cache(executor)
+    t = new_task(executor)
 
     t.context.cache_properties('a' => '1', 'b' => '2', 'c.d.e' => '345')
 
@@ -61,7 +61,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
 
   def test_destroy
     executor = Redfish::Executor.new
-    t = new_property_cache(executor)
+    t = new_task(executor)
 
     t.context.cache_properties('a' => '1', 'b' => '2', 'c.d.e' => '345')
 
@@ -73,7 +73,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
 
   def test_destroy_no_existing
     executor = Redfish::Executor.new
-    t = new_property_cache(executor)
+    t = new_task(executor)
 
     assert_equal t.context.property_cache?, false
     t.perform_action(:destroy)
@@ -81,9 +81,9 @@ class Redfish::Tasks::TestPropertyCache < Redfish::TestCase
     assert_equal t.context.property_cache?, false
   end
 
-  def new_property_cache(executor)
+  def new_task(executor)
     t = Redfish::Tasks::PropertyCache.new
-    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
+    t.context = create_simple_context(executor)
     t
   end
 end

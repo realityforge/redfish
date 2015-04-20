@@ -13,4 +13,8 @@ class Redfish::TestCase < Minitest::Test
 
   def teardown
   end
+
+  def create_simple_context(executor)
+    Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
+  end
 end

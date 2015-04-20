@@ -3,7 +3,7 @@ require File.expand_path('../../helper', __FILE__)
 class Redfish::Tasks::TestProperty < Redfish::TestCase
   def test_property_no_cache_and_not_set
     executor = Redfish::Executor.new
-    t = new_property(executor)
+    t = new_task(executor)
 
     executor.expects(:exec).with(equals(t.context),equals('get'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)),equals(:terse => true, :echo => false)).returns('')
     executor.expects(:exec).with(equals(t.context),equals('set'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)),equals(:terse => true, :echo => false)).returns('')
@@ -17,7 +17,7 @@ class Redfish::Tasks::TestProperty < Redfish::TestCase
 
   def test_property_no_cache_and_already_set
     executor = Redfish::Executor.new
-    t = new_property(executor)
+    t = new_task(executor)
 
     executor.expects(:exec).with(equals(t.context),equals('get'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)),equals(:terse => true, :echo => false)).returns('configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
 
@@ -30,7 +30,7 @@ class Redfish::Tasks::TestProperty < Redfish::TestCase
 
   def test_property_cache_and_not_set
     executor = Redfish::Executor.new
-    t = new_property(executor)
+    t = new_task(executor)
 
     t.context.cache_properties('configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'false')
 
@@ -46,7 +46,7 @@ class Redfish::Tasks::TestProperty < Redfish::TestCase
 
   def test_property_cache_and_set
     executor = Redfish::Executor.new
-    t = new_property(executor)
+    t = new_task(executor)
 
     t.context.cache_properties('configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true')
 
@@ -57,9 +57,9 @@ class Redfish::Tasks::TestProperty < Redfish::TestCase
     assert_equal t.updated_by_last_action?, false
   end
 
-  def new_property(executor)
+  def new_task(executor)
     t = Redfish::Tasks::Property.new
-    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
+    t.context = create_simple_context(executor)
     t
   end
 end

@@ -73,7 +73,7 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
 
   def new_task(executor)
     t = MyAsadminTask.new
-    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
+    t.context = create_simple_context(executor)
     t
   end
 end

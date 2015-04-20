@@ -1,7 +1,7 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestCustomResource < Redfish::TestCase
-  def test_create_no_cache_and_not_present
+  def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -24,7 +24,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_create_no_cache_and_present
+  def test_create_element_where_cache_not_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -35,7 +35,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.custom-resource.myapp/env/Setting.property.*)), equals(:terse => true, :echo => false)).
       returns('')
 
-    get_expected_key_values.each_pair do |k, v|
+    expected_local_properties.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
                                    equals(["resources.custom-resource.myapp/env/Setting.#{k}"]),
@@ -48,7 +48,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     assert_equal t.updated_by_last_action?, false
   end
 
-  def test_create_no_cache_and_present_but_modified
+  def test_create_element_where_cache_not_present_and_element_present_but_modified
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -60,7 +60,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.custom-resource.myapp/env/Setting.property.*)), equals(:terse => true, :echo => false)).
       returns("resources.custom-resource.myapp/env/Setting.property.Blah=Y\n")
 
-    values = get_expected_key_values
+    values = expected_local_properties
     values['deployment-order'] = '101'
     values['enabled'] = 'false'
 
@@ -99,7 +99,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_create_cache_and_no_present
+  def test_create_element_where_cache_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -119,8 +119,8 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_create_cache_and_present_but_modified
-    cache_values = get_expected_cache_values
+  def test_create_element_where_cache_present_and_element_present_but_modified
+    cache_values = expected_properties
 
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -160,8 +160,8 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_create_cache_and_present
-    cache_values = get_expected_cache_values
+  def test_create_element_where_cache_present_and_element_present
+    cache_values = expected_properties
 
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -177,7 +177,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_delete_no_cache_and_not_present
+  def test_delete_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -194,7 +194,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     assert_equal t.updated_by_last_action?, false
   end
 
-  def test_delete_no_cache_and_present
+  def test_delete_element_where_cache_not_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -217,7 +217,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_delete_cache_and_not_present
+  def test_delete_element_where_cache_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -230,11 +230,11 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     assert_equal t.context.property_cache.any_property_start_with?('resources.custom-resource.myapp/env/Setting.'), false
   end
 
-  def test_delete_cache_and_present
+  def test_delete_element_where_cache_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    cache_values = get_expected_cache_values
+    cache_values = expected_properties
 
     t.context.cache_properties(cache_values)
     t.options = {'name' => 'myapp/env/Setting'}
@@ -254,15 +254,15 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
   protected
 
   def ensure_expected_cache_values(t)
-    get_expected_cache_values.each_pair do |key, value|
+    expected_properties.each_pair do |key, value|
       assert_equal t.context.property_cache[key], value, "Expected #{key}=#{value}"
     end
   end
 
-  def get_expected_cache_values
+  def expected_properties
     cache_values = {}
 
-    get_expected_key_values.each_pair do |k, v|
+    expected_local_properties.each_pair do |k, v|
       cache_values["resources.custom-resource.myapp/env/Setting.#{k}"] = "#{v}"
     end
     cache_values
@@ -272,7 +272,8 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     t.options = params
   end
 
-  def get_expected_key_values
+  # Properties in GlassFish properties directory
+  def expected_local_properties
     p = params
     {
       'description' => p['description'],
@@ -283,6 +284,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
     }
   end
 
+  # Resource parameters
   def params
     {'name' => 'myapp/env/Setting',
      'enabled' => 'true',
@@ -293,7 +295,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::TestCase
 
   def new_task(executor)
     t = Redfish::Tasks::CustomResource.new
-    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
+    t.context = create_simple_context(executor)
     t
   end
 end
