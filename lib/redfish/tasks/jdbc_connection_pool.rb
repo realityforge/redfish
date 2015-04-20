@@ -152,6 +152,28 @@ module Redfish
         updated_by_last_action if t.updated_by_last_action?
       end
 
+      action :destroy do
+        property_prefix = "resources.jdbc-connection-pool.#{self.pool_name}."
+        cache_present = context.property_cache?
+        may_need_delete = cache_present ? context.property_cache.any_property_start_with?(property_prefix) : true
+
+        if may_need_delete
+          if cache_present || pool_present?
+
+            args = []
+            args << '--cascade=true'
+            args << self.pool_name
+            context.exec('delete-jdbc-connection-pool', args)
+
+            updated_by_last_action
+
+            if cache_present
+              context.property_cache.delete_all_with_prefix!(property_prefix)
+            end
+          end
+        end
+      end
+
       def pool_present?
         (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.pool_name)}$/)
       end

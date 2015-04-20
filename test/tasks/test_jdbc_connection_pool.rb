@@ -1,7 +1,7 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
-  def test_no_cache_and_not_present
+  def test_create_no_cache_and_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -41,7 +41,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_no_cache_and_present
+  def test_create_no_cache_and_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -125,7 +125,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, false
   end
 
-  def test_no_cache_and_present_but_modified
+  def test_create_no_cache_and_present_but_modified
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -225,7 +225,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     assert_equal t.updated_by_last_action?, true
   end
 
-  def test_cache_and_no_present
+  def test_create_cache_and_no_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
@@ -262,7 +262,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_cache_and_present_but_modified
+  def test_create_cache_and_present_but_modified
     cache_values = get_expected_cache_values
 
     executor = Redfish::Executor.new
@@ -317,7 +317,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
     ensure_expected_cache_values(t)
   end
 
-  def test_cache_and_present
+  def test_create_cache_and_present
     cache_values = get_expected_cache_values
 
     executor = Redfish::Executor.new
@@ -349,6 +349,82 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
     ensure_expected_cache_values(t)
   end
+
+  def test_delete_no_cache_and_not_present
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.options = {'pool_name' => 'APool'}
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-jdbc-connection-pools'),
+                                 equals([]),
+                                 equals({:terse => true, :echo => false})).
+      returns('')
+
+    t.perform_action(:destroy)
+
+    assert_equal t.updated_by_last_action?, false
+  end
+
+  def test_delete_no_cache_and_present
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.options = {'pool_name' => 'APool'}
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-jdbc-connection-pools'),
+                                 equals([]),
+                                 equals({:terse => true, :echo => false})).
+      returns("APool\n")
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-jdbc-connection-pool'),
+                                 equals(['--cascade=true', 'APool']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:destroy)
+
+    assert_equal t.updated_by_last_action?, true
+  end
+
+  def test_delete_cache_and_not_present
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties({})
+    t.options = {'pool_name' => 'APool'}
+
+    t.perform_action(:destroy)
+
+    assert_equal t.updated_by_last_action?, false
+    assert_equal t.context.property_cache.any_property_start_with?('resources.jdbc-connection-pool.APool.'), false
+  end
+
+  def test_delete_cache_and_present
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    cache_values = get_expected_cache_values
+
+    t.context.cache_properties(cache_values)
+    t.options = {'pool_name' => 'APool'}
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-jdbc-connection-pool'),
+                                 equals(['--cascade=true', 'APool']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:destroy)
+
+    assert_equal t.updated_by_last_action?, true
+    assert_equal t.context.property_cache.any_property_start_with?('resources.jdbc-connection-pool.APool.'), false
+  end
+
+  protected
 
   def ensure_expected_cache_values(t)
     get_expected_cache_values.each_pair do |key, value|
