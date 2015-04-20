@@ -412,11 +412,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::TestCase
 
   def new_task(executor)
     t = Redfish::Tasks::JdbcConnectionPool.new
-    t.context = new_context(executor)
+    t.context = Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
     t
-  end
-
-  def new_context(executor)
-    Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil)
   end
 end
