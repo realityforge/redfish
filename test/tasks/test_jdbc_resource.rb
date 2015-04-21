@@ -17,7 +17,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
     executor.expects(:exec).with(equals(t.context), equals('get'),
                                  equals(["#{property_prefix}deployment-order"]),
                                  equals(:terse => true, :echo => false)).
-      returns("resources.jdbc-resource.jdbc/MyDB.deployment-order=100\n")
+      returns("#{property_prefix}deployment-order=100\n")
 
     t.perform_action(:create)
 
@@ -32,15 +32,15 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-resources'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("jdbc/MyDB\n")
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.jdbc-resource.jdbc/MyDB.property.*)), equals(:terse => true, :echo => false)).
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
       returns('')
 
     expected_local_properties.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
-                                   equals(["resources.jdbc-resource.jdbc/MyDB.#{k}"]),
+                                   equals(["#{property_prefix}#{k}"]),
                                    equals(:terse => true, :echo => false)).
-        returns("resources.jdbc-resource.jdbc/MyDB.#{k}=#{v}\n")
+        returns("#{property_prefix}#{k}=#{v}\n")
     end
 
     t.perform_action(:create)
@@ -57,8 +57,8 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-resources'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("jdbc/MyDB\n")
     # Return a property that should be deleted
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.jdbc-resource.jdbc/MyDB.property.*)), equals(:terse => true, :echo => false)).
-      returns("resources.jdbc-resource.jdbc/MyDB.property.Blah=Y\n")
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
+      returns("#{property_prefix}property.Blah=Y\n")
 
     values = expected_local_properties
     values['deployment-order'] = '101'
@@ -67,9 +67,9 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
     values.each_pair do |k, v|
       executor.expects(:exec).with(equals(t.context),
                                    equals('get'),
-                                   equals(["resources.jdbc-resource.jdbc/MyDB.#{k}"]),
+                                   equals(["#{property_prefix}#{k}"]),
                                    equals(:terse => true, :echo => false)).
-        returns("resources.jdbc-resource.jdbc/MyDB.#{k}=#{v}\n")
+        returns("#{property_prefix}#{k}=#{v}\n")
     end
 
     executor.expects(:exec).with(equals(t.context),
@@ -85,7 +85,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
                                  equals('get'),
                                  equals(["#{property_prefix}property.Blah"]),
                                  equals(:terse => true, :echo => false)).
-      returns("resources.jdbc-resource.jdbc/MyDB.property.Blah=X\n")
+      returns("#{property_prefix}property.Blah=X\n")
 
     # This is the set to remove property that should not exist
     executor.expects(:exec).with(equals(t.context),
