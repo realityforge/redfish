@@ -15,7 +15,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(t.context), equals('get'),
-                                 equals(['resources.custom-resource.myapp/env/Setting.deployment-order']),
+                                 equals(["#{property_prefix}deployment-order"]),
                                  equals(:terse => true, :echo => false)).
       returns("#{property_prefix}deployment-order=100\n")
 
