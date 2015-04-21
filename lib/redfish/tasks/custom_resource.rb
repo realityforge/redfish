@@ -10,7 +10,7 @@ module Redfish
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
-      attribute :value, :kind_of => String, :default => nil
+      attribute :value, :kind_of => String
       attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       action :create do

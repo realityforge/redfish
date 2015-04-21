@@ -10,7 +10,7 @@ module Redfish
       attribute :store_protocol_class, :kind_of => String, :required => nil
       attribute :transport_protocol, :kind_of => String, :required => nil
       attribute :transport_protocol_class, :kind_of => String, :required => nil
-      attribute :debug, :equal_to => [true, false, 'true', 'false'], :default => nil
+      attribute :debug, :equal_to => [true, false, 'true', 'false']
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}

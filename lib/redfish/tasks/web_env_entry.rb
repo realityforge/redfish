@@ -5,17 +5,17 @@ module Redfish
       # The name of the associated application.
       attribute :application, :kind_of => String, :required => true
       # The optional name of the module if part of multiple module application.
-      attribute :module, :kind_of => String, :default => nil
+      attribute :module, :kind_of => String
       # The key name of the web env entry.
       attribute :name, :kind_of => String, :required => true
       # The java type name of env entry.
       attribute :type, :equal_to => %w(java.lang.Boolean java.lang.Byte java.lang.Character java.lang.Double java.lang.Float java.lang.Integer java.lang.Long java.lang.Short java.lang.String), :default => 'java.lang.String'
       # The value of the entry.
-      attribute :value, :kind_of => String, :default => nil
+      attribute :value, :kind_of => String
       # Specifies whether the environment entry is ignored if it is set in the application's deployment descriptor. When an environment entry is ignored, the application behaves as if the entry had never been set in the application's deployment descriptor.
       attribute :ignore_descriptor_item, :equal_to => [true, false, 'true', 'false'], :default => false
       # A description of the entry.
-      attribute :description, :kind_of => String, :default => nil
+      attribute :description, :kind_of => String
 
       action :create do
         raise 'At least one of the "ignore_descriptor_item" or "value" parameters must be set.' if !self.ignore_descriptor_item? && self.value.nil?
