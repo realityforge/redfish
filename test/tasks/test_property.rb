@@ -12,7 +12,7 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     t.value = 'true'
     t.perform_action(:set)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
   end
 
   def test_property_no_cache_and_already_set
@@ -25,7 +25,7 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     t.value = 'true'
     t.perform_action(:set)
 
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
   end
 
   def test_property_cache_and_not_set
@@ -40,13 +40,12 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     t.value = 'true'
     t.perform_action(:set)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
     assert_equal t.context.property_cache['configs.config.server-config.security-service.activate-default-principal-to-role-mapping'], 'true'
   end
 
   def test_property_cache_and_set
-    executor = Redfish::Executor.new
-    t = new_task(executor)
+    t = new_task
 
     t.context.cache_properties('configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true')
 
@@ -54,6 +53,6 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     t.value = 'true'
     t.perform_action(:set)
 
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
   end
 end

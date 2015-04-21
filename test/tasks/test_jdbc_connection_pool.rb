@@ -15,13 +15,13 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(t.context), equals('get'),
-                                 equals(['resources.jdbc-connection-pool.APool.deployment-order']),
+                                 equals(["#{property_prefix}deployment-order"]),
                                  equals(:terse => true, :echo => false)).
       returns("#{property_prefix}deployment-order=100\n")
 
     t.perform_action(:create)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
   end
 
   def test_create_element_where_cache_not_present_and_element_present
@@ -32,7 +32,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("APool\n")
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.jdbc-connection-pool.APool.property.*)), equals(:terse => true, :echo => false)).
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
       returns('')
 
     expected_local_properties.each_pair do |k, v|
@@ -45,7 +45,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:create)
 
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
   end
 
   def test_create_element_where_cache_not_present_and_element_present_but_modified
@@ -57,7 +57,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("APool\n")
     # Return a property that should be deleted
-    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(resources.jdbc-connection-pool.APool.property.*)), equals(:terse => true, :echo => false)).
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
       returns("#{property_prefix}property.DatabaseName2=MYDB\n")
 
     cache_values = expected_local_properties
@@ -101,7 +101,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:create)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
   end
 
   def test_create_element_where_cache_present_and_element_not_present
@@ -120,7 +120,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:create)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
     ensure_expected_cache_values(t)
   end
 
@@ -169,24 +169,21 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:create)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
 
     ensure_expected_cache_values(t)
   end
 
   def test_create_element_where_cache_present_and_element_present
-    cache_values = expected_properties
+    t = new_task
 
-    executor = Redfish::Executor.new
-    t = new_task(executor)
-
-    t.context.cache_properties(cache_values)
+    t.context.cache_properties(expected_properties)
 
     t.options = resource_parameters
 
     t.perform_action(:create)
 
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
 
     ensure_expected_cache_values(t)
   end
@@ -205,7 +202,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:destroy)
 
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
   end
 
   def test_delete_element_where_cache_not_present_and_element_present
@@ -228,29 +225,26 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:destroy)
 
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
   end
 
   def test_delete_element_where_cache_present_and_element_not_present
-    executor = Redfish::Executor.new
-    t = new_task(executor)
+    t = new_task
 
     t.context.cache_properties({})
     t.options = {'name' => 'APool'}
 
     t.perform_action(:destroy)
 
-    assert_equal t.updated_by_last_action?, false
-    assert_equal t.context.property_cache.any_property_start_with?(property_prefix), false
+    ensure_task_not_updated_by_last_action(t)
+    ensure_properties_not_present(t)
   end
 
   def test_delete_element_where_cache_present_and_element_present
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    cache_values = expected_properties
-
-    t.context.cache_properties(cache_values)
+    t.context.cache_properties(expected_properties)
     t.options = {'name' => 'APool'}
 
     executor.expects(:exec).with(equals(t.context),
@@ -261,11 +255,9 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:destroy)
 
-    assert_equal t.updated_by_last_action?, true
-    assert_equal t.context.property_cache.any_property_start_with?(property_prefix), false
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t)
   end
-
-  protected
 
   protected
 

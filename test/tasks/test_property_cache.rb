@@ -12,7 +12,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
 
     assert_equal t.context.property_cache?, false
     t.perform_action(:create)
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
     assert_equal t.context.property_cache?, true
     assert_equal t.context.property_cache['a'], '1'
     assert_equal t.context.property_cache['b'], '2'
@@ -32,7 +32,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
 
     assert_equal t.context.property_cache?, true
     t.perform_action(:create)
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
     assert_equal t.context.property_cache?, true
     assert_equal t.context.property_cache['a'], '1'
     assert_equal t.context.property_cache['b'], '2'
@@ -52,7 +52,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
 
     assert_equal t.context.property_cache?, true
     t.perform_action(:create)
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
     assert_equal t.context.property_cache?, true
     assert_equal t.context.property_cache['a'], '1'
     assert_equal t.context.property_cache['b'], '2'
@@ -60,24 +60,22 @@ class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
   end
 
   def test_destroy
-    executor = Redfish::Executor.new
-    t = new_task(executor)
+    t = new_task
 
     t.context.cache_properties('a' => '1', 'b' => '2', 'c.d.e' => '345')
 
     assert_equal t.context.property_cache?, true
     t.perform_action(:destroy)
-    assert_equal t.updated_by_last_action?, true
+    ensure_task_updated_by_last_action(t)
     assert_equal t.context.property_cache?, false
   end
 
   def test_destroy_no_existing
-    executor = Redfish::Executor.new
-    t = new_task(executor)
+    t = new_task
 
     assert_equal t.context.property_cache?, false
     t.perform_action(:destroy)
-    assert_equal t.updated_by_last_action?, false
+    ensure_task_not_updated_by_last_action(t)
     assert_equal t.context.property_cache?, false
   end
 end

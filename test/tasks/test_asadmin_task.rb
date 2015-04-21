@@ -22,8 +22,7 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
   end
 
   def test_parse_properties
-    executor = Redfish::Executor.new
-    t = new_task(executor)
+    t = new_task
 
     properties = t.send(:parse_properties, "a=1\nb=2\nc.d.e=345")
 
@@ -35,8 +34,7 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
   def collect_property_sets_with_cache_present
     property_prefix = 'resources.jdbc-connection-pool.MyDbPool.'
 
-    executor = Redfish::Executor.new
-    t = new_task(executor)
+    t = new_task
 
     cache_values = {}
     cache_values["#{property_prefix}property.c"] = '3'
@@ -71,7 +69,7 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
     assert_equal property_map, {'property.a' => '1', 'property.b' => '2', 'property.c' => ''}
   end
 
-  def new_task(executor)
+  def new_task(executor = Redfish::Executor.new)
     t = MyAsadminTask.new
     t.context = create_simple_context(executor)
     t
