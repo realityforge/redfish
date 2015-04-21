@@ -221,10 +221,10 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
   def resource_parameters
     {
       'name' => 'myThreadPool',
-     'maxthreadpoolsize' => 100,
-     'minthreadpoolsize' => 10,
-     'idletimeout' => 850,
-     'maxqueuesize' => 4000
+      'maxthreadpoolsize' => 100,
+      'minthreadpoolsize' => 10,
+      'idletimeout' => 850,
+      'maxqueuesize' => 4000
     }
   end
 end
