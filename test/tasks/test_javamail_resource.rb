@@ -260,7 +260,7 @@ class Redfish::Tasks::TestJavamailResource < Redfish::Tasks::BaseTaskTest
       'enabled' => 'true',
       'debug' => 'true',
       'description' => 'Audit DB',
-      'deploymentorder' => 100
+      'deployment_order' => 100
     }
   end
 end

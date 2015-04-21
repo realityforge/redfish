@@ -48,8 +48,8 @@ module Redfish
       end
 
       def set_deployment_order(property_prefix)
-        if self.respond_to?(:deploymentorder)
-          t = context.task('property', 'key' => "#{property_prefix}deployment-order", 'value' => self.deploymentorder.to_s)
+        if self.respond_to?(:deployment_order)
+          t = context.task('property', 'key' => "#{property_prefix}deployment-order", 'value' => self.deployment_order.to_s)
           t.perform_action(:set)
           updated_by_last_action if t.updated_by_last_action?
         end

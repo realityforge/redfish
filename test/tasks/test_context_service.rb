@@ -272,7 +272,7 @@ class Redfish::Tasks::TestContextService < Redfish::Tasks::BaseTaskTest
       'context_info' => 'Classloader,JNDI,Security',
       'description' => 'Blah blah',
       'properties' => {'SomeKey' => 'SomeValue'},
-      'deploymentorder' => 100
+      'deployment_order' => 100
     }
   end
 end

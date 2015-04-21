@@ -268,7 +268,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
       'enabled' => 'true',
       'connectionpoolid' => 'MyDBPool',
       'description' => 'Audit DB',
-      'deploymentorder' => 100
+      'deployment_order' => 100
     }
   end
 end

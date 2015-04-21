@@ -78,7 +78,7 @@ module Redfish
       attribute :name, :kind_of => String, :required => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
-      attribute :deploymentorder, :kind_of => Fixnum, :default => 100
+      attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       ATTRIBUTES.each do |attr|
         if attr.type == :string

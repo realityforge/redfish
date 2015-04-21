@@ -259,7 +259,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
       'enabled' => p['enabled'],
       'factory-class' => 'org.glassfish.resources.custom.factory.PrimitivesAndStringFactory',
       'res-type' => p['restype'],
-      'deployment-order' => p['deploymentorder'].to_s
+      'deployment-order' => p['deployment_order'].to_s
     }
   end
 
@@ -270,7 +270,7 @@ class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
       'enabled' => 'true',
       'restype' => 'java.lang.String',
       'description' => 'My Env Setting',
-      'deploymentorder' => 100
+      'deployment_order' => 100
     }
   end
 end

@@ -15,7 +15,7 @@ module Redfish
       # Descriptive details about the resource.
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
-      attribute :deploymentorder, :kind_of => Fixnum, :default => 100
+      attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       action :create do
         create(resource_property_prefix)

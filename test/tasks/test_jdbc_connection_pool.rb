@@ -325,7 +325,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
       'isconnectvalidatereq' => 'true',
       'ping' => 'true',
       'description' => 'Audit Connection Pool',
-      'deploymentorder' => 100,
+      'deployment_order' => 100,
       'properties' =>
         {
           'Instance' => 'MSSQLSERVER',
