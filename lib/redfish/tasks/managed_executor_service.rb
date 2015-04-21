@@ -76,13 +76,13 @@ module Redfish
         args << '--contextinfoenabled' << self.context_info_enabled.to_s
         args << '--contextinfo' << self.context_info.to_s
         args << '--threadpriority' << self.thread_priority.to_s
-        args << '--corepoolsize' << self.core_pool_size
-        args << '--hungafterseconds' << self.hung_after_seconds
-        args << '--keepaliveseconds' << self.keep_alive_seconds
-        args << '--longrunningtasks' << self.long_running_tasks
-        args << '--maximumpoolsize' << self.maximum_pool_size
-        args << '--taskqueuecapacity' << self.task_queue_capacity
-        args << '--threadlifetimeseconds' << self.thread_lifetime_seconds
+        args << '--corepoolsize' << self.core_pool_size.to_s
+        args << '--hungafterseconds' << self.hung_after_seconds.to_s
+        args << '--keepaliveseconds' << self.keep_alive_seconds.to_s
+        args << '--longrunningtasks' << self.long_running_tasks.to_s
+        args << '--maximumpoolsize' << self.maximum_pool_size.to_s
+        args << '--taskqueuecapacity' << self.task_queue_capacity.to_s
+        args << '--threadlifetimeseconds' << self.thread_lifetime_seconds.to_s
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
         args << '--description' << self.description.to_s
         args << self.name.to_s
