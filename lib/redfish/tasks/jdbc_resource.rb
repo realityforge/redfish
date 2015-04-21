@@ -10,11 +10,15 @@ module Redfish
       attribute :deploymentorder, :kind_of => Fixnum, :default => 100
 
       action :create do
-        create("resources.jdbc-resource.#{self.name}.")
+        create(resource_property_prefix)
       end
 
       action :destroy do
-        destroy("resources.jdbc-resource.#{self.name}.")
+        destroy(resource_property_prefix)
+      end
+
+      def resource_property_prefix
+        "resources.jdbc-resource.#{self.name}."
       end
 
       def properties_to_record_in_create
@@ -24,7 +28,7 @@ module Redfish
       def properties_to_set_in_create
         property_map = {'description' => self.description}
 
-        collect_property_sets("resources.jdbc-resource.#{self.name}.", property_map)
+        collect_property_sets(resource_property_prefix, property_map)
 
         property_map['enabled'] = self.enabled
         property_map['pool-name'] = self.connectionpoolid

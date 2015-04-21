@@ -14,11 +14,15 @@ module Redfish
       attribute :deploymentorder, :kind_of => Fixnum, :default => 100
 
       action :create do
-        create("resources.custom-resource.#{self.name}.")
+        create(resource_property_prefix)
       end
 
       action :destroy do
-        destroy("resources.custom-resource.#{self.name}.")
+        destroy(resource_property_prefix)
+      end
+
+      def resource_property_prefix
+        "resources.custom-resource.#{self.name}."
       end
 
       def properties_to_record_in_create
@@ -28,7 +32,7 @@ module Redfish
       def properties_to_set_in_create
         property_map = {'description' => self.description}
 
-        collect_property_sets("resources.custom-resource.#{self.name}.", property_map)
+        collect_property_sets(resource_property_prefix, property_map)
         property_map['property.value'] = self.value if self.value
 
         property_map['enabled'] = self.enabled

@@ -13,11 +13,15 @@ module Redfish
       attribute :maxqueuesize, :kind_of => Integer, :default => 4096
 
       action :create do
-        create("configs.config.server-config.thread-pools.thread-pool.#{self.name}.")
+        create(resource_property_prefix)
       end
 
       action :destroy do
-        destroy("configs.config.server-config.thread-pools.thread-pool.#{self.name}.")
+        destroy(resource_property_prefix)
+      end
+
+      def resource_property_prefix
+        "configs.config.server-config.thread-pools.thread-pool.#{self.name}."
       end
 
       def properties_to_record_in_create

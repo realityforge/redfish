@@ -16,11 +16,11 @@ module Redfish
       attribute :properties, :kind_of => Hash, :default => {}
 
       action :create do
-        create(property_prefix)
+        create(resource_property_prefix)
       end
 
       action :destroy do
-        destroy(property_prefix)
+        destroy(resource_property_prefix)
       end
 
       def properties_to_record_in_create
@@ -30,7 +30,7 @@ module Redfish
       def properties_to_set_in_create
         property_map = {}
 
-        collect_property_sets(property_prefix, property_map)
+        collect_property_sets(resource_property_prefix, property_map)
 
         property_map['address'] = self.address
         property_map['enabled'] = self.enabled.to_s
@@ -61,7 +61,7 @@ module Redfish
         (context.exec('list-iiop-listeners', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end
 
-      def property_prefix
+      def resource_property_prefix
         "configs.config.server-config.iiop-service.iiop-listener.#{self.name}."
       end
     end
