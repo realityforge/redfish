@@ -11,7 +11,7 @@ class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
       returns('')
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-managed-executor-service'),
-                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', 4, '--hungafterseconds', 0, '--keepaliveseconds', 60, '--longrunningtasks', false, '--maximumpoolsize', 2147483647, '--taskqueuecapacity', 2147483647, '--threadlifetimeseconds', 0, '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyExecutorService']),
+                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--maximumpoolsize', '2147483647', '--taskqueuecapacity', '2147483647', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyExecutorService']),
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(t.context), equals('get'),
@@ -109,7 +109,7 @@ class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-managed-executor-service'),
-                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', 4, '--hungafterseconds', 0, '--keepaliveseconds', 60, '--longrunningtasks', false, '--maximumpoolsize', 2147483647, '--taskqueuecapacity', 2147483647, '--threadlifetimeseconds', 0, '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyExecutorService']),
+                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--maximumpoolsize', '2147483647', '--taskqueuecapacity', '2147483647', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyExecutorService']),
                                  equals({})).
       returns('')
 
