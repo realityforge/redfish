@@ -3,11 +3,11 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   protected
 
   def ensure_task_updated_by_last_action(task)
-    assert_equal task.updated_by_last_action?, true
+    assert_equal task.updated_by_last_action?, true, 'Expected to update with last action'
   end
 
   def ensure_task_not_updated_by_last_action(task)
-    assert_equal task.updated_by_last_action?, false
+    assert_equal task.updated_by_last_action?, false, 'Expected to not update with last action'
   end
 
   def ensure_properties_not_present(task)
