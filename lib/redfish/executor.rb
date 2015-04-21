@@ -11,8 +11,11 @@ module Redfish
       end
 
       if 0 != last_exitstatus
-        Redfish.info(output)
-        raise "Asadmin command failed #{asadmin_command} with exist status #{last_exitstatus}"
+        Redfish.warn("Command: #{cmd.inspect}")
+        Redfish.warn(output)
+        message = "Asadmin command failed #{asadmin_command} with exist status #{last_exitstatus}"
+        Redfish.warn(message)
+        raise message
       end
       output
     end
