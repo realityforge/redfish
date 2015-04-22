@@ -11,7 +11,7 @@ class Redfish::Tasks::TestManagedScheduledExecutorService < Redfish::Tasks::Base
       returns('')
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-managed-scheduled-executor-service'),
-                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--maximumpoolsize', '2147483647', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyScheduledExecutorService']),
+                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyScheduledExecutorService']),
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(t.context), equals('get'),
@@ -109,7 +109,7 @@ class Redfish::Tasks::TestManagedScheduledExecutorService < Redfish::Tasks::Base
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-managed-scheduled-executor-service'),
-                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--maximumpoolsize', '2147483647', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyScheduledExecutorService']),
+                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyScheduledExecutorService']),
                                  equals({})).
       returns('')
 
@@ -264,7 +264,6 @@ class Redfish::Tasks::TestManagedScheduledExecutorService < Redfish::Tasks::Base
       'hung-after-seconds' => '0',
       'keep-alive-seconds' => '60',
       'long-running-tasks' => 'false',
-      'maximum-pool-size' => '2147483647',
       'thread-lifetime-seconds' => '0',
       'deployment-order' => '100'
     }
@@ -284,7 +283,6 @@ class Redfish::Tasks::TestManagedScheduledExecutorService < Redfish::Tasks::Base
       'hung_after_seconds' => 0,
       'keep_alive_seconds' => 60,
       'long_running_tasks' => false,
-      'maximum_pool_size' => 2147483647,
       'thread_lifetime_seconds' => 0,
       'deployment_order' => 100
     }

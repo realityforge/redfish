@@ -18,8 +18,6 @@ module Redfish
       attribute :hung_after_seconds, :kind_of => Integer, :default => 0
       # Specifies the number of threads to keep in a thread pool, even if they are idle.
       attribute :core_pool_size, :kind_of => Integer, :default => 0
-      # Specifies the maximum number of threads that a thread pool can contain.
-      attribute :maximum_pool_size, :kind_of => Integer, :default => 2147483647
       # Specifies the number of seconds that threads can remain idle when the number of threads is greater than corepoolsize.
       attribute :keep_alive_seconds, :kind_of => Integer, :default => 60
       # Specifies the number of seconds that threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than corepoolsize or whether the threads are idle. The value of 0 means that threads are never purged.
@@ -60,7 +58,6 @@ module Redfish
         property_map['hung-after-seconds'] = self.hung_after_seconds
         property_map['keep-alive-seconds'] = self.keep_alive_seconds
         property_map['long-running-tasks'] = self.long_running_tasks
-        property_map['maximum-pool-size'] = self.maximum_pool_size
         property_map['thread-lifetime-seconds'] = self.thread_lifetime_seconds
 
         property_map
@@ -77,7 +74,6 @@ module Redfish
         args << '--hungafterseconds' << self.hung_after_seconds.to_s
         args << '--keepaliveseconds' << self.keep_alive_seconds.to_s
         args << '--longrunningtasks' << self.long_running_tasks.to_s
-        args << '--maximumpoolsize' << self.maximum_pool_size.to_s
         args << '--threadlifetimeseconds' << self.thread_lifetime_seconds.to_s
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
         args << '--description' << self.description.to_s
