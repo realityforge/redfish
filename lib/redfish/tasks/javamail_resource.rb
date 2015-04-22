@@ -47,10 +47,11 @@ module Redfish
       end
 
       def properties_to_set_in_create
-        property_map = {'description' => self.description}
+        property_map = {}
 
         collect_property_sets(resource_property_prefix, property_map)
 
+        property_map['description'] = self.description
         property_map['debug'] = self.debug
         property_map['enabled'] = self.enabled
         property_map['from'] = self.from

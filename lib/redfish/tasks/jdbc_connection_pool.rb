@@ -123,12 +123,16 @@ module Redfish
       end
 
       def properties_to_set_in_create
-        property_map = {'description' => self.description}
+        property_map = {}
+
         collect_property_sets(resource_property_prefix, property_map)
 
         ATTRIBUTES.each do |attr|
           property_map[attr.arg] = self.send(attr.key)
         end
+
+        property_map['description'] = self.description
+
         property_map
       end
 
