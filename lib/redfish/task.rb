@@ -9,6 +9,9 @@ module Redfish
         end
 
         def attribute(key, options)
+          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default]
+          raise "Unknown keys passed to attribute method: #{unexpected_keys.inspect}" unless unexpected_keys.empty?
+
           define_method("#{key}=") do |value|
             kind_of = ([options[:kind_of]] || []).compact.flatten
             if !kind_of.empty? && !kind_of.any? { |k| value.is_a?(k) }
