@@ -40,9 +40,20 @@ module Redfish
       end
 
       def set_properties(property_prefix, property_map)
+        i = self.immutable_local_properties
         property_map.each_pair do |key, value|
           t = context.task('property', 'key' => "#{property_prefix}#{key}", 'value' => as_property_value(value))
-          t.perform_action(:set)
+          if i.include?(key)
+            begin
+              t.perform_action(:ensure)
+            rescue
+              message = "Immutable property '#{property_prefix}#{key}' is different from the expected value '#{as_property_value(value)}'."
+              Redfish.warn(message)
+              raise message
+            end
+          else
+            t.perform_action(:set)
+          end
           updated_by_last_action if t.updated_by_last_action?
         end
       end
@@ -71,6 +82,10 @@ module Redfish
             end
           end
         end
+      end
+
+      def immutable_local_properties
+        []
       end
 
       def properties_to_record_in_create
