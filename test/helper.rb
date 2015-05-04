@@ -23,9 +23,23 @@ class Redfish::TestCase < Minitest::Test
   include Test::Unit::Assertions
 
   def setup
+    @temp_dir = nil
   end
 
   def teardown
+    unless @temp_dir.nil?
+      FileUtils.rm_rf @temp_dir
+      @temp_dir = nil
+    end
+  end
+
+  def temp_dir
+    if @temp_dir.nil?
+      base_temp_dir = ENV['TEST_TMP_DIR'] || File.expand_path("#{File.dirname(__FILE__)}/../tmp")
+      @temp_dir = "#{base_temp_dir}/redfish-#{Time.now.to_i}"
+      FileUtils.mkdir_p @temp_dir
+    end
+    @temp_dir
   end
 
   def create_simple_context(executor)
