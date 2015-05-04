@@ -17,6 +17,7 @@ $:.unshift File.expand_path('../../lib', __FILE__)
 require 'minitest/autorun'
 require 'test/unit/assertions'
 require 'mocha/setup'
+require 'fileutils'
 require 'redfish'
 
 class Redfish::TestCase < Minitest::Test
