@@ -15,7 +15,6 @@
 module Redfish
   module Tasks
     class PropertyCache < AsadminTask
-
       private
 
       action :create do

@@ -87,8 +87,6 @@ module Redfish
           %w(auto-commit meta-data table custom-validation),
           'auto-commit')
 
-      public
-
       attribute :name, :kind_of => String, :required => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}

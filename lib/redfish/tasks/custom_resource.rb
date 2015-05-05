@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class CustomResource < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
       attribute :restype, :kind_of => String, :default => 'java.lang.String'

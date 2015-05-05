@@ -76,8 +76,6 @@ module Redfish
           %w(XATransaction LocalTransaction NoTransaction),
           nil)
 
-      public
-
       attribute :name, :kind_of => String, :required => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
@@ -94,6 +92,8 @@ module Redfish
           attribute attr.key, attr.options.merge(:equal_to => attr.type, :default => attr.default_value)
         end
       end
+
+      private
 
       action :create do
         create(resource_property_prefix)

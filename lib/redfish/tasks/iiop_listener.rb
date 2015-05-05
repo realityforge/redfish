@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class IiopListener < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
 

@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class JavamailResource < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
       attribute :host, :kind_of => String, :required => true

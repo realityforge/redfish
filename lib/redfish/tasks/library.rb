@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class Library < AsadminTask
+      private
+
       attribute :file, :kind_of => String, :required => true
       attribute :library_type, :equal_to => %w(common ext app), :default => 'common'
       attribute :upload, :equal_to => [true, false, 'true', 'false'], :default => false

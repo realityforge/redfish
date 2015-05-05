@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class ConnectorResource < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
       attribute :connector_pool_name, :kind_of => String, :required => true

@@ -18,6 +18,8 @@ module Redfish
 
       TYPES = %w(car ear ejb osgi rar war)
 
+      private
+
       attribute :name, :kind_of => String, :required => true
       attribute :location, :kind_of => String, :default => nil
       attribute :deployment_plan, :kind_of => String, :default => nil
@@ -64,23 +66,23 @@ module Redfish
         property_map['availability-enabled'] = self.availability_enabled
         property_map['directory-deployed'] = is_location_a_directory?
         property_map['context-root'] = self.context_root.nil? ? '' : self.context_root
-        property_map['location'] = is_location_a_directory? ? "file:#{self.resolved_location.gsub(/\/$/, '')}/" : "${com.sun.aas.instanceRootURI}/applications/#{self.name}/"
+        property_map['location'] = is_location_a_directory? ? "file:#{resolved_location.gsub(/\/$/, '')}/" : "${com.sun.aas.instanceRootURI}/applications/#{self.name}/"
 
         property_map['property.defaultAppName'] = self.name
-        property_map['property.archiveType'] = self.derive_archive_type
-        property_map['property.appLocation'] = is_location_a_directory? ? "file:#{self.resolved_location.gsub(/\/$/, '')}/" : "${com.sun.aas.instanceRootURI}/applications/__internal/#{self.name}/#{File.basename(self.location)}"
+        property_map['property.archiveType'] = derive_archive_type
+        property_map['property.appLocation'] = is_location_a_directory? ? "file:#{resolved_location.gsub(/\/$/, '')}/" : "${com.sun.aas.instanceRootURI}/applications/__internal/#{self.name}/#{File.basename(self.location)}"
 
         property_map
       end
 
       def is_location_a_directory?
-        File.directory?(self.resolved_location)
+        File.directory?(resolved_location)
       end
 
       def derive_archive_type
         return self.type unless type.nil?
         unless is_location_a_directory?
-          extension = File.extname(self.resolved_location.to_s)
+          extension = File.extname(resolved_location.to_s)
           unless extension.empty?
             type = extension[1..-1]
             return type if TYPES.include?(type)
@@ -117,7 +119,7 @@ module Redfish
         args << '--deploymentplan' << self.deployment_plan.to_s if self.deployment_plan
         args << '--deploymentorder' << self.deployment_order.to_s
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
-        args << self.resolved_location.to_s
+        args << resolved_location.to_s
 
         context.exec(is_location_a_directory? ? 'deploydir' : 'deploy', args)
       end

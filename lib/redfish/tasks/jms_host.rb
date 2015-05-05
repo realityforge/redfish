@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class JmsHost < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
       # The host name for the JMS service.

@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class ManagedExecutorService < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
 

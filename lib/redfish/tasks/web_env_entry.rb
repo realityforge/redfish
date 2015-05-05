@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class WebEnvEntry < BaseResourceTask
+      private
 
       # The name of the associated application.
       attribute :application, :kind_of => String, :required => true
@@ -32,8 +33,8 @@ module Redfish
       attribute :description, :kind_of => String
 
       action :create do
-        raise 'At least one of the "ignore_descriptor_item" or "value" parameters must be set.' if !self.ignore_descriptor_item? && self.value.nil?
-        raise 'Only one of "ignore_descriptor_item" or "value" parameters must be set but both are specified.' if self.ignore_descriptor_item? && !self.value.nil?
+        raise 'At least one of the "ignore_descriptor_item" or "value" parameters must be set.' if !ignore_descriptor_item? && self.value.nil?
+        raise 'Only one of "ignore_descriptor_item" or "value" parameters must be set but both are specified.' if ignore_descriptor_item? && !self.value.nil?
         create(resource_property_prefix)
       end
 
@@ -57,8 +58,8 @@ module Redfish
         property_map = {}
 
         property_map['description'] = self.description
-        property_map['env-entry-type'] = self.ignore_descriptor_item? ? '' : self.type
-        property_map['env-entry-value'] = self.ignore_descriptor_item? ? '' : self.value
+        property_map['env-entry-type'] = ignore_descriptor_item? ? '' : self.type
+        property_map['env-entry-value'] = ignore_descriptor_item? ? '' : self.value
         property_map['ignore-descriptor-item'] = self.ignore_descriptor_item
 
         property_map
@@ -68,7 +69,7 @@ module Redfish
         args = []
 
         args << '--name' << self.name.to_s
-        args << '--type' << self.type.to_s unless self.ignore_descriptor_item?
+        args << '--type' << self.type.to_s unless ignore_descriptor_item?
         args << '--description' << self.description.to_s
         args << '--value' << self.value.to_s unless self.value.nil?
         args << "--ignoreDescriptorItem=#{self.ignore_descriptor_item}"

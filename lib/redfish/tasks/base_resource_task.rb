@@ -54,7 +54,7 @@ module Redfish
       end
 
       def set_properties(property_prefix, property_map)
-        i = self.immutable_local_properties
+        i = immutable_local_properties
         property_map.each_pair do |key, value|
           t = context.task('property', 'key' => "#{property_prefix}#{key}", 'value' => as_property_value(value))
           if i.include?(key)

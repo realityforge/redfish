@@ -16,6 +16,8 @@ module Redfish
   module Tasks
     class AdminObject < BaseResourceTask
 
+      private
+
       attribute :name, :kind_of => String, :required => true
       attribute :resource_adapter_name, :kind_of => String, :required => true
       attribute :restype, :kind_of => String, :required => true

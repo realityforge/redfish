@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class JdbcResource < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
       attribute :connectionpoolid, :kind_of => String, :required => true

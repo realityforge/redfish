@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class ThreadPool < BaseResourceTask
+      private
 
       attribute :name, :kind_of => String, :required => true
       # Specifies the minimum number of threads in the pool. These are created when the thread pool is instantiated.

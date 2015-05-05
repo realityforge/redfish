@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class JmsResource < BaseResourceTask
+      private
+
       attribute :name, :kind_of => String, :required => true
       attribute :restype, :equal_to => %w(javax.jms.Topic javax.jms.Queue javax.jms.ConnectionFactory javax.jms.TopicConnectionFactory javax.jms.QueueConnectionFactory), :required => true
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
@@ -24,7 +26,7 @@ module Redfish
 
       action :create do
         self.properties.keys.each do |k|
-          raise "The property '#{k}' is not valid for the resource type '#{restype}'. Valid properties include: #{self.valid_properties.inspect}" unless self.valid_properties.include?(k)
+          raise "The property '#{k}' is not valid for the resource type '#{restype}'. Valid properties include: #{valid_properties.inspect}" unless valid_properties.include?(k)
         end
 
         create(resource_property_prefix)
