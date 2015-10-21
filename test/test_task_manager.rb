@@ -51,11 +51,11 @@ class Redfish::TestTaskManager < Redfish::TestCase
 
     t = Redfish::TaskManager.create_task(context,
                                          'property',
-                                         'key' => 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping',
+                                         'name' => 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping',
                                          'value' => 'true')
     assert t.is_a?(Redfish::Tasks::Property)
     assert_equal t.context, context
-    assert_equal t.key, 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
+    assert_equal t.name, 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     assert_equal t.value, 'true'
   end
 
