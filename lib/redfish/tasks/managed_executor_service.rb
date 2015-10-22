@@ -101,7 +101,7 @@ module Redfish
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
         args << '--description' << self.description.to_s
         args << self.name.to_s
-        
+
         context.exec('create-managed-executor-service', args)
       end
 

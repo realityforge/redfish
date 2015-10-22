@@ -21,7 +21,7 @@ class Redfish::TestTaskExecutionRecord < Redfish::TestCase
     record = Redfish::TaskExecutionRecord.new(fake_task)
 
     assert_equal record.task, fake_task
-    
+
     assert_equal record.action_started?, false
     assert_equal record.action_finished?, false
 
