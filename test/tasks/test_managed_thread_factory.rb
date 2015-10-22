@@ -15,6 +15,15 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestManagedThreadFactory < Redfish::Tasks::BaseTaskTest
+  def test_to_s
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.options = resource_parameters
+
+    assert_equal t.to_s, 'managed_thread_factory[MyThreadFactory]'
+  end
+
   def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)

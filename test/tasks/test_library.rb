@@ -15,6 +15,16 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
+  def test_to_s
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.file = '/opt/jtds/jtds-1.3.1.jar'
+    t.library_type = 'ext'
+
+    assert_equal t.to_s, 'library[/opt/jtds/jtds-1.3.1.jar]'
+  end
+
   def test_create_when_no_such_library
     executor = Redfish::Executor.new
     t = new_task(executor)

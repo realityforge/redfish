@@ -17,7 +17,7 @@ module Redfish
     class ManagedExecutorService < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
 
       # Determines whether the resource is enabled at runtime.
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true

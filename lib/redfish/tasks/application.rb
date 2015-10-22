@@ -20,7 +20,7 @@ module Redfish
 
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :location, :kind_of => String, :default => nil
       attribute :deployment_plan, :kind_of => String, :default => nil
       attribute :context_root, :kind_of => String, :default => nil

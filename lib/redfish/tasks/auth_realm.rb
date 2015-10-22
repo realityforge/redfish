@@ -17,7 +17,7 @@ module Redfish
     class AuthRealm < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :classname, :kind_of => String, :required => true
       attribute :properties, :kind_of => Hash, :default => {}
 

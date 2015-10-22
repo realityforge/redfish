@@ -15,6 +15,16 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
+  def test_to_s
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
+    t.value = 'true'
+
+    assert_equal t.to_s, 'property[configs.config.server-config.security-service.activate-default-principal-to-role-mapping]'
+  end
+
   def test_set_property_no_cache_and_not_set
     executor = Redfish::Executor.new
     t = new_task(executor)

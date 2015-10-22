@@ -20,6 +20,15 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
     @location = @deployment_plan = nil
   end
 
+  def test_to_s
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.options = resource_parameters
+
+    assert_equal t.to_s, 'application[MyApplication]'
+  end
+
   def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)

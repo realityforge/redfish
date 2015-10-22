@@ -17,7 +17,7 @@ module Redfish
     class ResourceAdapter < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :thread_pool_name, :kind_of => String, :default => nil
       attribute :properties, :kind_of => Hash, :default => {}
 

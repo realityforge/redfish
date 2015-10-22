@@ -17,7 +17,7 @@ module Redfish
     class JmsResource < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :restype, :equal_to => %w(javax.jms.Topic javax.jms.Queue javax.jms.ConnectionFactory javax.jms.TopicConnectionFactory javax.jms.QueueConnectionFactory), :required => true
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
       attribute :description, :kind_of => String, :default => ''

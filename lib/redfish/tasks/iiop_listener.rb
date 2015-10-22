@@ -17,7 +17,7 @@ module Redfish
     class IiopListener < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
 
       # Either the IP address or the hostname (resolvable by DNS).
       attribute :address, :kind_of => String, :default => '0.0.0.0'

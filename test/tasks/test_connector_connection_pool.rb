@@ -15,6 +15,15 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
+  def test_to_s
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.options = resource_parameters
+
+    assert_equal t.to_s, 'connector_connection_pool[MyConnectorConnectionPool::jmsra]'
+  end
+
   def test_create_element_where_cache_not_present_and_element_not_present
     executor = Redfish::Executor.new
     t = new_task(executor)

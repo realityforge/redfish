@@ -17,8 +17,8 @@ module Redfish
     class ConnectorResource < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
-      attribute :connector_pool_name, :kind_of => String, :required => true
+      attribute :connector_pool_name, :kind_of => String, :required => true, :identity_field => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :object_type, :equal_to => %w(user system-instance system-admin system-all), :default => 'user'
 
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true

@@ -18,11 +18,11 @@ module Redfish
       private
 
       # The name of the associated application.
-      attribute :application, :kind_of => String, :required => true
+      attribute :application, :kind_of => String, :required => true, :identity_field => true
       # The optional name of the module if part of multiple module application.
       attribute :module, :kind_of => String
       # The key name of the web env entry.
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       # The java type name of env entry.
       attribute :type, :equal_to => %w(java.lang.Boolean java.lang.Byte java.lang.Character java.lang.Double java.lang.Float java.lang.Integer java.lang.Long java.lang.Short java.lang.String), :default => 'java.lang.String'
       # The value of the entry.

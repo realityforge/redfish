@@ -18,8 +18,8 @@ module Redfish
 
       private
 
-      attribute :name, :kind_of => String, :required => true
-      attribute :resource_adapter_name, :kind_of => String, :required => true
+      attribute :resource_adapter_name, :kind_of => String, :required => true, :identity_field => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :restype, :kind_of => String, :required => true
       attribute :classname, :kind_of => String, :default => nil
       attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true

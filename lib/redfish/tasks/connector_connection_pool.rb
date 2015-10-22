@@ -47,7 +47,7 @@ module Redfish
         at(key, values, property_key, default_value, options)
       end
 
-      str(:resource_adapter_name, 'resource-adapter-name', nil, :required => true, :cmdline_arg => 'raname')
+      str(:resource_adapter_name, 'resource-adapter-name', nil, :required => true, :cmdline_arg => 'raname', :identity_field => true)
       str(:connection_definition_name, 'connection-definition-name', nil, :required => true, :cmdline_arg => 'connectiondefinition')
 
       num(:steady_pool_size, 'steady-pool-size', 1)
@@ -76,7 +76,7 @@ module Redfish
           %w(XATransaction LocalTransaction NoTransaction),
           nil)
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
       attribute :deployment_order, :kind_of => Fixnum, :default => 100

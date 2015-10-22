@@ -15,6 +15,13 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
+  def test_to_s
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    assert_equal t.to_s, 'property_cache[]'
+  end
+
   def test_create_no_existing
     executor = Redfish::Executor.new
     t = new_task(executor)

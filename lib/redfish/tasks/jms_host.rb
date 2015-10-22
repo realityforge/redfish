@@ -17,7 +17,7 @@ module Redfish
     class JmsHost < BaseResourceTask
       private
 
-      attribute :name, :kind_of => String, :required => true
+      attribute :name, :kind_of => String, :required => true, :identity_field => true
       # The host name for the JMS service.
       attribute :host, :kind_of => String, :required => true
       # The port number used by the JMS service.
