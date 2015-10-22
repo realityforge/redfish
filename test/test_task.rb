@@ -16,7 +16,8 @@ require File.expand_path('../helper', __FILE__)
 
 class Redfish::TestTask < Redfish::TestCase
   class MyTestTask < Redfish::Task
-    attribute :a, :kind_of => String, :required => true
+    attribute :container, :kind_of => String, :identity_field => true
+    attribute :a, :kind_of => String, :required => true, :identity_field => true
     attribute :b, :kind_of => [TrueClass, FalseClass], :default => false
     attribute :c, :equal_to => [true, false, 'true', 'false'], :default => 'false'
     attribute :d, :kind_of => String, :regex => /^X+$/
@@ -34,6 +35,14 @@ class Redfish::TestTask < Redfish::TestCase
       @action2_ran = true
       updated_by_last_action
     end
+  end
+
+  def test_identity_field
+    task = new_task
+    task.container = 'Container'
+    task.a = 'A'
+    assert_equal task.instance_key, 'Container::A'
+    assert_equal task.to_s, 'my_test_task[Container::A]'
   end
 
   def test_registered_name

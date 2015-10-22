@@ -16,6 +16,10 @@ module Redfish
   module MetaDataHelper
     def self.included(base)
       class << base
+        def identity_fields
+          @identity_fields ||= []
+        end
+
         def action(key, &block)
           define_method("perform_#{key}") do
             instance_eval(&block)
@@ -23,8 +27,10 @@ module Redfish
         end
 
         def attribute(key, options)
-          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default]
+          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default, :identity_field]
           raise "Unknown keys passed to attribute method: #{unexpected_keys.inspect}" unless unexpected_keys.empty?
+
+          self.identity_fields << key if options[:identity_field]
 
           define_method("#{key}=") do |value|
             kind_of = ([options[:kind_of]] || []).compact.flatten
@@ -94,6 +100,14 @@ module Redfish
 
     def updated_by_last_action?
       !!@updated_by_last_action
+    end
+
+    def instance_key
+      self.class.identity_fields.size == 0 ? '' : self.class.identity_fields.collect{|f| self.send(f) }.join('::')
+    end
+
+    def to_s
+      "#{self.class.registered_name}[#{instance_key}]"
     end
 
     protected
