@@ -36,6 +36,10 @@ class Redfish::TestTask < Redfish::TestCase
     end
   end
 
+  def test_registered_name
+    assert_equal MyTestTask.registered_name, 'my_test_task'
+  end
+
   def test_required_raises_exception_if_unset
     begin
       new_task.a

@@ -65,6 +65,12 @@ module Redfish
       TaskManager.mark_as_abstract!(self)
     end
 
+    class << self
+      def registered_name
+        Redfish::Naming.underscore(name.split('::').last)
+      end
+    end
+
     include MetaDataHelper
 
     attr_writer :context

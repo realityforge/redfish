@@ -19,7 +19,7 @@ module Redfish
       @@abstract_types = []
 
       def register_task(type)
-        name = Redfish::Naming.underscore(type.name.split('::').last)
+        name = type.registered_name
         raise "Task already registered with name '#{name}' when attempting to register #{type}" if @@task_map[name]
         Redfish.debug("Registering task '#{name}' with type #{type}")
         @@task_map[name] = type
