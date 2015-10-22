@@ -46,7 +46,6 @@ class Redfish::TestTask < Redfish::TestCase
     fail('Expected to fail when accessing a before setting')
   end
 
-
   def test_invalid_value_by_kind_of
     begin
       new_task.a = 1
