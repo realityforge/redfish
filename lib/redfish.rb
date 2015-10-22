@@ -24,6 +24,7 @@ require 'redfish/executor'
 require 'redfish/task_manager'
 require 'redfish/task'
 require 'redfish/task_execution_record'
+require 'redfish/run_context'
 
 require 'redfish/tasks/asadmin_task'
 require 'redfish/tasks/base_resource_task'
