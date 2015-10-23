@@ -17,7 +17,7 @@ require File.expand_path('../helper', __FILE__)
 class Redfish::TestTaskExecutionRecord < Redfish::TestCase
 
   def test_basic_interaction
-    fake_task = ''
+    fake_task = 'MyTask'
     record = Redfish::TaskExecutionRecord.new(fake_task)
 
     assert_equal record.task, fake_task
