@@ -26,19 +26,19 @@ class Redfish::TestTaskExecutionRecord < Redfish::TestCase
     assert_equal record.action_finished?, false
 
     # action not yet set
-    assert_raise { record.action }
+    assert_raise(RuntimeError) { record.action }
 
     record.action(:myaction)
     assert_equal record.action, :myaction
 
     # Should not be able to override action
-    assert_raise { record.action(:myaction) }
+    assert_raise(RuntimeError) { record.action(:myaction) }
 
     # Should not be able to do following until started
-    assert_raise { record.action_error = 'X' }
-    assert_raise { record.action_performed_update! }
-    assert_raise { record.action_error? }
-    assert_raise { record.action_performed_update? }
+    assert_raise(RuntimeError) { record.action_error = 'X' }
+    assert_raise(RuntimeError) { record.action_performed_update! }
+    assert_raise(RuntimeError) { record.action_error? }
+    assert_raise(RuntimeError) { record.action_performed_update? }
 
     record.action_started_at = Time.now
 
@@ -47,16 +47,16 @@ class Redfish::TestTaskExecutionRecord < Redfish::TestCase
 
     record.action_error = 'X'
     record.action_performed_update!
-    assert_raise { record.action_error? }
-    assert_raise { record.action_performed_update? }
+    assert_raise(RuntimeError) { record.action_error? }
+    assert_raise(RuntimeError) { record.action_performed_update? }
 
     record.action_finished_at = Time.now
 
     assert_equal record.action_started?, true
     assert_equal record.action_finished?, true
 
-    assert_raise { record.action_error = 'X' }
-    assert_raise { record.action_performed_update! }
+    assert_raise(RuntimeError) { record.action_error = 'X' }
+    assert_raise(RuntimeError) { record.action_performed_update! }
 
     assert_equal record.action_error?, true
     assert_equal record.action_performed_update?, true
