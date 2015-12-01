@@ -304,6 +304,7 @@ module Redfish #nodoc
     def interpret_resource_adapter(run_context, key, config)
       params = config.dup
       params.delete('connection_pools')
+      params.delete('admin_objects')
       run_context.task('resource_adapter', params(params).merge('name' => key)).action(:create)
 
       psort(config['connection_pools']).each_pair do |pool_key, pool_config|
