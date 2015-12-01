@@ -163,7 +163,7 @@ module Redfish #nodoc
     def interpret(run_context, data)
       pre_interpret_actions(run_context)
 
-      psort(data['extra_libraries']).values.each do |config|
+      psort(data['libraries']).values.each do |config|
         interpret_library(run_context, config)
       end
 
