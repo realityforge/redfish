@@ -26,7 +26,6 @@ module Redfish #nodoc
       @action = nil
       @action_started_at = nil
       @action_finished_at = nil
-      @action_error = nil
       @action_performed_update = false
       @action_error = nil
     end
