@@ -300,7 +300,7 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
       'directory-deployed' => 'true',
       'context-root' => '/myapp',
       'location' => "file:#{self.location_as_dir}/",
-      'property.defaultAppName' => 'MyApplication',
+      'property.defaultAppName' => 'myapp',
       'property.archiveType' => 'war',
       'property.appLocation' => "file:#{self.location_as_dir}/",
       'property.java-web-start-enabled' => 'false',
