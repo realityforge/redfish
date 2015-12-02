@@ -52,4 +52,3 @@ module Redfish #nodoc
     end
   end
 end
-
