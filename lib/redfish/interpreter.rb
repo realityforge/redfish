@@ -18,7 +18,7 @@ module Redfish #nodoc
   # The following is a typical example of the data translated by the interpreter
   #
   # {
-  #   'extra_libraries' => {
+  #   'libraries' => {
   #     'realm' => {
   #       'url' => '/some/path/lib/realm.jar'
   #     },
@@ -138,7 +138,7 @@ module Redfish #nodoc
   #   },
   #   'applications' => {
   #     'myapp' => {
-  #       'url' => 'https://s3.amazonaws.com/somebucket/apps/app.war',
+  #       'location' => "/opt/myapp/myapp.war",
   #       'context_root' => '/'
   #     }
   #   },
