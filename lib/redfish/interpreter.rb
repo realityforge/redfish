@@ -31,7 +31,7 @@ module Redfish #nodoc
   #       'url' => '/some/path/lib/jasypt-1.9.0.jar'
   #     }
   #   },
-  #   'threadpools' => {
+  #   'thread_pools' => {
   #     'thread-pool-1' => {
   #       'maxthreadpoolsize' => 200,
   #       'minthreadpoolsize' => 5,
@@ -167,7 +167,7 @@ module Redfish #nodoc
         interpret_library(run_context, config)
       end
 
-      psort(data['threadpools']).each_pair do |key, config|
+      psort(data['thread_pools']).each_pair do |key, config|
         interpret_thread_pool(run_context, key, config)
       end
 
