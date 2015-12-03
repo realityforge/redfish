@@ -45,6 +45,13 @@ module Redfish
         end
 
         set_deployment_order(property_prefix)
+
+        if create_occurred
+          post_create_hook
+        end
+      end
+
+      def post_create_hook
       end
 
       def record_properties_in_cache(property_prefix, props)
