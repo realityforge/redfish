@@ -19,3 +19,5 @@
 
 * All task properties that have a kind_of that is Fixnum or Integer should also allow property replacement ala 
     :kind_of => [Fixnum, String], :regex => /^[0-9]+$/ where regex is expanded to allow ${MY_VAR}
+
+* Add integration level tests
