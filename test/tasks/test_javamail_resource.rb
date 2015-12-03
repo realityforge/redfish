@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestJavamailResource < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'javamail_resources' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-javamail-resource'),
+                                 equals(['--debug', 'true', '--enabled', 'true', '--description', 'Audit DB', '--mailhost', 'mail.example.com', '--mailuser', 'myUser', '--fromaddress', 'myUser@example.com', '--storeprotocol', 'imap', '--storeprotocolclass', 'com.sun.mail.imap.IMAPStore', '--transprotocol', 'smtp2', '--transprotocolclass', 'com.sun.mail.smtp.SMTPTransport2', 'myThing']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'javamail_resources' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

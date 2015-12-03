@@ -15,6 +15,57 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestConnectorResource < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'resource_adapters' => {'jmsra' => {'connection_pools' => {'MyConnectorPool' => {'connection_definition_name' => 'X', 'resources' => resource_parameters_as_tree}}}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-connector-connection-pool'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-connector-resource'),
+                                 equals(['--enabled', 'true', '--objecttype', 'user', '--poolname', 'MyConnectorPool', '--description', 'Connector Blah', 'MyConnectorResource']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 2)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'resource_adapters' => {'jmsra' => {'connection_pools' => {'MyConnectorPool' => {'connection_definition_name' => 'X', 'resources' => resource_parameters_as_tree}}}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-connector-connection-pool'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, false, :create, 2)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

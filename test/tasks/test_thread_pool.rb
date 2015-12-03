@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'thread_pools' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-threadpool'),
+                                 equals(%w(--maxthreadpoolsize 100 --minthreadpoolsize 10 --idletimeout 850 --maxqueuesize 4000 myThreadPool)),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'thread_pools' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -34,7 +62,7 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
       returns('')
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-threadpool'),
-                                 equals(['--maxthreadpoolsize', '100', '--minthreadpoolsize', '10', '--idletimeout', '850', '--maxqueuesize', '4000', 'myThreadPool']),
+                                 equals(%w(--maxthreadpoolsize 100 --minthreadpoolsize 10 --idletimeout 850 --maxqueuesize 4000 myThreadPool)),
                                  equals({})).
       returns('')
 

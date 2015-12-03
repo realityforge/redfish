@@ -15,6 +15,46 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'resource_adapters' => {'jmsra' => {'admin_objects' => resource_parameters_as_tree}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-admin-object'),
+                                 equals(['--enabled', 'true', '--raname', 'jmsra', '--restype', 'javax.jms.Queue', '--property', 'User=sa', '--description', 'Blah blee', '--classname', 'com.sun.messaging.Queue', 'MyAdminResource']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 1)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'resource_adapters' => {'jmsra' => {'admin_objects' => resource_parameters_as_tree}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, false, :create, 1)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

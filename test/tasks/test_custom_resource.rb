@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'custom_resources' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-custom-resource'),
+                                 equals(['--enabled', 'true', '--restype', 'java.lang.String', '--factoryclass', 'org.glassfish.resources.custom.factory.PrimitivesAndStringFactory', '--description', 'My Env Setting', 'myapp/env/Setting']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'custom_resources' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

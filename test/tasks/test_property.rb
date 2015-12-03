@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'properties' => {'configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true'}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('set'),
+                                 equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
+    perform_interpret(context, data, true, :set, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'properties' => {'configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true'}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
+
+    perform_interpret(context, data, false, :set, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

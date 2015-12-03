@@ -15,6 +15,46 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'libraries' => {'jtds' => {'file' => '/opt/jtds/jtds-1.3.1.jar', 'library_type' => 'ext'}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('add-library'),
+                                 equals(%w(--type ext --upload false /opt/jtds/jtds-1.3.1.jar)),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'libraries' => {'jtds' => {'file' => '/opt/jtds/jtds-1.3.1.jar', 'library_type' => 'ext'}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns('jtds-1.3.1.jar')
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

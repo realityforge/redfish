@@ -15,6 +15,46 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestWebEnvEntry < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'applications' => {'MyApp' => {'location' => '.', 'web_env_entries' => resource_parameters_as_tree}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('deploydir'),
+                                 anything,
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('set-web-env-entry'),
+                                 equals(['--name', 'MyEntry', '--type', 'java.lang.String', '--description', 'My Entry Desc', '--value', 'Blah', '--ignoreDescriptorItem=false', 'MyApp']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 1)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'applications' => {'MyApp' => {'location' => '.', 'web_env_entries' => resource_parameters_as_tree}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('set'),
+                                 includes2(regexp_matches(/applications\.application\.MyApp\.[^.]*/)),
+                                 anything).
+      returns('').
+      at_least(1)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 1)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

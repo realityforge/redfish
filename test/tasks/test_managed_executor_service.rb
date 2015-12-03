@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'managed_executor_services' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-managed-executor-service'),
+                                 equals(['--enabled', 'true', '--contextinfoenabled', 'true', '--contextinfo', 'Classloader,JNDI,Security', '--threadpriority', '6', '--corepoolsize', '4', '--hungafterseconds', '0', '--keepaliveseconds', '60', '--longrunningtasks', 'false', '--maximumpoolsize', '2147483647', '--taskqueuecapacity', '2147483647', '--threadlifetimeseconds', '0', '--property', 'SomeKey=SomeValue', '--description', 'Blah blah', 'MyExecutorService']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'managed_executor_services' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

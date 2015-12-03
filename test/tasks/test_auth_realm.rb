@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestAuthRealm < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'auth_realms' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-auth-realm'),
+                                 equals(['--classname', 'com.sun.enterprise.security.auth.realm.file.FileRealm', '--property', 'assign-groups=SomeGroup:jaas-context=fileRealm:file=\\$\\{com\\.sun\\.aas\\.instanceRoot\\}\\/config\\/keyfile', 'MyAuthRealm']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'auth_realms' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

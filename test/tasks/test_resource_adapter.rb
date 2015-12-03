@@ -15,6 +15,34 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
+  def test_interpret_create
+    data = {'resource_adapters' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 equals(%w(--threadpoolid MyThreadPool --property SomeKey=SomeValue MyResourceAdapterConfig)),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, 0)
+  end
+
+  def test_interpret_create_when_exists
+    data = {'resource_adapters' => resource_parameters_as_tree}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, to_properties_content)
+
+    perform_interpret(context, data, false, :create, 0)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)
@@ -32,9 +60,10 @@ class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context), equals('list-resource-adapter-configs'), equals(%w()), equals(:terse => true, :echo => false)).
       returns('')
+
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-resource-adapter-config'),
-                                 equals(['--threadpoolid', 'MyThreadPool', '--property', 'SomeKey=SomeValue', 'MyResourceAdapterConfig']),
+                                 equals(%w(--threadpoolid MyThreadPool --property SomeKey=SomeValue MyResourceAdapterConfig)),
                                  equals({})).
       returns('')
 
