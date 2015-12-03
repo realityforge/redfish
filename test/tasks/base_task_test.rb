@@ -58,9 +58,16 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def new_task(executor = Redfish::Executor.new)
-    task_name = self.class.name.to_s.split('::').last.gsub(/^Test/,'')
     t = Redfish::Tasks.const_get(task_name).new
     t.context = create_simple_context(executor)
     t
+  end
+
+  def task_name
+    self.class.name.to_s.split('::').last.gsub(/^Test/,'')
+  end
+
+  def registered_name
+    Redfish::Naming.underscore(task_name)
   end
 end
