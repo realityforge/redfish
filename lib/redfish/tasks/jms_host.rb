@@ -26,6 +26,8 @@ module Redfish
       attribute :admin_username, :kind_of => String, :required => true
       # The password for the JMS service.
       attribute :admin_password, :kind_of => String, :required => true
+      # Flag indicating wheter jms service should be lazily initialized.
+      attribute :lazy_init, :kind_of => [TrueClass, FalseClass], :default => true
 
       action :create do
         create(resource_property_prefix)
@@ -50,6 +52,7 @@ module Redfish
         property_map['admin-password'] = self.admin_password
         property_map['host'] = self.host
         property_map['port'] = self.port
+        property_map['lazy-init'] = self.lazy_init.to_s
         property_map
       end
 
@@ -63,6 +66,12 @@ module Redfish
         args << self.name.to_s
 
         context.exec('create-jms-host', args)
+      end
+
+      def post_create_hook
+        t = context.task('property', 'name' => "#{resource_property_prefix}lazy-init", 'value' => self.lazy_init.to_s)
+        t.perform_action(:set)
+        updated_by_last_action if t.updated_by_last_action?
       end
 
       def do_destroy

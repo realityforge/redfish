@@ -28,6 +28,10 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
                                  equals(['--mqhost', 'mq.example.com', '--mqport', '99', '--mquser', 'god', '--mqpassword', 'secret', 'MyJmsHost']),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}lazy-init=false"]),
+                                 equals(:terse => true, :echo => false))
 
     perform_interpret(context, data, true, :create, 0)
   end
@@ -61,10 +65,19 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
     executor.expects(:exec).with(equals(t.context), equals('list-jms-hosts'), equals(%w()), equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(["#{property_prefix}lazy-init"]),
+                                 equals(:terse => true, :echo => false)).
+        returns("#{property_prefix}lazy-init=true")
+    executor.expects(:exec).with(equals(t.context),
                                  equals('create-jms-host'),
                                  equals(['--mqhost', 'mq.example.com', '--mqport', '99', '--mquser', 'god', '--mqpassword', 'secret', 'MyJmsHost']),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}lazy-init=false"]),
+                                 equals(:terse => true, :echo => false))
 
     t.perform_action(:create)
 
@@ -136,6 +149,10 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
                                  equals(%w(--mqhost mq.example.com --mqport 99 --mquser god --mqpassword secret MyJmsHost)),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}lazy-init=false"]),
+                                 equals(:terse => true, :echo => false))
 
     t.perform_action(:create)
 
@@ -264,7 +281,8 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
       'host' => 'mq.example.com',
       'port' => '99',
       'admin-user' => 'god',
-      'admin-password' => 'secret'
+      'admin-password' => 'secret',
+      'lazy-init' => 'false'
     }
   end
 
@@ -275,7 +293,8 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
       'host' => 'mq.example.com',
       'port' => 99,
       'admin_username' => 'god',
-      'admin_password' => 'secret'
+      'admin_password' => 'secret',
+      'lazy_init' => false
     }
   end
 end
