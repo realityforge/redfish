@@ -19,6 +19,7 @@ require 'test/unit/assertions'
 require 'mocha/setup'
 require 'fileutils'
 require 'redfish'
+require File.expand_path('../_include2', __FILE__)
 
 class Redfish::TestCase < Minitest::Test
   include Test::Unit::Assertions
