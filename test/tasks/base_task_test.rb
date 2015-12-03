@@ -70,4 +70,60 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   def registered_name
     Redfish::Naming.underscore(task_name)
   end
+
+  def perform_interpret(context, data, task_ran, expected_task_action, additional_task_count)
+    run_context = interpret(context, data)
+
+    updated_records = to_updated_resource_records(run_context)
+    unchanged_records = to_unchanged_resource_records(run_context)
+
+    assert_equal updated_records.size, (task_ran ? 1 : 0) + 2 + additional_task_count
+    assert_equal unchanged_records.size, (task_ran ? 0 : 1)
+
+    assert_property_cache_records(updated_records)
+
+    record_under_test = get_record_under_test(task_ran ? updated_records : unchanged_records, expected_task_action)
+    ensure_task_record(record_under_test, task_ran, false)
+    record_under_test
+  end
+
+  def mock_property_get(executor, context, results)
+    executor.
+      expects(:exec).
+      with(equals(context), equals('get'), equals(%w(*)), equals(:terse => true, :echo => false)).
+      returns(results)
+  end
+
+  def assert_property_cache_records(records)
+    assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :create }.size, 1
+    assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :destroy }.size, 1
+  end
+
+  def ensure_task_record(record, updated, errored)
+    assert_equal record.action_error?, errored
+    assert record.action_started?
+    assert record.action_finished?
+    assert_equal record.action_performed_update?, updated
+  end
+
+  def get_record_under_test(records, action_name)
+    records_under_test = records.select { |r| r.task.class.registered_name == registered_name && r.action == action_name }
+    assert_equal records_under_test.size, 1
+    records_under_test[0]
+  end
+
+  def interpret(context, data)
+    run_context = Redfish::RunContext.new(context)
+    Redfish::Interpreter.interpret(run_context, data)
+    run_context.converge
+    run_context
+  end
+
+  def to_unchanged_resource_records(context)
+    context.execution_records.select { |action_record| !action_record.action_performed_update? }
+  end
+
+  def to_updated_resource_records(context)
+    context.execution_records.select { |action_record| action_record.action_performed_update? }
+  end
 end
