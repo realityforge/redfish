@@ -87,6 +87,21 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     record_under_test
   end
 
+  def resource_parameters_as_tree(name_key = 'name')
+    params = resource_parameters
+    name = params.delete(name_key)
+    assert_not_nil name
+    {name => params}
+  end
+
+  def to_properties_content
+    properties = nil
+    expected_local_properties.each_pair do |k, v|
+      properties = (properties.nil? ? '' : "#{properties}\n") + "#{property_prefix}#{k}=#{v}"
+    end
+    properties
+  end
+
   def mock_property_get(executor, context, results)
     executor.
       expects(:exec).
