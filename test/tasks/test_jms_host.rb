@@ -133,7 +133,7 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-jms-host'),
-                                 equals(['--mqhost', 'mq.example.com', '--mqport', '99', '--mquser', 'god', '--mqpassword', 'secret', 'MyJmsHost']),
+                                 equals(%w(--mqhost mq.example.com --mqport 99 --mquser god --mqpassword secret MyJmsHost)),
                                  equals({})).
       returns('')
 
