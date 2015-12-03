@@ -199,6 +199,10 @@ module Redfish #nodoc
         interpret_auth_realm(run_context, key, config)
       end
 
+      psort(data['jms_hosts']).each_pair do |key, config|
+        interpret_jms_hosts(run_context, key, config)
+      end
+
       psort(data['jdbc_connection_pools']).each_pair do |key, config|
         interpret_jdbc_connection_pool(run_context, key, config)
       end
@@ -278,6 +282,10 @@ module Redfish #nodoc
 
     def interpret_auth_realm(run_context, key, config)
       run_context.task('auth_realm', params(config).merge('name' => key)).action(:create)
+    end
+
+    def interpret_jms_hosts(run_context, key, config)
+      run_context.task('jms_host', params(config).merge('name' => key)).action(:create)
     end
 
     def interpret_jdbc_connection_pool(run_context, key, config)
