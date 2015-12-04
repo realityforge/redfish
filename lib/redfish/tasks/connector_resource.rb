@@ -21,7 +21,7 @@ module Redfish
       attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :object_type, :equal_to => %w(user system-instance system-admin system-all), :default => 'user'
 
-      attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :enabled, :type => :boolean, :default => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
       attribute :deployment_order, :kind_of => Fixnum, :default => 100

@@ -20,9 +20,9 @@ module Redfish
       attribute :name, :kind_of => String, :required => true, :identity_field => true
 
       # Determines whether the resource is enabled at runtime.
-      attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :enabled, :type => :boolean, :default => true
       # Determines whether container contexts are propagated to threads. If set to true, the contexts specified in the --contextinfo option are propagated. If set to false, no contexts are propagated and the --contextinfo option is ignored.
-      attribute :context_info_enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :context_info_enabled, :type => :boolean, :default => true
       # Specifies individual container contexts to propagate to threads. Valid values are Classloader, JNDI, Security, and WorkArea. Values are specified in a comma-separated list and are case-insensitive. All contexts are propagated by default.
       attribute :context_info, :kind_of => String, :default => 'Classloader,JNDI,Security,WorkArea'
       # Descriptive details about the resource.

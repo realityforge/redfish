@@ -22,7 +22,7 @@ module Redfish
       attribute :factoryclass,
                 :kind_of => String,
                 :default => 'org.glassfish.resources.custom.factory.PrimitivesAndStringFactory'
-      attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :enabled, :type => :boolean, :default => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
       attribute :value, :kind_of => String

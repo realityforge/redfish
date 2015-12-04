@@ -15,7 +15,4 @@
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.
 
-* All task properties that have a kind_of that is Fixnum or Integer should also allow property replacement ala 
-    :kind_of => [Fixnum, String], :regex => /^[0-9]+$/ where regex is expanded to allow ${MY_VAR}
-
 * Add integration level tests

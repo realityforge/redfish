@@ -19,7 +19,7 @@ module Redfish
 
       attribute :file, :kind_of => String, :required => true, :identity_field => true
       attribute :library_type, :equal_to => %w(common ext app), :default => 'common'
-      attribute :upload, :equal_to => [true, false, 'true', 'false'], :default => false
+      attribute :upload, :type => :boolean, :default => false
 
       action :create do
         unless present?

@@ -22,11 +22,11 @@ module Redfish
       # Either the IP address or the hostname (resolvable by DNS).
       attribute :address, :kind_of => String, :default => '0.0.0.0'
       # The IIOP port number.
-      attribute :port, :kind_of => Integer, :default => 1072
+      attribute :port, :type => :integer, :default => 1072
       # If set to true, the IIOP listener runs SSL. You can turn SSL2 or SSL3 ON or OFF and set ciphers using an SSL element. The security setting globally enables or disables SSL by making certificates available to the server instance.
-      attribute :securityenabled, :equal_to => [true, false, 'true', 'false'], :default => false
+      attribute :securityenabled, :type => :boolean, :default => false
       # If set to true, the IIOP listener is enabled at runtime.
-      attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :enabled, :type => :boolean, :default => true
       # Optional attribute name/value pairs for configuring the IIOP listener.
       attribute :properties, :kind_of => Hash, :default => {}
 

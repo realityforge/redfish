@@ -27,8 +27,16 @@ module Redfish
         end
 
         def attribute(key, options)
-          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default, :identity_field]
+          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default, :identity_field, :type]
           raise "Unknown keys passed to attribute method: #{unexpected_keys.inspect}" unless unexpected_keys.empty?
+
+          options = options.dup
+          if options[:type] == :integer
+            options[:kind_of] = [Integer, String]
+            options[:regex] = /^([0-9]+)|(\$\{[a-zA-Z.]+\})$/
+          elsif options[:type] == :boolean
+            options[:equal_to] = [true, false, 'true', 'false']
+          end
 
           self.identity_fields << key if options[:identity_field]
 

@@ -20,27 +20,27 @@ module Redfish
       attribute :name, :kind_of => String, :required => true, :identity_field => true
 
       # Determines whether the resource is enabled at runtime.
-      attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :enabled, :type => :boolean, :default => true
       # Determines whether container contexts are propagated to threads. If set to true, the contexts specified in the --contextinfo option are propagated. If set to false, no contexts are propagated and the --contextinfo option is ignored.
-      attribute :context_info_enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :context_info_enabled, :type => :boolean, :default => true
       # Specifies individual container contexts to propagate to threads. Valid values are Classloader, JNDI, Security, and WorkArea. Values are specified in a comma-separated list and are case-insensitive. All contexts are propagated by default.
       attribute :context_info, :kind_of => String, :default => 'Classloader,JNDI,Security,WorkArea'
       # Specifies the priority to assign to created threads.
-      attribute :thread_priority, :kind_of => Integer, :default => 5
+      attribute :thread_priority, :type => :integer, :default => 5
       # Specifies whether the resource should be used for long-running tasks. If set to true, long-running tasks are not reported as stuck.
-      attribute :long_running_tasks, :equal_to => [true, false, 'true', 'false'], :default => false
+      attribute :long_running_tasks, :type => :boolean, :default => false
       # Specifies the number of seconds that a task can execute before it is considered unresponsive. If the value is 0 tasks are never considered unresponsive.
-      attribute :hung_after_seconds, :kind_of => Integer, :default => 0
+      attribute :hung_after_seconds, :type => :integer, :default => 0
       # Specifies the number of threads to keep in a thread pool, even if they are idle.
-      attribute :core_pool_size, :kind_of => Integer, :default => 0
+      attribute :core_pool_size, :type => :integer, :default => 0
       # Specifies the maximum number of threads that a thread pool can contain.
-      attribute :maximum_pool_size, :kind_of => Integer, :default => 2147483647
+      attribute :maximum_pool_size, :type => :integer, :default => 2147483647
       # Specifies the number of seconds that threads can remain idle when the number of threads is greater than corepoolsize.
-      attribute :keep_alive_seconds, :kind_of => Integer, :default => 60
+      attribute :keep_alive_seconds, :type => :integer, :default => 60
       # Specifies the number of seconds that threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than corepoolsize or whether the threads are idle. The value of 0 means that threads are never purged.
-      attribute :thread_lifetime_seconds, :kind_of => Integer, :default => 0
+      attribute :thread_lifetime_seconds, :type => :integer, :default => 0
       # Specifies the number of submitted tasks that can be stored in the task queue awaiting execution.
-      attribute :task_queue_capacity, :kind_of => Integer, :default => 2147483647
+      attribute :task_queue_capacity, :type => :integer, :default => 2147483647
 
       # Descriptive details about the resource.
       attribute :description, :kind_of => String, :default => ''

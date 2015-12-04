@@ -25,16 +25,16 @@ module Redfish
       attribute :deployment_plan, :kind_of => String, :default => nil
       attribute :context_root, :kind_of => String, :default => nil
       attribute :virtual_servers, :kind_of => Array, :default => []
-      attribute :enabled, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :enabled, :type => :boolean, :default => true
       attribute :type, :equal_to => TYPES + TYPES.collect { |a| a.to_sym } + [nil], :default => nil
 
-      attribute :generate_rmi_stubs, :equal_to => [true, false, 'true', 'false'], :default => false
-      attribute :availability_enabled, :equal_to => [true, false, 'true', 'false'], :default => false
-      attribute :lb_enabled, :equal_to => [true, false, 'true', 'false'], :default => true
-      attribute :keep_state, :equal_to => [true, false, 'true', 'false'], :default => false
-      attribute :verify, :equal_to => [true, false, 'true', 'false'], :default => false
-      attribute :precompile_jsp, :equal_to => [true, false, 'true', 'false'], :default => true
-      attribute :async_replication, :equal_to => [true, false, 'true', 'false'], :default => true
+      attribute :generate_rmi_stubs, :type => :boolean, :default => false
+      attribute :availability_enabled, :type => :boolean, :default => false
+      attribute :lb_enabled, :type => :boolean, :default => true
+      attribute :keep_state, :type => :boolean, :default => false
+      attribute :verify, :type => :boolean, :default => false
+      attribute :precompile_jsp, :type => :boolean, :default => true
+      attribute :async_replication, :type => :boolean, :default => true
 
       attribute :properties, :kind_of => Hash, :default => {}
       attribute :deployment_order, :kind_of => Fixnum, :default => 100

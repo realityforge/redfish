@@ -28,7 +28,7 @@ module Redfish
       # The value of the entry.
       attribute :value, :kind_of => String
       # Specifies whether the environment entry is ignored if it is set in the application's deployment descriptor. When an environment entry is ignored, the application behaves as if the entry had never been set in the application's deployment descriptor.
-      attribute :ignore_descriptor_item, :equal_to => [true, false, 'true', 'false'], :default => false
+      attribute :ignore_descriptor_item, :type => :boolean, :default => false
       # A description of the entry.
       attribute :description, :kind_of => String
 

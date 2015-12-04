@@ -19,13 +19,13 @@ module Redfish
 
       attribute :name, :kind_of => String, :required => true, :identity_field => true
       # Specifies the minimum number of threads in the pool. These are created when the thread pool is instantiated.
-      attribute :minthreadpoolsize, :kind_of => Integer, :default => 2
+      attribute :minthreadpoolsize, :type => :integer, :default => 2
       # Specifies the maximum number of threads the pool can contain.
-      attribute :maxthreadpoolsize, :kind_of => Integer, :default => 5
+      attribute :maxthreadpoolsize, :type => :integer, :default => 5
       # Specifies the amount of time in seconds after which idle threads are removed from the pool.
-      attribute :idletimeout, :kind_of => Integer, :default => 900
+      attribute :idletimeout, :type => :integer, :default => 900
       # Specifies the maximum number of messages that can be queued until threads are available to process them for a network listener or IIOP listener. A value of -1 specifies no limit.
-      attribute :maxqueuesize, :kind_of => Integer, :default => 4096
+      attribute :maxqueuesize, :type => :integer, :default => 4096
 
       action :create do
         create(resource_property_prefix)

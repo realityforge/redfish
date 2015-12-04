@@ -21,13 +21,13 @@ module Redfish
       # The host name for the JMS service.
       attribute :host, :kind_of => String, :required => true
       # The port number used by the JMS service.
-      attribute :port, :kind_of => Integer, :required => true
+      attribute :port, :type => :integer, :required => true
       # The user name for the JMS service.
       attribute :admin_username, :kind_of => String, :required => true
       # The password for the JMS service.
       attribute :admin_password, :kind_of => String, :required => true
       # Flag indicating wheter jms service should be lazily initialized.
-      attribute :lazy_init, :kind_of => [TrueClass, FalseClass], :default => true
+      attribute :lazy_init, :type => :boolean, :default => true
 
       action :create do
         create(resource_property_prefix)

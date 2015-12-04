@@ -96,9 +96,9 @@ module Redfish
         if attr.type == :string
           attribute attr.key, attr.options.merge(:kind_of => String, :default => attr.default_value)
         elsif attr.type == :numeric
-          attribute attr.key, attr.options.merge(:kind_of => [Fixnum, String], :regex => /^[0-9]+$/, :default => attr.default_value)
+          attribute attr.key, attr.options.merge(:type => :integer, :default => attr.default_value)
         elsif attr.type == :boolean
-          attribute attr.key, attr.options.merge(:equal_to => [true, false, 'true', 'false'], :default => attr.default_value)
+          attribute attr.key, attr.options.merge(:type => :boolean, :default => attr.default_value)
         elsif attr.type.is_a?(Array)
           attribute attr.key, attr.options.merge(:equal_to => attr.type, :default => attr.default_value)
         end
