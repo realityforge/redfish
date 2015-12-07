@@ -27,7 +27,7 @@ module Redfish
         end
 
         def attribute(key, options)
-          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default, :identity_field, :type]
+          unexpected_keys = options.keys - [:kind_of, :equal_to, :regex, :required, :default, :identity_field, :type, :custom_validation]
           raise "Unknown keys passed to attribute method: #{unexpected_keys.inspect}" unless unexpected_keys.empty?
 
           options = options.dup
@@ -52,6 +52,9 @@ module Redfish
             regex = options[:regex]
             if regex && !value.nil? && !(regex =~ value.to_s)
               raise "Invalid value passed to attribute '#{key}' expected to match regex #{regex.inspect} but is #{value.inspect}"
+            end
+            if options[:custom_validation]
+              self.send(:"validate_#{key}", value)
             end
             instance_variable_set("@#{key}", value)
           end
