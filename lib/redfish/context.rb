@@ -62,6 +62,13 @@ module Redfish
       @property_cache
     end
 
+    def domain_version
+      version = property_cache['domain.version']
+      return {:variant => 'Payara', :version => '4.1.152'} if '#badassfish-b187' == version
+      return {:variant => 'Payara', :version => '4.1.1.154'} if '270' == version
+      raise "Unknown domain.version #{version}"
+    end
+
     def cache_properties(properties)
       raise 'Property cache already defined' if property_cache?
       @property_cache = PropertyCache.new(properties)
