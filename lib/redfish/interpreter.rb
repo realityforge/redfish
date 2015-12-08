@@ -166,6 +166,8 @@ module Redfish #nodoc
 
       interpret_log_levels(run_context, data['log_levels']) if data['log_levels']
 
+      interpret_log_attributes(run_context, data['log_attributes']) if data['log_attributes']
+
       psort(data['libraries']).values.each do |config|
         interpret_library(run_context, config)
       end
@@ -245,6 +247,10 @@ module Redfish #nodoc
 
     def interpret_log_levels(run_context, config)
       run_context.task('log_levels', 'levels' => config).action(:set)
+    end
+
+    def interpret_log_attributes(run_context, config)
+      run_context.task('log_attributes', 'attributes' => config).action(:set)
     end
 
     def interpret_library(run_context, config)
