@@ -5,7 +5,7 @@
     * Raise an exception if any unprocessed data unless attribute starts with _
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10"
 
-* Update DSL to allow updates to logging properties through tasks
+* Update DSL to specify payara specific arg when setting non-standard logging properties
 
 * Enable restart of app server under conditions such as;
     * update of libraries
