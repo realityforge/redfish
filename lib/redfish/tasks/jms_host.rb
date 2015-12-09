@@ -48,7 +48,7 @@ module Redfish
       def properties_to_set_in_create
         property_map = {}
 
-        property_map['admin-user'] = self.admin_username
+        property_map['admin-user-name'] = self.admin_username
         property_map['admin-password'] = self.admin_password
         property_map['host'] = self.host
         property_map['port'] = self.port

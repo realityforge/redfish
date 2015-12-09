@@ -280,7 +280,7 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
     {
       'host' => 'mq.example.com',
       'port' => '99',
-      'admin-user' => 'god',
+      'admin-user-name' => 'god',
       'admin-password' => 'secret',
       'lazy-init' => 'false'
     }
