@@ -58,10 +58,12 @@ class Redfish::TestContext < Redfish::TestCase
     context.cache_properties('domain.version' => '#badassfish-b187')
     assert_equal context.domain_version, {:variant => 'Payara', :version => '4.1.152'}
     context.remove_property_cache
+    assert_equal context.domain_version('#badassfish-b187'), {:variant => 'Payara', :version => '4.1.152'}
 
     context.cache_properties('domain.version' => '270')
     assert_equal context.domain_version, {:variant => 'Payara', :version => '4.1.1.154'}
     context.remove_property_cache
+    assert_equal context.domain_version('270'), {:variant => 'Payara', :version => '4.1.1.154'}
 
     context.cache_properties('domain.version' => 'other')
     begin
