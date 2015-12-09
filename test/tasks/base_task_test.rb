@@ -71,14 +71,14 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     Redfish::Naming.underscore(task_name)
   end
 
-  def perform_interpret(context, data, task_ran, expected_task_action, additional_task_count)
+  def perform_interpret(context, data, task_ran, expected_task_action, options = {})
     run_context = interpret(context, data)
 
     updated_records = to_updated_resource_records(run_context)
     unchanged_records = to_unchanged_resource_records(run_context)
 
-    assert_equal updated_records.size, (task_ran ? 1 : 0) + 2 + additional_task_count
-    assert_equal unchanged_records.size, (task_ran ? 0 : 1)
+    assert_equal updated_records.size, (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
+    assert_equal unchanged_records.size, (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0)
 
     assert_property_cache_records(updated_records)
 
@@ -100,6 +100,14 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       properties = (properties.nil? ? '' : "#{properties}\n") + "#{property_prefix}#{k}=#{v}"
     end
     properties
+  end
+
+  def setup_interpreter_expects(executor, context, property_results)
+    executor.
+      expects(:exec).
+      with(equals(context), equals('list-jvm-options'), equals([]), equals(:terse => true, :echo => false)).
+      returns("-DANTLR_USE_DIRECT_CLASS_LOADING=true\n-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory\n-Dcom.sun.enterprise.security.httpsOutboundKeyAlias=s1as\n-Djava.awt.headless=true\n-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed\n-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext\n-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf\n-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy\n-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks\n-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks\n-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver\n-Djdk.corba.allowOutputStreamSubclass=true\n-Djdk.tls.rejectClientInitiatedRenegotiation=true\n-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false")
+    mock_property_get(executor, context, "domain.version=270\n#{property_results}")
   end
 
   def mock_property_get(executor, context, results)

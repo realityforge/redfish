@@ -164,6 +164,8 @@ module Redfish #nodoc
     def interpret(run_context, data)
       pre_interpret_actions(run_context)
 
+      interpret_jvm_options(run_context, data['jvm_options'] || {})
+
       interpret_log_levels(run_context, data['log_levels']) if data['log_levels']
 
       interpret_log_attributes(run_context, data['log_attributes']) if data['log_attributes']
@@ -243,6 +245,17 @@ module Redfish #nodoc
 
     def post_interpret_actions(run_context)
       run_context.task('property_cache').action(:destroy)
+    end
+
+    def interpret_jvm_options(run_context, config)
+      options = config['options'] || []
+      defines = config['defines'] || {}
+      default_defines = config['default_defines'].nil? ? true : config['default_defines']
+      run_context.task('jvm_options',
+                       'jvm_options' => options,
+                       'defines' => defines,
+                       'default_defines' => default_defines).
+        action(:set)
     end
 
     def interpret_log_levels(run_context, config)

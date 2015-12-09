@@ -21,7 +21,7 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('set'),
@@ -29,7 +29,7 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
                                  equals(:terse => true, :echo => false)).
       returns('')
 
-    perform_interpret(context, data, true, :set, 0)
+    perform_interpret(context, data, true, :set)
   end
 
   def test_interpret_create_when_exists
@@ -38,9 +38,9 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
+    setup_interpreter_expects(executor, context, 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
 
-    perform_interpret(context, data, false, :set, 0)
+    perform_interpret(context, data, false, :set)
   end
 
   def test_to_s

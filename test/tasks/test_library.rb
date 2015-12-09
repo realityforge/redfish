@@ -21,7 +21,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-libraries'),
@@ -35,7 +35,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create, 0)
+    perform_interpret(context, data, true, :create)
   end
 
   def test_interpret_create_when_exists
@@ -44,7 +44,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-libraries'),
@@ -52,7 +52,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
                                  equals(:terse => true, :echo => false)).
       returns('jtds-1.3.1.jar')
 
-    perform_interpret(context, data, false, :create, 0)
+    perform_interpret(context, data, false, :create)
   end
 
   def test_to_s

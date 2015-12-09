@@ -21,7 +21,7 @@ class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('create-resource-adapter-config'),
@@ -35,7 +35,7 @@ class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create, 1)
+    perform_interpret(context, data, true, :create, :additional_task_count => 1)
   end
 
   def test_interpret_create_when_exists
@@ -44,7 +44,7 @@ class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, to_properties_content)
+    setup_interpreter_expects(executor, context, to_properties_content)
 
     executor.expects(:exec).with(equals(context),
                                  equals('create-resource-adapter-config'),
@@ -52,7 +52,7 @@ class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, false, :create, 1)
+    perform_interpret(context, data, false, :create, :additional_task_count => 1)
   end
 
   def test_to_s

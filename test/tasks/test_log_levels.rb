@@ -21,7 +21,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-log-levels'),
@@ -34,7 +34,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :set, 0)
+    perform_interpret(context, data, true, :set)
   end
 
   def test_interpret_set_when_matches
@@ -43,7 +43,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-log-levels'),
@@ -51,7 +51,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals(:terse => true, :echo => false)).
       returns("other\t<INFO>\niris\t<WARNING>\niris.planner\t<INFO>\njavax\t<SEVERE>")
 
-    perform_interpret(context, data, false, :set, 0)
+    perform_interpret(context, data, false, :set)
   end
 
   def test_to_s

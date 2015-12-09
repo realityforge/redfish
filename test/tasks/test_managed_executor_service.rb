@@ -21,7 +21,7 @@ class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
+    setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
                                  equals('create-managed-executor-service'),
@@ -29,7 +29,7 @@ class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create, 0)
+    perform_interpret(context, data, true, :create)
   end
 
   def test_interpret_create_when_exists
@@ -38,9 +38,9 @@ class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, to_properties_content)
+    setup_interpreter_expects(executor, context, to_properties_content)
 
-    perform_interpret(context, data, false, :create, 0)
+    perform_interpret(context, data, false, :create)
   end
 
   def test_to_s
