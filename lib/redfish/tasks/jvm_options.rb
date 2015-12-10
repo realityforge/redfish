@@ -67,7 +67,7 @@ module Redfish
       def derive_default_defines
         c = context.property_cache? ?
           context.domain_version :
-          context.domain_version(load_properties('domain.version').values[0])
+          context.domain_version(get_property('domain.version'))
 
         if c[:variant] == 'Payara' && c[:version] == '4.1.152'
            {

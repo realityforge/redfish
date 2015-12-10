@@ -56,6 +56,15 @@ module Redfish
         parse_properties(output)
       end
 
+      def load_property(key)
+        result = load_properties(key)
+        result.empty? ? nil : result.values[0]
+      end
+
+      def get_property(key)
+        context.property_cache? ? context.property_cache[key] : load_property(key)
+      end
+
       def parse_properties(output)
         properties = {}
         output.split("\n").each do |line|

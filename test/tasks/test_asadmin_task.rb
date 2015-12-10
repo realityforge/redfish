@@ -35,6 +35,42 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
     assert_equal properties['c.d.e'], '345'
   end
 
+  def test_load_property
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    executor.
+      expects(:exec).
+      with(equals(t.context), equals('get'), equals(%w(some.key)), equals(:terse => true, :echo => false)).
+      returns('some.key=345')
+
+    v = t.send(:load_property, 'some.key')
+    assert_equal v, '345'
+  end
+
+  def test_get_property_no_cache
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    executor.
+      expects(:exec).
+      with(equals(t.context), equals('get'), equals(%w(some.key)), equals(:terse => true, :echo => false)).
+      returns('some.key=345')
+
+    v = t.send(:get_property, 'some.key')
+    assert_equal v, '345'
+  end
+
+  def test_get_property_with_cache
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('some.key' => '345')
+
+    v = t.send(:get_property, 'some.key')
+    assert_equal v, '345'
+  end
+
   def test_parse_properties
     t = new_task
 
