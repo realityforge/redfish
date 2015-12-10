@@ -21,13 +21,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
-
-    executor.expects(:exec).with(equals(context),
-                                 equals('list-jvm-options'),
-                                 equals([]),
-                                 equals(:terse => true, :echo => false)).
-      returns("-DMyDefine=true\n-DMyOtherDefine=true\n-A=B:1")
+    mock_property_get(executor, context, 'configs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
 
     executor.expects(:exec).with(equals(context),
                                  equals('delete-jvm-options'),
@@ -49,13 +43,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, '')
-
-    executor.expects(:exec).with(equals(context),
-                                 equals('list-jvm-options'),
-                                 equals([]),
-                                 equals(:terse => true, :echo => false)).
-      returns("-DA=B:1\n-XMagic")
+    mock_property_get(executor, context, "configs.config.server-config.java-config.jvm-options=-DA=B:1,-XMagic\n")
 
     perform_interpret(context, data, false, :set, :exclude_jvm_options => true)
   end
@@ -75,11 +63,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    executor.expects(:exec).with(equals(t.context),
-                                 equals('list-jvm-options'),
-                                 equals([]),
-                                 equals(:terse => true, :echo => false)).
-      returns("-DMyDefine=true\n-DMyOtherDefine=true\n-A=B:1")
+    t.context.cache_properties('configs.config.server-config.java-config.jvm-options' => '-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jvm-options'),
@@ -105,11 +89,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    executor.expects(:exec).with(equals(t.context),
-                                 equals('list-jvm-options'),
-                                 equals([]),
-                                 equals(:terse => true, :echo => false)).
-      returns("-DA=B:1\n-XMagic")
+    t.context.cache_properties('configs.config.server-config.java-config.jvm-options' => '-DA=B:1,-XMagic')
 
     t.jvm_options = ['-XMagic']
     t.defines = {'A' => 'B:1'}
@@ -123,16 +103,8 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    executor.expects(:exec).with(equals(t.context), equals('get'),
-                                 equals(['domain.version']),
-                                 equals(:terse => true, :echo => false)).
-      returns("domain.version=270\n")
-
-    executor.expects(:exec).with(equals(t.context),
-                                 equals('list-jvm-options'),
-                                 equals([]),
-                                 equals(:terse => true, :echo => false)).
-      returns("-DMyDefine=true\n-DMyOtherDefine=true\n-A=B:1")
+    t.context.cache_properties('domain.version' => '270',
+                               'configs.config.server-config.java-config.jvm-options' => '-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jvm-options'),

@@ -103,11 +103,9 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def setup_interpreter_expects(executor, context, property_results)
-    executor.
-      expects(:exec).
-      with(equals(context), equals('list-jvm-options'), equals([]), equals(:terse => true, :echo => false)).
-      returns("-DANTLR_USE_DIRECT_CLASS_LOADING=true\n-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory\n-Dcom.sun.enterprise.security.httpsOutboundKeyAlias=s1as\n-Djava.awt.headless=true\n-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed\n-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext\n-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf\n-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy\n-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks\n-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks\n-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver\n-Djdk.corba.allowOutputStreamSubclass=true\n-Djdk.tls.rejectClientInitiatedRenegotiation=true\n-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false")
-    mock_property_get(executor, context, "domain.version=270\n#{property_results}")
+    mock_property_get(executor,
+                      context,
+                      "domain.version=270\nconfigs.config.server-config.java-config.jvm-options=-DANTLR_USE_DIRECT_CLASS_LOADING=true,-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory,-Dcom.sun.enterprise.security.httpsOutboundKeyAlias=s1as,-Djava.awt.headless=true,-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed,-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext,-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf,-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy,-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks,-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks,-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver,-Djdk.corba.allowOutputStreamSubclass=true,-Djdk.tls.rejectClientInitiatedRenegotiation=true,-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false\n#{property_results}")
   end
 
   def mock_property_get(executor, context, results)
