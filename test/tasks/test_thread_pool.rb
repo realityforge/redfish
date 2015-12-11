@@ -252,10 +252,46 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
+  def test_cleaner_deletes_unexpected_element
+
+    executor = Redfish::Executor.new
+    t = new_task(executor, 'Cleaner')
+
+    existing = %w(ThreadPool1 ThreadPool2 ThreadPool3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing[1,existing.size]
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-threadpool'),
+                                 equals([existing.first]),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t, "#{raw_property_prefix}#{existing.first}")
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+
+    executor = Redfish::Executor.new
+    t = new_task(executor, 'Cleaner')
+
+    existing = %w(ThreadPool1 ThreadPool2 ThreadPool3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   protected
 
   def property_prefix
-    'configs.config.server-config.thread-pools.thread-pool.myThreadPool.'
+    "#{raw_property_prefix}myThreadPool."
   end
 
   # Properties in GlassFish properties directory

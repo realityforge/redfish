@@ -57,10 +57,14 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     raise 'resource_parameters not overridden'
   end
 
-  def new_task(executor = Redfish::Executor.new)
-    t = Redfish::Tasks.const_get(task_name).new
+  def new_task(executor = Redfish::Executor.new, task_suffix = '')
+    t = task_class(task_suffix).new
     t.context = create_simple_context(executor)
     t
+  end
+
+  def task_class(task_suffix)
+    Redfish::Tasks.const_get("#{task_name}#{task_suffix}")
   end
 
   def task_name
@@ -72,6 +76,22 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def perform_interpret(context, data, task_ran, expected_task_action, options = {})
+    add_excludes_unless_defined = options[:add_excludes_unless_defined].nil? ? true : options[:add_excludes_unless_defined]
+    data = data.dup
+    if add_excludes_unless_defined
+      %w(
+        libraries thread_pools iiop_listeners context_services managed_thread_factories
+        managed_executor_services managed_scheduled_executor_services auth_realms jms_hosts
+        jdbc_connection_pools resource_adapters jms_resources custom_resources javamail_resources
+        applications
+      ).each do |key|
+        unless data.has_key?(key) && data[key].has_key?(key)
+          data[key] = {} unless data.has_key?(key)
+          data[key]['managed'] = false
+        end
+      end
+    end
+
     run_context = interpret(context, data)
 
     updated_records = to_updated_resource_records(run_context)
@@ -146,5 +166,21 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
   def to_updated_resource_records(context)
     context.execution_records.select { |action_record| action_record.action_performed_update? }
+  end
+
+  def raw_property_prefix
+    Redfish::Tasks.const_get(task_name).const_get(:PROPERTY_PREFIX)
+  end
+
+  def create_fake_elements(context, names, attributes = %w(p q r s t u v))
+
+    properties = {}
+    names.collect{|k| "#{raw_property_prefix}#{k}"}.each do |key|
+      attributes.each do |a|
+        properties["#{key}.#{a}"] = a
+      end
+    end
+
+    context.cache_properties(properties)
   end
 end

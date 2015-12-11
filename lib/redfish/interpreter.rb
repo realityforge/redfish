@@ -174,7 +174,8 @@ module Redfish #nodoc
         interpret_library(run_context, config)
       end
 
-      psort(data['thread_pools']).each_pair do |key, config|
+      thread_pools = psort(data['thread_pools'])
+      thread_pools.each_pair do |key, config|
         interpret_thread_pool(run_context, key, config)
       end
 
@@ -234,10 +235,22 @@ module Redfish #nodoc
         interpret_application(run_context, key, config)
       end
 
+
+      run_context.task('thread_pool_cleaner', 'expected' => thread_pools.keys).action(:clean) if managed?(data['thread_pools'])
+
       post_interpret_actions(run_context)
     end
 
     private
+
+    def managed?(data)
+      data['managed'].nil? ? true : !!data['managed']
+    end
+
+    def elements_with_prefix(run_context, prefix)
+      run_context.app_context.property_cache.get_keys_starting_with(prefix).
+        collect {|k| k[prefix.size,k.size].gsub(/\.*$/,'') }.sort.uniq
+    end
 
     def pre_interpret_actions(run_context)
       run_context.task('property_cache').action(:create)
@@ -418,7 +431,10 @@ module Redfish #nodoc
     end
 
     def psort(hash)
-      hash.nil? ? {} : Hash[hash.sort_by { |key, value| "#{"%04d" % priority_value(value)}#{key}" }]
+      return {} if hash.nil?
+      hash = hash.dup
+      hash.delete_if {|k,v| k =~ /^_.*/ || k == 'managed'}
+      Hash[hash.sort_by { |key, value| "#{'%04d' % priority_value(value)}#{key}" }]
     end
 
     def priority_value(value)
