@@ -235,8 +235,9 @@ module Redfish #nodoc
         interpret_application(run_context, key, config)
       end
 
-
-      run_context.task('thread_pool_cleaner', 'expected' => thread_pools.keys).action(:clean) if managed?(data['thread_pools'])
+      if managed?(data['thread_pools'])
+        run_context.task('thread_pool_cleaner', 'expected' => thread_pools.keys).action(:clean)
+      end
 
       post_interpret_actions(run_context)
     end
