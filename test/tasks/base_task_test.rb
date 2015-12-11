@@ -24,8 +24,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     assert_equal task.updated_by_last_action?, false, 'Expected to not update with last action'
   end
 
-  def ensure_properties_not_present(task)
-    assert_equal task.context.property_cache.any_property_start_with?(property_prefix), false
+  def ensure_properties_not_present(task, prefix = property_prefix)
+    assert_equal task.context.property_cache.any_property_start_with?(prefix), false
   end
 
   def ensure_expected_cache_values(t)
