@@ -255,7 +255,7 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
   def test_cleaner_deletes_unexpected_element
 
     executor = Redfish::Executor.new
-    t = new_task(executor, 'Cleaner')
+    t = new_cleaner_task(executor)
 
     existing = %w(ThreadPool1 ThreadPool2 ThreadPool3)
     create_fake_elements(t.context, existing)
@@ -277,7 +277,7 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
   def test_cleaner_not_updated_if_no_clean_actions
 
     executor = Redfish::Executor.new
-    t = new_task(executor, 'Cleaner')
+    t = new_cleaner_task(executor)
 
     existing = %w(ThreadPool1 ThreadPool2 ThreadPool3)
     create_fake_elements(t.context, existing)

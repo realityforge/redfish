@@ -63,6 +63,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     t
   end
 
+  def new_cleaner_task(executor)
+    new_task(executor, 'Cleaner')
+  end
+
   def task_class(task_suffix)
     Redfish::Tasks.const_get("#{task_name}#{task_suffix}")
   end
@@ -172,10 +176,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     Redfish::Tasks.const_get(task_name).const_get(:PROPERTY_PREFIX)
   end
 
-  def create_fake_elements(context, names, attributes = %w(p q r s t u v))
+  def create_fake_elements(context, names, property_prefix = raw_property_prefix, attributes = %w(p q r s t u v))
 
     properties = {}
-    names.collect{|k| "#{raw_property_prefix}#{k}"}.each do |key|
+    names.collect{|k| "#{property_prefix}#{k}"}.each do |key|
       attributes.each do |a|
         properties["#{key}.#{a}"] = a
       end
