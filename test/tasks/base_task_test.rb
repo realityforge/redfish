@@ -181,14 +181,16 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def create_fake_elements(context, names, property_prefix = raw_property_prefix, attributes = %w(p q r s t u v))
+    context.cache_properties(create_fake_element_properties(names, property_prefix, attributes))
+  end
 
+  def create_fake_element_properties(names, property_prefix = raw_property_prefix, attributes = %w(p q r s t u v))
     properties = {}
     names.collect{|k| "#{property_prefix}#{k}"}.each do |key|
       attributes.each do |a|
         properties["#{key}.#{a}"] = a
       end
     end
-
-    context.cache_properties(properties)
+    properties
   end
 end
