@@ -111,11 +111,15 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     record_under_test
   end
 
-  def resource_parameters_as_tree(name_key = 'name')
+  def resource_parameters_as_tree(options = {})
+    name_key = options[:name_key] || 'name'
+    managed = options[:managed]
     params = resource_parameters
     name = params.delete(name_key)
     assert_not_nil name
-    {name => params}
+    results = {name => params}
+    results['managed'] = managed unless managed.nil?
+    results
   end
 
   def to_properties_content
