@@ -89,7 +89,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
         jdbc_connection_pools resource_adapters jms_resources custom_resources javamail_resources
         applications
       ).each do |key|
-        unless data.has_key?(key) && data[key].has_key?(key)
+        unless data.has_key?(key) && data[key].has_key?('managed')
           data[key] = {} unless data.has_key?(key)
           data[key]['managed'] = false
         end
