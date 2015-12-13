@@ -130,6 +130,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     properties
   end
 
+  def setup_interpreter_expects_with_fake_elements(executor, context, names, property_prefix = raw_property_prefix)
+    setup_interpreter_expects(executor, context, create_fake_element_properties(names, property_prefix).collect{|k,v| "#{k}=#{v}"}.join("\n"))
+  end
+
   def setup_interpreter_expects(executor, context, property_results)
     mock_property_get(executor,
                       context,

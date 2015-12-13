@@ -252,8 +252,33 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
-  def test_cleaner_deletes_unexpected_element
+  def test_interpret_create_and_delete
+    data = {'thread_pools' => resource_parameters_as_tree(:managed => true)}
 
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(Element1 Element2)
+    setup_interpreter_expects_with_fake_elements(executor, context, existing)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-threadpool'),
+                                 equals(%w(--maxthreadpoolsize 100 --minthreadpoolsize 10 --idletimeout 850 --maxqueuesize 4000 myThreadPool)),
+                                 equals({})).
+      returns('')
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                   equals('delete-threadpool'),
+                                   equals([element]),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 1)
+  end
+
+
+  def test_cleaner_deletes_unexpected_element
     executor = Redfish::Executor.new
     t = new_cleaner_task(executor)
 
