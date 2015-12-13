@@ -277,7 +277,6 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
     perform_interpret(context, data, true, :create, :additional_task_count => 1)
   end
 
-
   def test_cleaner_deletes_unexpected_element
     executor = Redfish::Executor.new
     t = new_cleaner_task(executor)
