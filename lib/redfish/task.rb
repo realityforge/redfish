@@ -93,6 +93,7 @@ module Redfish
     attr_writer :context
 
     def initialize(options = {})
+      @run_context = nil
       super(options)
       @updated_by_last_action = false
       yield self if block_given?
@@ -101,6 +102,16 @@ module Redfish
     def context
       raise 'No context associated with task' unless @context
       @context
+    end
+
+    def run_context=(run_context)
+      raise 'Already associated run_context with task' unless @run_context.nil?
+      @run_context = run_context
+    end
+
+    def run_context
+      raise 'No run_context associated with task' unless @run_context
+      @run_context
     end
 
     def perform_action(action)

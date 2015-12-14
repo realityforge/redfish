@@ -25,7 +25,7 @@ module Redfish #nodoc
     end
 
     def task(name, options = {}, &block)
-      execution_record = TaskExecutionRecord.new(@app_context.task(name, options, &block))
+      execution_record = TaskExecutionRecord.new(@app_context.task(name, options.merge(:run_context => self), &block))
       add_execution_record(execution_record)
       execution_record
     end
