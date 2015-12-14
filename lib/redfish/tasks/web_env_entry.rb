@@ -20,7 +20,7 @@ module Redfish
       # The name of the associated application.
       attribute :application, :kind_of => String, :required => true, :identity_field => true
       # The optional name of the module if part of multiple module application.
-      attribute :module, :kind_of => String
+      attribute :module, :kind_of => [String, NilClass]
       # The key name of the web env entry.
       attribute :name, :kind_of => String, :required => true, :identity_field => true
       # The java type name of env entry.

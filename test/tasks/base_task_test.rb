@@ -94,6 +94,14 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
           data[key]['managed'] = false
         end
       end
+
+      if data.has_key?('applications')
+        data['applications'].each_pair do |key, application_config|
+          next if key == 'managed' && (application_config.is_a?(TrueClass) || application_config.is_a?(FalseClass))
+          application_config['web_env_entries'] = {} unless application_config.has_key?('web_env_entries')
+          application_config['web_env_entries']['managed'] = false unless application_config['web_env_entries'].has_key?('managed')
+        end
+      end
     end
 
     run_context = interpret(context, data)

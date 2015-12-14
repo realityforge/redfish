@@ -420,8 +420,12 @@ module Redfish #nodoc
       params = config.dup
       params.delete('web_env_entries')
       run_context.task('application', params(params).merge('name' => key, 'deployment_order' => priority_value(config))).action(:create)
-      psort(config['web_env_entries']).each_pair do |entry_key, entry_config|
+      web_env_entries = psort(config['web_env_entries'])
+      web_env_entries.each_pair do |entry_key, entry_config|
         run_context.task('web_env_entry', params(entry_config).merge('application' => key, 'name' => entry_key)).action(:create)
+      end
+      if managed?(config['web_env_entries'])
+        run_context.task('web_env_entry_cleaner', {'application' => key, 'expected' => web_env_entries.keys}).action(:clean)
       end
     end
 
