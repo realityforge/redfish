@@ -281,7 +281,7 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_cleaner_task(executor)
 
-    existing = %w(ThreadPool1 ThreadPool2 ThreadPool3)
+    existing = %w(Element1 Element2 Element3)
     create_fake_elements(t.context, existing)
 
     t.expected = existing[1,existing.size]
@@ -303,7 +303,7 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_cleaner_task(executor)
 
-    existing = %w(ThreadPool1 ThreadPool2 ThreadPool3)
+    existing = %w(Element1 Element2 Element3)
     create_fake_elements(t.context, existing)
 
     t.expected = existing
