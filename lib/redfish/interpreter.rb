@@ -245,7 +245,7 @@ module Redfish #nodoc
     private
 
     def managed?(data)
-      data['managed'].nil? ? true : !!data['managed']
+      (data.nil? || data['managed'].nil?) ? true : !!data['managed']
     end
 
     def elements_with_prefix(run_context, prefix)
