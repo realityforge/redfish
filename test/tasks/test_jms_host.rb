@@ -25,7 +25,7 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(context),
                                  equals('create-jms-host'),
-                                 equals(['--mqhost', 'mq.example.com', '--mqport', '99', '--mquser', 'god', '--mqpassword', 'secret', 'MyJmsHost']),
+                                 equals(%w(--mqhost mq.example.com --mqport 99 --mquser god --mqpassword secret MyJmsHost)),
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(context),
@@ -72,7 +72,7 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
         returns("#{property_prefix}lazy-init=true")
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-jms-host'),
-                                 equals(['--mqhost', 'mq.example.com', '--mqport', '99', '--mquser', 'god', '--mqpassword', 'secret', 'MyJmsHost']),
+                                 equals(%w(--mqhost mq.example.com --mqport 99 --mquser god --mqpassword secret MyJmsHost)),
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(t.context),
