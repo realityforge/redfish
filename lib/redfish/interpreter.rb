@@ -215,7 +215,8 @@ module Redfish #nodoc
         interpret_jdbc_connection_pool(run_context, key, config)
       end
 
-      psort(data['resource_adapters']).each_pair do |key, config|
+      resource_adapters = psort(data['resource_adapters'])
+      resource_adapters.each_pair do |key, config|
         interpret_resource_adapter(run_context, key, config)
       end
 
@@ -233,6 +234,10 @@ module Redfish #nodoc
 
       psort(data['applications']).each_pair do |key, config|
         interpret_application(run_context, key, config)
+      end
+
+      if managed?(data['resource_adapters'])
+        run_context.task('resource_adapter_cleaner', 'expected' => resource_adapters.keys).action(:clean)
       end
 
       if managed?(data['thread_pools'])

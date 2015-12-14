@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class ResourceAdapter < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.resource-adapter-config.'
+
       private
 
       attribute :name, :kind_of => String, :required => true, :identity_field => true
@@ -30,7 +32,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.resource-adapter-config.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create
