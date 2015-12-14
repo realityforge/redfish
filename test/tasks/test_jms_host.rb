@@ -33,7 +33,8 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
                                  equals(["#{property_prefix}lazy-init=false"]),
                                  equals(:terse => true, :echo => false))
 
-    perform_interpret(context, data, true, :create)
+    # Additional set
+    perform_interpret(context, data, true, :create, :additional_task_count => 1)
   end
 
   def test_interpret_create_when_exists

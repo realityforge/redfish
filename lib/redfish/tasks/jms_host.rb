@@ -69,9 +69,10 @@ module Redfish
       end
 
       def post_create_hook
-        t = context.task('property', 'name' => "#{resource_property_prefix}lazy-init", 'value' => self.lazy_init.to_s)
-        t.perform_action(:set)
-        updated_by_last_action if t.updated_by_last_action?
+        t = run_context.task('property', 'name' => "#{resource_property_prefix}lazy-init", 'value' => self.lazy_init.to_s)
+        t.action(:set)
+        run_context.converge_task(t)
+        updated_by_last_action if t.task.updated_by_last_action?
       end
 
       def do_destroy
