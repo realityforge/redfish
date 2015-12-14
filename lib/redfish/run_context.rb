@@ -32,16 +32,20 @@ module Redfish #nodoc
 
     def converge
       execution_records.each do |execution_record|
-        execution_record.action_started_at = Time.now
-        begin
-          execution_record.task.perform_action(execution_record.action)
-          execution_record.action_performed_update! if execution_record.task.updated_by_last_action?
-        rescue Exception => e
-          execution_record.action_error = e
-          raise e
-        ensure
-          execution_record.action_finished_at = Time.now
-        end
+        converge_task(execution_record)
+      end
+    end
+
+    def converge_task(execution_record)
+      execution_record.action_started_at = Time.now
+      begin
+        execution_record.task.perform_action(execution_record.action)
+        execution_record.action_performed_update! if execution_record.task.updated_by_last_action?
+      rescue Exception => e
+        execution_record.action_error = e
+        raise e
+      ensure
+        execution_record.action_finished_at = Time.now
       end
     end
 
