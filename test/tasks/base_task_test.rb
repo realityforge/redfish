@@ -102,7 +102,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     unchanged_records = to_unchanged_resource_records(run_context)
 
     assert_equal updated_records.size, (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
-    assert_equal unchanged_records.size, (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0)
+    assert_equal unchanged_records.size, (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
 
     assert_property_cache_records(updated_records)
 
