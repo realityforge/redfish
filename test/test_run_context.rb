@@ -18,13 +18,13 @@ class Redfish::TestRunContext < Redfish::TestCase
 
   def test_basic_interaction
 
-    context = Redfish::RunContext.new(new_context)
+    run_context = Redfish::RunContext.new(new_context)
 
-    assert_equal context.execution_records.size, 0
+    assert_equal run_context.execution_records.size, 0
 
-    context.task('property', 'name' => 'myKey', 'value' => 'myValue').action(:set)
+    run_context.task('property', 'name' => 'myKey', 'value' => 'myValue').action(:set)
 
-    assert_equal context.execution_records.size, 1
+    assert_equal run_context.execution_records.size, 1
   end
 
   private

@@ -167,7 +167,7 @@ class Redfish::TestTask < Redfish::TestCase
 
   def new_task
     MyTestTask.new do |t|
-      t.context = new_context
+      t.run_context = Redfish::RunContext.new(new_context)
       yield t if block_given?
     end
   end

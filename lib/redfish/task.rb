@@ -90,18 +90,14 @@ module Redfish
 
     include MetaDataHelper
 
-    attr_writer :context
-
-    def initialize(options = {})
+    def initialize(options = {}, &block)
       @run_context = nil
-      super(options)
+      super(options, &block)
       @updated_by_last_action = false
-      yield self if block_given?
     end
 
     def context
-      raise 'No context associated with task' unless @context
-      @context
+      run_context.app_context
     end
 
     def run_context=(run_context)

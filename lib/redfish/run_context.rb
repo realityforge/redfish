@@ -20,12 +20,15 @@ module Redfish #nodoc
       @execution_records = []
     end
 
+    attr_reader :app_context
+
     def execution_records
       @execution_records.dup
     end
 
     def task(name, options = {}, &block)
-      execution_record = TaskExecutionRecord.new(@app_context.task(name, options.merge(:run_context => self), &block))
+      task = Redfish::TaskManager.create_task(name, options.merge(:run_context => self), &block)
+      execution_record = TaskExecutionRecord.new(task)
       add_execution_record(execution_record)
       execution_record
     end

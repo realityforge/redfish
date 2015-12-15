@@ -59,8 +59,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
   def new_task(executor = Redfish::Executor.new, task_suffix = '')
     t = task_class(task_suffix).new
-    t.context = create_simple_context(executor)
-    t.run_context = Redfish::RunContext.new(t.context)
+    t.run_context = Redfish::RunContext.new(create_simple_context(executor))
     t
   end
 
@@ -110,8 +109,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     updated_records = to_updated_resource_records(run_context)
     unchanged_records = to_unchanged_resource_records(run_context)
 
-    assert_equal updated_records.size, (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
-    assert_equal unchanged_records.size, (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
+    expected_updated = (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
+    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated}- Actual:\n#{updated_records.collect{|a|a.to_s}.join("\n")}"
+    expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
+    assert_equal unchanged_records.size, expected_unchanged, "Expected Upchanged Count #{expected_unchanged}- Actual:\n#{unchanged_records.collect{|a|a.to_s}.join("\n")}"
 
     assert_property_cache_records(updated_records)
 

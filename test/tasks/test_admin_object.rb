@@ -35,7 +35,7 @@ class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1)
+    perform_interpret(context, data, true, :create, :additional_task_count => 1, :additional_unchanged_task_count => 1)
   end
 
   def test_interpret_create_when_exists
@@ -52,7 +52,7 @@ class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, false, :create, :additional_task_count => 1)
+    perform_interpret(context, data, false, :create, :additional_task_count => 1, :additional_unchanged_task_count => expected_local_properties.size)
   end
 
   def test_to_s

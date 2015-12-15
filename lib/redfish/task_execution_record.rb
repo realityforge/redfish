@@ -30,6 +30,10 @@ module Redfish #nodoc
       @action_error = nil
     end
 
+    def converge
+      task.run_context.converge_task(self)
+    end
+
     def action(action = nil)
       raise "Attempting to retrieve action for #{task} when no action defined" if action.nil? && @action.nil?
       raise "Attempting to write action for #{task} when action already defined as #{@action.inspect}" if !action.nil? && !@action.nil?

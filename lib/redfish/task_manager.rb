@@ -34,12 +34,11 @@ module Redfish
         @@task_map.keys.dup
       end
 
-      def create_task(context, name, options = {})
+      def create_task(name, options = {})
         type = @@task_map[name]
         raise "No task registered with name '#{name}'" unless type
         raise "Attempted to instantiate abstract task with name '#{name}'" if @@abstract_types.include?(type)
         t = type.new
-        t.context = context
         t.options = options
         yield t if block_given?
         t

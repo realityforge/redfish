@@ -39,8 +39,9 @@ module Redfish
       end
 
       def remove_element(element)
-        t = context.task(registered_name, additional_resource_properties.merge(resource_name_key => element))
-        t.perform_action(clean_action)
+        t = run_context.task(registered_name, additional_resource_properties.merge(resource_name_key => element))
+        t.action(clean_action)
+        t.converge
         t
       end
 
@@ -49,7 +50,7 @@ module Redfish
         elements_to_remove = existing_elements - self.expected
         elements_to_remove.each do |element|
           t = remove_element(element)
-          updated_by_last_action if t.updated_by_last_action?
+          updated_by_last_action if t.task.updated_by_last_action?
         end
       end
 

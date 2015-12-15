@@ -34,7 +34,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1)
+    perform_interpret(context, data, true, :create, :additional_task_count => 1, :additional_unchanged_task_count => 1 + 1)
   end
 
   def test_interpret_create_when_exists
@@ -51,7 +51,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
 
     setup_interpreter_expects(executor, context, to_properties_content)
 
-    perform_interpret(context, data, false, :create, :additional_task_count => 1)
+    perform_interpret(context, data, false, :create, :additional_task_count => 1, :additional_unchanged_task_count => 1 + expected_local_properties.size)
   end
 
   def test_to_s

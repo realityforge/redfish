@@ -121,7 +121,7 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
 
   def new_task(executor = Redfish::Executor.new)
     t = MyAsadminTask.new
-    t.context = create_simple_context(executor)
+    t.run_context = Redfish::RunContext.new(create_simple_context(executor))
     t
   end
 end

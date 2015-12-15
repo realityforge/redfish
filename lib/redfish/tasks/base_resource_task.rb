@@ -63,27 +63,30 @@ module Redfish
       def set_properties(property_prefix, property_map)
         i = immutable_local_properties
         property_map.each_pair do |key, value|
-          t = context.task('property', 'name' => "#{property_prefix}#{key}", 'value' => as_property_value(value))
+          t = run_context.task('property', 'name' => "#{property_prefix}#{key}", 'value' => as_property_value(value))
           if i.include?(key)
             begin
-              t.perform_action(:ensure)
+              t.action(:ensure)
+              run_context.converge_task(t)
             rescue
               message = "Immutable property '#{property_prefix}#{key}' is different from the expected value '#{as_property_value(value)}'."
               Redfish.warn(message)
               raise message
             end
           else
-            t.perform_action(:set)
+            t.action(:set)
+            run_context.converge_task(t)
           end
-          updated_by_last_action if t.updated_by_last_action?
+          updated_by_last_action if t.task.updated_by_last_action?
         end
       end
 
       def set_deployment_order(property_prefix)
         if self.respond_to?(:deployment_order)
-          t = context.task('property', 'name' => "#{property_prefix}deployment-order", 'value' => self.deployment_order.to_s)
-          t.perform_action(:set)
-          updated_by_last_action if t.updated_by_last_action?
+          t = run_context.task('property', 'name' => "#{property_prefix}deployment-order", 'value' => self.deployment_order.to_s)
+          t.action(:set)
+          run_context.converge_task(t)
+          updated_by_last_action if t.task.updated_by_last_action?
         end
       end
 

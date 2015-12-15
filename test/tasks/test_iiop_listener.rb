@@ -25,7 +25,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(context),
                                  equals('create-iiop-listener'),
-                                 equals(['--listeneraddress', '127.0.0.1', '--iiopport', '1072', '--securityenabled', 'false', '--enabled', 'true', 'myThing']),
+                                 equals(%w(--listeneraddress 127.0.0.1 --iiopport 1072 --securityenabled false --enabled true myThing)),
                                  equals({})).
       returns('')
 
@@ -40,7 +40,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
 
     setup_interpreter_expects(executor, context, to_properties_content)
 
-    perform_interpret(context, data, false, :create)
+    perform_interpret(context, data, false, :create, :additional_unchanged_task_count => expected_local_properties.size)
   end
 
   def test_to_s

@@ -40,7 +40,7 @@ class Redfish::Tasks::TestAuthRealm < Redfish::Tasks::BaseTaskTest
 
     setup_interpreter_expects(executor, context, to_properties_content)
 
-    perform_interpret(context, data, false, :create)
+    perform_interpret(context, data, false, :create, :additional_unchanged_task_count => expected_local_properties.size)
   end
 
   def test_to_s

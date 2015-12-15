@@ -82,9 +82,5 @@ module Redfish
     def exec(asadmin_command, args = [], options = {})
       @executor.exec(self, asadmin_command, args, options)
     end
-
-    def task(name, options = {}, &block)
-      Redfish::TaskManager.create_task(self, name, options, &block)
-    end
   end
 end
