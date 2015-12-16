@@ -196,7 +196,8 @@ module Redfish #nodoc
         interpret_managed_executor_service(run_context, key, config)
       end
 
-      psort(data['managed_scheduled_executor_services']).each_pair do |key, config|
+      managed_scheduled_executor_services = psort(data['managed_scheduled_executor_services'])
+      managed_scheduled_executor_services.each_pair do |key, config|
         interpret_managed_scheduled_executor_service(config, key, run_context)
       end
 
@@ -239,6 +240,12 @@ module Redfish #nodoc
 
       if managed?(data['resource_adapters'])
         run_context.task('resource_adapter_cleaner', 'expected' => resource_adapters.keys).action(:clean)
+      end
+
+      if managed?(data['managed_scheduled_executor_services'])
+        run_context.task('managed_scheduled_executor_service_cleaner',
+                         'expected' => managed_scheduled_executor_services.keys).
+          action(:clean)
       end
 
       if managed?(data['managed_thread_factories'])

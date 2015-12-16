@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class ManagedScheduledExecutorService < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.managed-scheduled-executor-service.'
+
       private
 
       attribute :name, :kind_of => String, :required => true, :identity_field => true
@@ -52,7 +54,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.managed-scheduled-executor-service.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create
