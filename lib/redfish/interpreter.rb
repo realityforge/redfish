@@ -215,7 +215,8 @@ module Redfish #nodoc
         interpret_jms_hosts(run_context, key, config)
       end
 
-      psort(data['jdbc_connection_pools']).each_pair do |key, config|
+      jdbc_connection_pools = psort(data['jdbc_connection_pools'])
+      jdbc_connection_pools.each_pair do |key, config|
         interpret_jdbc_connection_pool(run_context, key, config)
       end
 
@@ -242,6 +243,10 @@ module Redfish #nodoc
 
       if managed?(data['resource_adapters'])
         run_context.task('resource_adapter_cleaner', 'expected' => resource_adapters.keys).action(:clean)
+      end
+
+      if managed?(data['jdbc_connection_pools'])
+        run_context.task('jdbc_connection_pool_cleaner', 'expected' => jdbc_connection_pools.keys).action(:clean)
       end
 
       if managed?(data['jms_hosts'])
