@@ -210,7 +210,8 @@ module Redfish #nodoc
         interpret_auth_realm(run_context, key, config)
       end
 
-      psort(data['jms_hosts']).each_pair do |key, config|
+      jms_hosts = psort(data['jms_hosts'])
+      jms_hosts.each_pair do |key, config|
         interpret_jms_hosts(run_context, key, config)
       end
 
@@ -241,6 +242,10 @@ module Redfish #nodoc
 
       if managed?(data['resource_adapters'])
         run_context.task('resource_adapter_cleaner', 'expected' => resource_adapters.keys).action(:clean)
+      end
+
+      if managed?(data['jms_hosts'])
+        run_context.task('jms_host_cleaner', 'expected' => jms_hosts.keys).action(:clean)
       end
 
       if managed?(data['managed_scheduled_executor_services'])
