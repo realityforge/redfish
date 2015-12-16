@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class ManagedThreadFactory < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.managed-thread-factory.'
+
       private
 
       attribute :name, :kind_of => String, :required => true, :identity_field => true
@@ -41,7 +43,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.managed-thread-factory.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create

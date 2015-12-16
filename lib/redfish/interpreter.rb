@@ -187,7 +187,8 @@ module Redfish #nodoc
         interpret_context_service(run_context, key, config)
       end
 
-      psort(data['managed_thread_factories']).each_pair do |key, config|
+      managed_thread_factories = psort(data['managed_thread_factories'])
+      managed_thread_factories.each_pair do |key, config|
         interpret_managed_thread_factory(run_context, key, config)
       end
 
@@ -238,6 +239,10 @@ module Redfish #nodoc
 
       if managed?(data['resource_adapters'])
         run_context.task('resource_adapter_cleaner', 'expected' => resource_adapters.keys).action(:clean)
+      end
+
+      if managed?(data['managed_thread_factories'])
+        run_context.task('managed_thread_factory_cleaner', 'expected' => managed_thread_factories.keys).action(:clean)
       end
 
       if managed?(data['thread_pools'])
