@@ -69,7 +69,7 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
                                  equals('get'),
                                  equals(["#{property_prefix}lazy-init"]),
                                  equals(:terse => true, :echo => false)).
-        returns("#{property_prefix}lazy-init=true")
+      returns("#{property_prefix}lazy-init=true")
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-jms-host'),
                                  equals(%w(--mqhost mq.example.com --mqport 99 --mquser god --mqpassword secret MyJmsHost)),

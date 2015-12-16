@@ -296,7 +296,6 @@ class Redfish::Tasks::TestManagedExecutorService < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
-
   def test_interpret_create_and_delete
     data = {'managed_executor_services' => resource_parameters_as_tree(:managed => true)}
 
