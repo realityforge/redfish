@@ -23,7 +23,9 @@ module Redfish
       protected
 
       def property_prefix
-        raise 'property_prefix not implemented'
+        Redfish::Tasks.
+          const_get(self.class.name.to_s.split('::').last.gsub(/Cleaner$/, '')).
+          const_get(:PROPERTY_PREFIX)
       end
 
       def clean_action

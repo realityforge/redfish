@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class ResourceAdapterCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::ResourceAdapter::PROPERTY_PREFIX
-      end
     end
   end
 end

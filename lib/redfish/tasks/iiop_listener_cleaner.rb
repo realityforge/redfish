@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class IiopListenerCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::IiopListener::PROPERTY_PREFIX
-      end
     end
   end
 end

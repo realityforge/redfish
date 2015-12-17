@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class AuthRealmCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::AuthRealm::PROPERTY_PREFIX
-      end
     end
   end
 end

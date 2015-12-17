@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class ContextServiceCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::ContextService::PROPERTY_PREFIX
-      end
     end
   end
 end

@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class ThreadPoolCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::ThreadPool::PROPERTY_PREFIX
-      end
     end
   end
 end

@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class JdbcConnectionPoolCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::JdbcConnectionPool::PROPERTY_PREFIX
-      end
     end
   end
 end

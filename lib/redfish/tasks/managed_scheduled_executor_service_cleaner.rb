@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class ManagedScheduledExecutorServiceCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::ManagedScheduledExecutorService::PROPERTY_PREFIX
-      end
     end
   end
 end

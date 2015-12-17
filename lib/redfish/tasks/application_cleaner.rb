@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class ApplicationCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::Application::PROPERTY_PREFIX
-      end
     end
   end
 end

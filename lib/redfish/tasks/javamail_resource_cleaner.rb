@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class JavamailResourceCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::JavamailResource::PROPERTY_PREFIX
-      end
     end
   end
 end

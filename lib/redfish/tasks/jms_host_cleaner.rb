@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class JmsHostCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::JmsHost::PROPERTY_PREFIX
-      end
     end
   end
 end

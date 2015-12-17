@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class ManagedThreadFactoryCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::ManagedThreadFactory::PROPERTY_PREFIX
-      end
     end
   end
 end

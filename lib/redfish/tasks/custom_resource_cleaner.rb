@@ -15,11 +15,6 @@
 module Redfish
   module Tasks
     class CustomResourceCleaner < BaseCleanerTask
-      private
-
-      def property_prefix
-        Tasks::CustomResource::PROPERTY_PREFIX
-      end
     end
   end
 end
