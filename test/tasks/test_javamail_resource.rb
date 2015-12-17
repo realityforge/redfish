@@ -135,7 +135,7 @@ class Redfish::Tasks::TestJavamailResource < Redfish::Tasks::BaseTaskTest
                                  equals('get'),
                                  equals(%W(#{property_prefix}property.DeleteMe)),
                                  equals(:terse => true, :echo => false)).
-        returns("#{property_prefix}property.DeleteMe=X")
+      returns("#{property_prefix}property.DeleteMe=X")
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
                                  equals(%W(#{property_prefix}property.DeleteMe=)),
@@ -156,7 +156,7 @@ class Redfish::Tasks::TestJavamailResource < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-javamail-resource'),
-                                 equals( ['--debug', 'true', '--enabled', 'true', '--description', 'Audit DB', '--mailhost', 'mail.example.com', '--mailuser', 'myUser', '--fromaddress', 'myUser@example.com', '--storeprotocol', 'imap', '--storeprotocolclass', 'com.sun.mail.imap.IMAPStore', '--transprotocol', 'smtp2', '--transprotocolclass', 'com.sun.mail.smtp.SMTPTransport2', 'myThing']),
+                                 equals(['--debug', 'true', '--enabled', 'true', '--description', 'Audit DB', '--mailhost', 'mail.example.com', '--mailuser', 'myUser', '--fromaddress', 'myUser@example.com', '--storeprotocol', 'imap', '--storeprotocolclass', 'com.sun.mail.imap.IMAPStore', '--transprotocol', 'smtp2', '--transprotocolclass', 'com.sun.mail.smtp.SMTPTransport2', 'myThing']),
                                  equals({})).
       returns('')
 
@@ -274,10 +274,70 @@ class Redfish::Tasks::TestJavamailResource < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
+  def test_interpret_create_and_delete
+    data = {'javamail_resources' => resource_parameters_as_tree(:managed => true)}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(Element1 Element2)
+    setup_interpreter_expects_with_fake_elements(executor, context, existing)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-javamail-resource'),
+                                 equals(['--debug', 'true', '--enabled', 'true', '--description', 'Audit DB', '--mailhost', 'mail.example.com', '--mailuser', 'myUser', '--fromaddress', 'myUser@example.com', '--storeprotocol', 'imap', '--storeprotocolclass', 'com.sun.mail.imap.IMAPStore', '--transprotocol', 'smtp2', '--transprotocolclass', 'com.sun.mail.smtp.SMTPTransport2', 'myThing']),
+                                 equals({})).
+      returns('')
+
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                   equals('delete-javamail-resource'),
+                                   equals([element]),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 1)
+  end
+
+  def test_cleaner_deletes_unexpected_element
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing[1, existing.size]
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-javamail-resource'),
+                                 equals([existing.first]),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t, "#{raw_property_prefix}#{existing.first}")
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   protected
 
   def property_prefix
-    'resources.mail-resource.myThing.'
+    "#{raw_property_prefix}myThing."
   end
 
   # Properties in GlassFish properties directory

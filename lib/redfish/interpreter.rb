@@ -233,12 +233,17 @@ module Redfish #nodoc
         interpret_custom_resource(run_context, key, config)
       end
 
-      psort(data['javamail_resources']).each_pair do |key, config|
+      javamail_resources = psort(data['javamail_resources'])
+      javamail_resources.each_pair do |key, config|
         interpret_javamail_resource(run_context, key, config)
       end
 
       psort(data['applications']).each_pair do |key, config|
         interpret_application(run_context, key, config)
+      end
+
+      if managed?(data['javamail_resources'])
+        run_context.task('javamail_resource_cleaner', 'expected' => javamail_resources.keys).action(:clean)
       end
 
       if managed?(data['resource_adapters'])
