@@ -230,7 +230,8 @@ module Redfish #nodoc
         interpret_jms_resource(run_context, key, config)
       end
 
-      psort(data['custom_resources']).each_pair do |key, config|
+      custom_resources = psort(data['custom_resources'])
+      custom_resources.each_pair do |key, config|
         interpret_custom_resource(run_context, key, config)
       end
 
@@ -245,6 +246,10 @@ module Redfish #nodoc
 
       if managed?(data['javamail_resources'])
         run_context.task('javamail_resource_cleaner', 'expected' => javamail_resources.keys).action(:clean)
+      end
+
+      if managed?(data['custom_resources'])
+        run_context.task('custom_resource_cleaner', 'expected' => custom_resources.keys).action(:clean)
       end
 
       if managed?(data['resource_adapters'])

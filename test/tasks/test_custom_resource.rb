@@ -297,6 +297,66 @@ class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
+  def test_interpret_create_and_delete
+    data = {'custom_resources' => resource_parameters_as_tree(:managed => true)}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(Element1 Element2)
+    setup_interpreter_expects_with_fake_elements(executor, context, existing)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-custom-resource'),
+                                 equals(['--enabled', 'true', '--restype', 'java.lang.String', '--factoryclass', 'org.glassfish.resources.custom.factory.PrimitivesAndStringFactory', '--description', 'My Env Setting', 'myapp/env/Setting']),
+                                 equals({})).
+      returns('')
+
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                 equals('delete-custom-resource'),
+                                   equals([element]),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 1)
+  end
+
+  def test_cleaner_deletes_unexpected_element
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing[1, existing.size]
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-custom-resource'),
+                                 equals([existing.first]),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t, "#{raw_property_prefix}#{existing.first}")
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   protected
 
   def property_prefix
