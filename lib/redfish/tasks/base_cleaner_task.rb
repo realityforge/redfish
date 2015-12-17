@@ -48,12 +48,16 @@ module Redfish
       end
 
       action :clean do
-        existing_elements = elements_with_prefix(property_prefix)
+        existing_elements = self.existing_elements
         elements_to_remove = existing_elements - self.expected
         elements_to_remove.each do |element|
           t = remove_element(element)
           updated_by_last_action if t.task.updated_by_last_action?
         end
+      end
+
+      def existing_elements
+        elements_with_prefix(property_prefix)
       end
 
       def elements_with_prefix(prefix)
