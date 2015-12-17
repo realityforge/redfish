@@ -312,11 +312,6 @@ module Redfish #nodoc
       (data.nil? || data['managed'].nil?) ? true : !!data['managed']
     end
 
-    def elements_with_prefix(run_context, prefix)
-      run_context.app_context.property_cache.get_keys_starting_with(prefix).
-        collect {|k| k[prefix.size,k.size].gsub(/\.*$/,'') }.sort.uniq
-    end
-
     def pre_interpret_actions(run_context)
       run_context.task('property_cache').action(:create)
     end
