@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class ConnectorConnectionPool < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.connector-connection-pool.'
 
       private
 
@@ -104,7 +105,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.connector-connection-pool.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create

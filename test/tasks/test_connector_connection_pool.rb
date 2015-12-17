@@ -325,7 +325,7 @@ class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
   protected
 
   def property_prefix
-    'resources.connector-connection-pool.MyConnectorConnectionPool.'
+    "#{raw_property_prefix}MyConnectorConnectionPool."
   end
 
   # Properties in GlassFish properties directory

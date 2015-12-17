@@ -310,7 +310,7 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
   protected
 
   def property_prefix
-    'resources.jdbc-resource.jdbc/MyDB.'
+    "#{raw_property_prefix}jdbc/MyDB."
   end
 
   # Properties in GlassFish properties directory
