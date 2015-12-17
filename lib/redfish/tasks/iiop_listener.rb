@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class IiopListener < BaseResourceTask
+      PROPERTY_PREFIX = 'configs.config.server-config.iiop-service.iiop-listener.'
+
       private
 
       attribute :name, :kind_of => String, :required => true, :identity_field => true
@@ -77,7 +79,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "configs.config.server-config.iiop-service.iiop-listener.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
     end
   end

@@ -179,7 +179,8 @@ module Redfish #nodoc
         interpret_thread_pool(run_context, key, config)
       end
 
-      psort(data['iiop_listeners']).each_pair do |key, config|
+      iiop_listeners = psort(data['iiop_listeners'])
+      iiop_listeners.each_pair do |key, config|
         interpret_iiop_listener(run_context, key, config)
       end
 
@@ -272,6 +273,10 @@ module Redfish #nodoc
 
       if managed?(data['managed_thread_factories'])
         run_context.task('managed_thread_factory_cleaner', 'expected' => managed_thread_factories.keys).action(:clean)
+      end
+
+      if managed?(data['iiop_listeners'])
+        run_context.task('iiop_listener_cleaner', 'expected' => iiop_listeners.keys).action(:clean)
       end
 
       if managed?(data['thread_pools'])
