@@ -15,6 +15,8 @@
 module Redfish
   module Tasks
     class JdbcResource < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.jdbc-resource.'
+
       private
 
       attribute :connectionpoolid, :kind_of => String, :required => true, :identity_field => true
@@ -33,7 +35,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.jdbc-resource.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create
