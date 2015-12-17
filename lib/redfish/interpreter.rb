@@ -208,7 +208,8 @@ module Redfish #nodoc
         interpret_property(run_context, key, config)
       end
 
-      psort(data['auth_realms']).each_pair do |key, config|
+      auth_realms = psort(data['auth_realms'])
+      auth_realms.each_pair do |key, config|
         interpret_auth_realm(run_context, key, config)
       end
 
@@ -259,6 +260,10 @@ module Redfish #nodoc
 
       if managed?(data['jdbc_connection_pools'])
         run_context.task('jdbc_connection_pool_cleaner', 'expected' => jdbc_connection_pools.keys).action(:clean)
+      end
+
+      if managed?(data['auth_realms'])
+        run_context.task('auth_realm_cleaner', 'expected' => auth_realms.keys).action(:clean)
       end
 
       if managed?(data['jms_hosts'])
