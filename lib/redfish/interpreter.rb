@@ -242,8 +242,13 @@ module Redfish #nodoc
         interpret_javamail_resource(run_context, key, config)
       end
 
-      psort(data['applications']).each_pair do |key, config|
+      applications = psort(data['applications'])
+      applications.each_pair do |key, config|
         interpret_application(run_context, key, config)
+      end
+
+      if managed?(data['applications'])
+        run_context.task('application_cleaner', 'expected' => applications.keys).action(:clean)
       end
 
       if managed?(data['javamail_resources'])

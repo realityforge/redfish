@@ -15,6 +15,7 @@
 module Redfish
   module Tasks
     class Application < BaseResourceTask
+      PROPERTY_PREFIX = 'applications.application.'
 
       TYPES = %w(car ear ejb osgi rar war)
 
@@ -49,7 +50,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "applications.application.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create

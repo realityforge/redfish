@@ -296,17 +296,77 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
+  def test_interpret_create_and_delete
+    data = {'applications' => resource_parameters_as_tree(:managed => true)}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(Element1 Element2)
+    setup_interpreter_expects_with_fake_elements(executor, context, existing)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('deploydir'),
+                                 equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
+                                 equals({})).
+      returns('')
+
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                   equals('undeploy'),
+                                   equals(['--cascade=false', element]),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 1)
+  end
+
+  def test_cleaner_deletes_unexpected_element
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing[1, existing.size]
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('undeploy'),
+                                 equals(['--cascade=false', existing.first]),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t, "#{raw_property_prefix}#{existing.first}")
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   protected
 
   def property_prefix
-    'applications.application.MyApplication.'
+    "#{raw_property_prefix}MyApplication."
   end
 
   def location_as_dir
     unless @location
       @location = "#{self.temp_dir}/myapp"
       FileUtils.mkdir_p @location
-      File.open("#{@location}/index.txt",'w') {|f| f << 'Hi' }
+      File.open("#{@location}/index.txt", 'w') { |f| f << 'Hi' }
     end
     @location
   end
@@ -314,7 +374,7 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
   def deployment_plan
     unless @deployment_plan
       @deployment_plan = "#{self.temp_dir}/myapp-plan.jar"
-      File.open(@deployment_plan,'w') {|f| f << '' }
+      File.open(@deployment_plan, 'w') { |f| f << '' }
     end
     @deployment_plan
   end
