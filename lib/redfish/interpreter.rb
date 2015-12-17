@@ -184,7 +184,8 @@ module Redfish #nodoc
         interpret_iiop_listener(run_context, key, config)
       end
 
-      psort(data['context_services']).each_pair do |key, config|
+      context_services = psort(data['context_services'])
+      context_services.each_pair do |key, config|
         interpret_context_service(run_context, key, config)
       end
 
@@ -278,6 +279,10 @@ module Redfish #nodoc
 
       if managed?(data['managed_thread_factories'])
         run_context.task('managed_thread_factory_cleaner', 'expected' => managed_thread_factories.keys).action(:clean)
+      end
+
+      if managed?(data['context_services'])
+        run_context.task('context_service_cleaner', 'expected' => context_services.keys).action(:clean)
       end
 
       if managed?(data['iiop_listeners'])
