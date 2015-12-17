@@ -403,8 +403,8 @@ module Redfish #nodoc
     def interpret_jdbc_resource(run_context, connection_pool_key, key, config)
       run_context.task('jdbc_resource',
                        params(config).merge('connectionpoolid' => connection_pool_key,
-                                                     'name' => key,
-                                                     'deployment_order' => priority_value(config))).
+                                            'name' => key,
+                                            'deployment_order' => priority_value(config))).
         action(:create)
     end
 
@@ -440,16 +440,16 @@ module Redfish #nodoc
     def interpret_connector_resource(run_context, pool_key, key, config)
       run_context.task('connector_resource',
                        params(config).merge('connector_pool_name' => pool_key,
-                                                     'name' => key,
-                                                     'deployment_order' => priority_value(config))).
+                                            'name' => key,
+                                            'deployment_order' => priority_value(config))).
         action(:create)
     end
 
     def interpret_admin_object(run_context, resource_adapter_key, key, config)
       run_context.task('admin_object',
                        params(config).merge('resource_adapter_name' => resource_adapter_key,
-                                                         'name' => key,
-                                                         'deployment_order' => priority_value(config))).
+                                            'name' => key,
+                                            'deployment_order' => priority_value(config))).
         action(:create)
     end
 
@@ -497,7 +497,7 @@ module Redfish #nodoc
     def psort(hash)
       return {} if hash.nil?
       hash = hash.dup
-      hash.delete_if {|k,v| k =~ /^_.*/ || k == 'managed'}
+      hash.delete_if { |k, v| k =~ /^_.*/ || k == 'managed' }
       Hash[hash.sort_by { |key, value| "#{'%04d' % priority_value(value)}#{key}" }]
     end
 
