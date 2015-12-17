@@ -60,6 +60,12 @@ module Redfish
         elements_with_prefix(property_prefix)
       end
 
+      def elements_with_prefix_and_property(prefix, property_key, property_value)
+        elements_with_prefix(prefix).select do |key|
+          run_context.app_context.property_cache["#{prefix}#{key}.#{property_key}"] == property_value
+        end
+      end
+
       def elements_with_prefix(prefix)
         context.property_cache.get_keys_starting_with(prefix).
           collect { |k| k[prefix.size, k.size].gsub(/^([^.]+).*$/, '\1') }.sort.uniq
