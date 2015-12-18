@@ -102,6 +102,14 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
           application_config['web_env_entries']['managed'] = false unless application_config['web_env_entries'].has_key?('managed')
         end
       end
+
+      if data.has_key?('jdbc_connection_pools')
+        data['jdbc_connection_pools'].each_pair do |key, config|
+          next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
+          config['resources'] = {} unless config.has_key?('resources')
+          config['resources']['managed'] = false unless config['resources'].has_key?('managed')
+        end
+      end
     end
 
     run_context = interpret(context, data)
@@ -110,9 +118,9 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     unchanged_records = to_unchanged_resource_records(run_context)
 
     expected_updated = (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
-    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated}- Actual:\n#{updated_records.collect{|a|a.to_s}.join("\n")}"
+    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect{|a|a.to_s}.join("\n")}"
     expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
-    assert_equal unchanged_records.size, expected_unchanged, "Expected Upchanged Count #{expected_unchanged}- Actual:\n#{unchanged_records.collect{|a|a.to_s}.join("\n")}"
+    assert_equal unchanged_records.size, expected_unchanged, "Expected Upchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect{|a|a.to_s}.join("\n")}"
 
     assert_property_cache_records(updated_records)
 
