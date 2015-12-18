@@ -395,8 +395,15 @@ module Redfish #nodoc
                        params(params).merge('name' => key, 'deployment_order' => priority_value(config))).
         action(:create)
 
-      psort(config['resources']).each_pair do |resource_key, resource_config|
+      resources = psort(config['resources'])
+      resources.each_pair do |resource_key, resource_config|
         interpret_jdbc_resource(run_context, key, resource_key, resource_config)
+      end
+      if managed?(config['resources'])
+        run_context.task('jdbc_resource_cleaner',
+                         'connectionpoolid' => key,
+                         'expected' => resources.keys).
+          action(:clean)
       end
     end
 
