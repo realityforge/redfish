@@ -10,7 +10,6 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
     * Enable removal of un defined elements. Controllable per-element.
       - library
       - jms_resource
-      - jdbc_resource
       - connector_resource
       - connector_connection_pool
     * Raise an exception if any unprocessed data unless attribute starts with _
