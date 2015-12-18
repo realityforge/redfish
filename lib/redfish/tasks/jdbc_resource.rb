@@ -19,7 +19,7 @@ module Redfish
 
       private
 
-      attribute :connectionpoolid, :kind_of => String, :required => true, :identity_field => true
+      attribute :connectionpoolid, :kind_of => String, :identity_field => true
       attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :enabled, :type => :boolean, :default => true
       attribute :description, :kind_of => String, :default => ''
@@ -27,6 +27,7 @@ module Redfish
       attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       action :create do
+        raise 'connectionpoolid property not set' unless self.connectionpoolid
         create(resource_property_prefix)
       end
 
