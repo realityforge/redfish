@@ -72,7 +72,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def task_name
-    self.class.name.to_s.split('::').last.gsub(/^Test/,'')
+    self.class.name.to_s.split('::').last.gsub(/^Test/, '')
   end
 
   def registered_name
@@ -110,6 +110,22 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
           config['resources']['managed'] = false unless config['resources'].has_key?('managed')
         end
       end
+      if data.has_key?('resource_adapters')
+        data['resource_adapters'].each_pair do |key, config|
+          next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
+          if config.has_key?('connection_pools')
+            config['connection_pools'].each_pair do |pool_key, pool_config|
+              next if pool_key == 'managed' && (pool_config.is_a?(TrueClass) || pool_config.is_a?(FalseClass))
+
+              pool_config['resources'] = {} unless pool_config.has_key?('resources')
+              pool_config['resources']['managed'] = false unless pool_config['resources'].has_key?('managed')
+            end
+          else
+            config['connection_pools'] = {}
+          end
+          config['connection_pools']['managed'] = false unless config['connection_pools'].has_key?('managed')
+        end
+      end
     end
 
     run_context = interpret(context, data)
@@ -118,9 +134,9 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     unchanged_records = to_unchanged_resource_records(run_context)
 
     expected_updated = (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
-    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect{|a|a.to_s}.join("\n")}"
+    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
     expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
-    assert_equal unchanged_records.size, expected_unchanged, "Expected Upchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect{|a|a.to_s}.join("\n")}"
+    assert_equal unchanged_records.size, expected_unchanged, "Expected Upchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records)
 
@@ -149,7 +165,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def setup_interpreter_expects_with_fake_elements(executor, context, names, property_prefix = raw_property_prefix)
-    setup_interpreter_expects(executor, context, create_fake_element_properties(names, property_prefix).collect{|k,v| "#{k}=#{v}"}.join("\n"))
+    setup_interpreter_expects(executor, context, create_fake_element_properties(names, property_prefix).collect { |k, v| "#{k}=#{v}" }.join("\n"))
   end
 
   def setup_interpreter_expects(executor, context, property_results)
@@ -208,7 +224,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
   def create_fake_element_properties(names, property_prefix = raw_property_prefix, attributes = %w(p q r s t u v))
     properties = {}
-    names.collect{|k| "#{property_prefix}#{k}"}.each do |key|
+    names.collect { |k| "#{property_prefix}#{k}" }.each do |key|
       attributes.each do |a|
         properties["#{key}.#{a}"] = a
       end

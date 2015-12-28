@@ -15,9 +15,11 @@
 module Redfish
   module Tasks
     class ConnectorResource < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.connector-resource.'
+
       private
 
-      attribute :connector_pool_name, :kind_of => String, :required => true, :identity_field => true
+      attribute :connector_pool_name, :kind_of => String, :identity_field => true
       attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :object_type, :equal_to => %w(user system-instance system-admin system-all), :default => 'user'
 
@@ -27,6 +29,8 @@ module Redfish
       attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       action :create do
+        raise 'connector_pool_name property not set' unless self.connector_pool_name
+
         create(resource_property_prefix)
       end
 
@@ -39,7 +43,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.connector-resource.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create

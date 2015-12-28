@@ -326,10 +326,99 @@ class Redfish::Tasks::TestConnectorResource < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
-  protected
+  def test_interpret_create_and_delete
+    data = {'resource_adapters' => {'jmsra' => {'connection_pools' => {'MyConnectorPool' => {'connection_definition_name' => 'X', 'resources' => resource_parameters_as_tree(:managed => true)}}}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(Element1 Element2)
+    properties = create_fake_element_properties(existing, raw_property_prefix)
+    properties.merge!(create_fake_element_properties(%w(Element3 Element4), raw_property_prefix))
+    properties["#{raw_property_prefix}Element1.pool-name"] = 'MyConnectorPool'
+    properties["#{raw_property_prefix}Element2.pool-name"] = 'MyConnectorPool'
+    properties["#{raw_property_prefix}Element3.pool-name"] = 'MyOtherDBPool'
+    properties["#{raw_property_prefix}Element4.pool-name"] = 'MyOtherDBPool'
+
+    setup_interpreter_expects(executor,
+                              context,
+                              properties.collect{|k,v| "#{k}=#{v}"}.join("\n"))
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-connector-connection-pool'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-connector-resource'),
+                                 equals(['--enabled', 'true', '--objecttype', 'user', '--poolname', 'MyConnectorPool', '--description', 'Connector Blah', 'MyConnectorResource']),
+                                 equals({})).
+      returns('')
+
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                 equals('delete-connector-resource'),
+                                   equals([element]),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + 1 + 1 + existing.size, :additional_unchanged_task_count => 2)
+  end
+
+  def test_cleaner_deletes_unexpected_element
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2)
+    properties = create_fake_element_properties(existing, raw_property_prefix)
+    properties.merge!(create_fake_element_properties(%w(Element3 Element4), raw_property_prefix))
+    properties["#{raw_property_prefix}Element1.pool-name"] = 'MyConnectorPool'
+    properties["#{raw_property_prefix}Element2.pool-name"] = 'MyConnectorPool'
+    properties["#{raw_property_prefix}ElementX.pool-name"] = 'MyConnectorPool'
+    properties["#{raw_property_prefix}Element3.pool-name"] = 'MyOtherPool'
+    properties["#{raw_property_prefix}Element4.pool-name"] = 'MyOtherPool'
+    t.context.cache_properties(properties)
+
+    t.connector_pool_name = 'MyConnectorPool'
+    t.expected = existing
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-connector-resource'),
+                                 equals(['ElementX']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t, "#{raw_property_prefix}ElementX")
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.connector_pool_name = 'MyConnectorPool'
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
+   protected
 
   def property_prefix
-    'resources.connector-resource.MyConnectorResource.'
+    "#{raw_property_prefix}MyConnectorResource."
   end
 
   # Properties in GlassFish properties directory
