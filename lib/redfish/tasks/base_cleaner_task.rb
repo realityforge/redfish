@@ -48,12 +48,14 @@ module Redfish
       end
 
       action :clean do
-        existing_elements = self.existing_elements
-        elements_to_remove = existing_elements - self.expected
-        elements_to_remove.each do |element|
+        self.elements_to_remove.each do |element|
           t = remove_element(element)
           updated_by_last_action if t.task.updated_by_last_action?
         end
+      end
+
+      def elements_to_remove
+        self.existing_elements - self.expected
       end
 
       def existing_elements
