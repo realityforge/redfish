@@ -354,11 +354,11 @@ class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
     existing = %w(Element1 Element2)
     properties = create_fake_element_properties(existing, raw_property_prefix)
     properties.merge!(create_fake_element_properties(%w(Element3 Element4), raw_property_prefix))
-    properties["#{raw_property_prefix}Element1.pool-name"] = "MyDBPool"
-    properties["#{raw_property_prefix}Element2.pool-name"] = "MyDBPool"
-    properties["#{raw_property_prefix}ElementX.pool-name"] = "MyDBPool"
-    properties["#{raw_property_prefix}Element3.pool-name"] = "MyOtherDBPool"
-    properties["#{raw_property_prefix}Element4.pool-name"] = "MyOtherDBPool"
+    properties["#{raw_property_prefix}Element1.pool-name"] = 'MyDBPool'
+    properties["#{raw_property_prefix}Element2.pool-name"] = 'MyDBPool'
+    properties["#{raw_property_prefix}ElementX.pool-name"] = 'MyDBPool'
+    properties["#{raw_property_prefix}Element3.pool-name"] = 'MyOtherDBPool'
+    properties["#{raw_property_prefix}Element4.pool-name"] = 'MyOtherDBPool'
     t.context.cache_properties(properties)
 
     t.connectionpoolid = 'MyDBPool'
