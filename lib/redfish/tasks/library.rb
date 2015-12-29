@@ -15,10 +15,12 @@
 module Redfish
   module Tasks
     class Library < AsadminTask
+      LIBRARY_TYPES = %w(common ext app)
+
       private
 
+      attribute :library_type, :equal_to => LIBRARY_TYPES, :default => 'common', :identity_field => true
       attribute :file, :kind_of => String, :required => true, :identity_field => true
-      attribute :library_type, :equal_to => %w(common ext app), :default => 'common'
       attribute :upload, :type => :boolean, :default => false
 
       action :create do

@@ -62,7 +62,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
     t.file = '/opt/jtds/jtds-1.3.1.jar'
     t.library_type = 'ext'
 
-    assert_equal t.to_s, 'library[/opt/jtds/jtds-1.3.1.jar]'
+    assert_equal t.to_s, 'library[ext::/opt/jtds/jtds-1.3.1.jar]'
   end
 
   def test_create_when_no_such_library
