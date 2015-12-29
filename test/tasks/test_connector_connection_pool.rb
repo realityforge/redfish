@@ -322,6 +322,90 @@ class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
+  def test_interpret_create_and_delete
+    data = {'resource_adapters' => {'jmsra' => {'connection_pools' => resource_parameters_as_tree(:managed => true)}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(Element1 Element2)
+    properties = create_fake_element_properties(existing, raw_property_prefix)
+    properties.merge!(create_fake_element_properties(%w(Element3 Element4), raw_property_prefix))
+    properties["#{raw_property_prefix}Element1.resource-adapter-name"] = 'jmsra'
+    properties["#{raw_property_prefix}Element2.resource-adapter-name"] = 'jmsra'
+    properties["#{raw_property_prefix}Element3.resource-adapter-name"] = 'MyOtherDBPool'
+    properties["#{raw_property_prefix}Element4.resource-adapter-name"] = 'MyOtherDBPool'
+
+    setup_interpreter_expects(executor,
+                              context,
+                              properties.collect{|k,v| "#{k}=#{v}"}.join("\n"))
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-connector-connection-pool'),
+                                 equals(['--raname=jmsra', '--connectiondefinition=javax.jms.QueueConnectionFactory', '--steadypoolsize=1', '--maxpoolsize=250', '--maxwait=60000', '--poolresize=2', '--idletimeout=300', '--leaktimeout=0', '--validateatmostonceperiod=0', '--maxconnectionusagecount=0', '--creationretryattempts=0', '--creationretryinterval=10', '--isconnectvalidatereq=true', '--failconnection=false', '--leakreclaim=false', '--lazyconnectionenlistment=false', '--lazyconnectionassociation=false', '--associatewiththread=false', '--matchconnections=true', '--ping=true', '--pooling=true', '--transactionsupport=NoTransaction', '--property', 'User=sa:Password=password', '--description', 'Audit Connection Pool', 'MyConnectorConnectionPool']),
+                                 equals({})).
+      returns('')
+
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                   equals('delete-connector-connection-pool'),
+                                   equals(%W(--cascade=true #{element})),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 2 + existing.size, :additional_unchanged_task_count => 1)
+  end
+
+  def test_cleaner_deletes_unexpected_element
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2)
+    properties = create_fake_element_properties(existing, raw_property_prefix)
+    properties.merge!(create_fake_element_properties(%w(Element3 Element4), raw_property_prefix))
+    properties["#{raw_property_prefix}Element1.resource-adapter-name"] = 'jmsra'
+    properties["#{raw_property_prefix}Element2.resource-adapter-name"] = 'jmsra'
+    properties["#{raw_property_prefix}ElementX.resource-adapter-name"] = 'jmsra'
+    properties["#{raw_property_prefix}Element3.resource-adapter-name"] = 'MyOtherDBPool'
+    properties["#{raw_property_prefix}Element4.resource-adapter-name"] = 'MyOtherDBPool'
+    t.context.cache_properties(properties)
+
+    t.resource_adapter_name = 'jmsra'
+    t.expected = existing
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-connector-connection-pool'),
+                                 equals(%W(--cascade=true ElementX)),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t, "#{raw_property_prefix}ElementX")
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(Element1 Element2 Element3)
+    create_fake_elements(t.context, existing)
+
+    t.resource_adapter_name = 'jmsra'
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   protected
 
   def property_prefix

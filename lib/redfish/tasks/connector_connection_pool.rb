@@ -48,7 +48,7 @@ module Redfish
         at(key, values, property_key, default_value, options)
       end
 
-      str(:resource_adapter_name, 'resource-adapter-name', nil, :required => true, :cmdline_arg => 'raname', :identity_field => true)
+      str(:resource_adapter_name, 'resource-adapter-name', nil, :cmdline_arg => 'raname', :identity_field => true)
       str(:connection_definition_name, 'connection-definition-name', nil, :required => true, :cmdline_arg => 'connectiondefinition')
 
       num(:steady_pool_size, 'steady-pool-size', 1)
@@ -97,6 +97,8 @@ module Redfish
       private
 
       action :create do
+        raise 'resource_adapter_name property not set' unless self.resource_adapter_name
+
         create(resource_property_prefix)
       end
 

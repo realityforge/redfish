@@ -421,8 +421,16 @@ module Redfish #nodoc
       params.delete('admin_objects')
       run_context.task('resource_adapter', params(params).merge('name' => key)).action(:create)
 
-      psort(config['connection_pools']).each_pair do |pool_key, pool_config|
+      connection_pools = psort(config['connection_pools'])
+      connection_pools.each_pair do |pool_key, pool_config|
         interpret_connector_connection_pool(run_context, key, pool_key, pool_config)
+      end
+
+      if managed?(config['connection_pools'])
+        run_context.task('connector_connection_pool_cleaner',
+                         'resource_adapter_name' => key,
+                         'expected' => connection_pools.keys).
+          action(:clean)
       end
 
       psort(config['admin_objects']).each_pair do |admin_object_key, admin_object_config|
