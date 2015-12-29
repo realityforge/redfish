@@ -25,7 +25,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def ensure_properties_not_present(task, prefix = property_prefix)
-    assert_equal task.context.property_cache.any_property_start_with?(prefix), false
+    assert_equal task.context.property_cache.any_property_start_with?(prefix), false, "Properties with prefix #{prefix} are present when not expected"
   end
 
   def ensure_expected_cache_values(t)
