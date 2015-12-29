@@ -170,7 +170,8 @@ module Redfish #nodoc
 
       interpret_log_attributes(run_context, data['log_attributes']) if data['log_attributes']
 
-      psort(data['libraries']).values.each do |config|
+      libraries = psort(data['libraries'])
+      libraries.values.each do |config|
         interpret_library(run_context, config)
       end
 
@@ -301,6 +302,12 @@ module Redfish #nodoc
 
       if managed?(data['thread_pools'])
         run_context.task('thread_pool_cleaner', 'expected' => thread_pools.keys).action(:clean)
+      end
+
+      if managed?(data['libraries'])
+        Redfish::Tasks::Library::LIBRARY_TYPES.each do |library_type|
+          run_context.task('library_cleaner', 'library_type' => library_type, 'expected' => libraries.keys).action(:clean)
+        end
       end
 
       post_interpret_actions(run_context)

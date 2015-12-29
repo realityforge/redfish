@@ -143,4 +143,96 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
 
     ensure_task_not_updated_by_last_action(t)
   end
+
+  def test_interpret_create_and_delete
+    data = {'libraries' => {'managed' => true, 'jtds' => {'file' => '/opt/jtds/jtds-1.3.1.jar', 'library_type' => 'ext'}}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    existing = %w(other.jar pgsql.jar)
+
+    setup_interpreter_expects(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type common)),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type app)),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns("#{existing.join("\n")}\n").
+      at_least(2)
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('add-library'),
+                                 equals(%w(--type ext --upload false /opt/jtds/jtds-1.3.1.jar)),
+                                 equals({})).
+      returns('')
+
+    existing.each do |element|
+      executor.expects(:exec).with(equals(context),
+                                   equals('remove-library'),
+                                   equals(%W(--type ext #{element})),
+                                   equals({})).
+        returns('')
+    end
+
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 2)
+  end
+
+  def test_cleaner_deletes_unexpected_element
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(/opt/jtds/jtds-1.3.1.jar /opt/pgsql/pgsql.jar)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns("other.jar\npgsql.jar\njtds-1.3.1.jar\n").
+      at_least(2)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('remove-library'),
+                                 equals(%w(--type ext other.jar)),
+                                 equals({})).
+      returns('')
+
+    t.library_type = 'ext'
+    t.expected = existing
+
+    t.perform_action(:clean)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_cleaner_not_updated_if_no_clean_actions
+    executor = Redfish::Executor.new
+    t = new_cleaner_task(executor)
+
+    existing = %w(/opt/jtds/jtds-1.3.1.jar /opt/pgsql/pgsql.jar /opt/other/other.jar)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns("other.jar\npgsql.jar\njtds-1.3.1.jar\n")
+
+    t.library_type = 'ext'
+    t.expected = existing
+    t.perform_action(:clean)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
 end
