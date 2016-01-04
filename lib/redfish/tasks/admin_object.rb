@@ -15,10 +15,11 @@
 module Redfish
   module Tasks
     class AdminObject < BaseResourceTask
+      PROPERTY_PREFIX = 'resources.admin-object-resource.'
 
       private
 
-      attribute :resource_adapter_name, :kind_of => String, :required => true, :identity_field => true
+      attribute :resource_adapter_name, :kind_of => String, :identity_field => true
       attribute :name, :kind_of => String, :required => true, :identity_field => true
       attribute :restype, :kind_of => String, :required => true
       attribute :classname, :kind_of => String, :default => nil
@@ -28,6 +29,8 @@ module Redfish
       attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       action :create do
+        raise 'resource_adapter_name property not set' unless self.resource_adapter_name
+
         create(resource_property_prefix)
       end
 
@@ -36,7 +39,7 @@ module Redfish
       end
 
       def resource_property_prefix
-        "resources.admin-object-resource.#{self.name}."
+        "#{PROPERTY_PREFIX}#{self.name}."
       end
 
       def properties_to_record_in_create

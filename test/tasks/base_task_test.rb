@@ -124,6 +124,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
             config['connection_pools'] = {}
           end
           config['connection_pools']['managed'] = false unless config['connection_pools'].has_key?('managed')
+          config['admin_objects'] = {} unless config.has_key?('admin_objects')
+          config['admin_objects']['managed'] = false unless config['admin_objects'].has_key?('managed')
         end
       end
     end

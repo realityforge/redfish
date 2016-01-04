@@ -440,8 +440,20 @@ module Redfish #nodoc
           action(:clean)
       end
 
-      psort(config['admin_objects']).each_pair do |admin_object_key, admin_object_config|
+      admin_objects = psort(config['admin_objects'])
+      admin_objects.each_pair do |admin_object_key, admin_object_config|
         interpret_admin_object(run_context, key, admin_object_key, admin_object_config)
+      end
+
+      if managed?(config['admin_objects'])
+        expected = admin_objects.keys
+        if 'jmsra' == key
+          #TODO: Add admin_objects that result from jms_resource section
+        end
+        run_context.task('admin_object_cleaner',
+                         'resource_adapter_name' => key,
+                         'expected' => expected).
+          action(:clean)
       end
     end
 
