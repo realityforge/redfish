@@ -90,7 +90,7 @@ class Redfish::TestExecutor < Redfish::TestCase
   def test_exec
     executor = Redfish::Executor.new
 
-    cmd = ['/opt/payara-4.1.151//glassfish/bin/asadmin', '--terse=false', '--echo=true', '--user', 'admin', '--port', '4848', 'set', 'a=1:b=2']
+    cmd = %w(/opt/payara-4.1.151//glassfish/bin/asadmin --terse=false --echo=true --user admin --port 4848 set a=1:b=2)
     IO.expects(:popen).with(equals(cmd),equals('r'),anything)
     executor.expects(:last_exitstatus).returns(0)
 
