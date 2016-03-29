@@ -46,8 +46,10 @@ module Redfish
     attr_reader :system_group
 
     def initialize(executor, install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
-      @executor, @install_dir, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
-        executor, install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
+      @executor, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
+        executor, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
+
+      @install_dir = install_dir[-1] == '/' ? install_dir[0...-1] : install_dir
       @echo = options[:echo].nil? ? false : !!options[:echo]
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]

@@ -52,6 +52,17 @@ class Redfish::TestContext < Redfish::TestCase
     assert !context.property_cache?
   end
 
+  def test_dirs_cleaned_of_trailing_slash
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   '/opt/glassfish/',
+                                   'appserver',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   nil)
+
+    assert_equal context.install_dir, '/opt/glassfish'
+  end
   def test_domain_version
     context = Redfish::Context.new(Redfish::Executor.new, '/opt/glassfish', 'appserver', 4848, true, 'admin', nil)
 

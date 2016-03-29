@@ -17,12 +17,12 @@ require File.expand_path('../helper', __FILE__)
 class Redfish::TestExecutor < Redfish::TestCase
   def test_asadmin_script
     executor = Redfish::Executor.new
-    assert_equal '/opt/payara-4.1.151//glassfish/bin/asadmin', executor.send(:asadmin_script, new_context(executor))
+    assert_equal '/opt/payara-4.1.151/glassfish/bin/asadmin', executor.send(:asadmin_script, new_context(executor))
   end
 
   def test_build_command
     executor = Redfish::Executor.new
-    assert_equal %w(/opt/payara-4.1.151//glassfish/bin/asadmin --terse=true --echo=false --user admin --port 4848 set a=b),
+    assert_equal %w(/opt/payara-4.1.151/glassfish/bin/asadmin --terse=true --echo=false --user admin --port 4848 set a=b),
                  executor.send(:build_command, new_context(executor), 'set', ['a=b'], :terse => true, :echo => false)
 
     context = Redfish::Context.new(executor,
@@ -34,11 +34,11 @@ class Redfish::TestExecutor < Redfish::TestCase
                                    nil,
                                    :authbind_executable => '/usr/bin/authbind')
 
-    assert_equal %w(/usr/bin/authbind --deep /opt/payara-4.1.151//glassfish/bin/asadmin --terse=true --echo=false --user admin --port 4848 set a=b),
+    assert_equal %w(/usr/bin/authbind --deep /opt/payara-4.1.151/glassfish/bin/asadmin --terse=true --echo=false --user admin --port 4848 set a=b),
                  executor.send(:build_command, context, 'set', ['a=b'], :terse => true, :echo => false)
 
     Etc.expects(:getlogin).returns('bob')
-    assert_equal %w(/usr/bin/sudo -u glassfish -g glassfish-group /opt/payara-4.1.151//glassfish/bin/asadmin --terse=false --echo=false --user admin --passwordfile=/etc/pass --secure --port 4848 set a=b),
+    assert_equal %w(/usr/bin/sudo -u glassfish -g glassfish-group /opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=false --user admin --passwordfile=/etc/pass --secure --port 4848 set a=b),
                  executor.send(:build_command,
                                Redfish::Context.new(executor,
                                                     '/opt/payara-4.1.151/',
@@ -102,7 +102,7 @@ class Redfish::TestExecutor < Redfish::TestCase
   def test_exec
     executor = Redfish::Executor.new
 
-    cmd = %w(/opt/payara-4.1.151//glassfish/bin/asadmin --terse=false --echo=true --user admin --port 4848 set a=1:b=2)
+    cmd = %w(/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --port 4848 set a=1:b=2)
     IO.expects(:popen).with(equals(cmd),equals('r'),anything)
     executor.expects(:last_exitstatus).returns(0)
 
@@ -110,6 +110,6 @@ class Redfish::TestExecutor < Redfish::TestCase
   end
 
   def new_context(executor)
-    Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, :terse => false, :echo => true)
+    create_simple_context(executor, :terse => false, :echo => true)
   end
 end
