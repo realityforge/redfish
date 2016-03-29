@@ -19,6 +19,8 @@ module Redfish
 
       cmd = build_command(context, asadmin_command, args, options)
 
+      Redfish.debug("Executing #{cmd.join(' ')}")
+
       output = nil
       IO.popen(cmd,'r') do |pipe|
         output = pipe.read
@@ -58,8 +60,6 @@ module Redfish
       cmd += asadmin_command_prefix(context, options)
       cmd << asadmin_command
       cmd += args
-
-      Redfish.debug("Executing #{cmd.join(' ')}")
 
       cmd
     end
