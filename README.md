@@ -14,6 +14,10 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 
 * Update DSL to specify payara specific arg when setting non-standard logging properties
 
+* Enhance domain task to add:
+    * Interpreter integration for create/delete
+    * start/stop/restart actions
+
 * Add tasks to manage realm_types
 
 * Enable restart of app server under conditions such as;
