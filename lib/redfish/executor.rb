@@ -39,7 +39,8 @@ module Redfish
 
       cmd = []
 
-      if needs_user_change?(context)
+      # :sudo option defaults to true unless explicitly set to false
+      if needs_user_change?(context) && (options[:sudo].nil? || options[:sudo])
         cmd << '/usr/bin/sudo'
         cmd << '-u' << context.system_user.to_s unless context.system_user.nil?
         cmd << '-g' << context.system_group.to_s unless context.system_group.nil?
