@@ -45,7 +45,8 @@ module Redfish
         cmd << '-g' << context.system_group.to_s unless context.system_group.nil?
       end
 
-      unless context.authbind_executable.nil?
+      # :authbind option defaults to true unless explicitly set to false
+      unless context.authbind_executable.nil? || (options[:authbind] && !options[:authbind])
         cmd << context.authbind_executable
         cmd << '--deep'
       end
