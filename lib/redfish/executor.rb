@@ -36,8 +36,8 @@ module Redfish
       output
     end
 
+    def build_command(context, asadmin_command, args = [], options = {})
 
-    def build_command(context, asadmin_command, args, options)
       cmd = []
 
       if needs_user_change?(context)
