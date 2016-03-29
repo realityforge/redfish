@@ -20,6 +20,13 @@ module Redfish
 
       protected
 
+      # Return a struct representing the domain version
+      def domain_version
+        context.property_cache? ?
+          context.domain_version :
+          context.domain_version(get_property('domain.version'))
+      end
+
       #
       # Many glassfish resources have an "extensible" set of properties with declared under the resource.
       # This method assumes there is a method "properties" that returns a list of said properties. It then

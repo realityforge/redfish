@@ -65,10 +65,7 @@ module Redfish
       end
 
       def derive_default_defines
-        c = context.property_cache? ?
-          context.domain_version :
-          context.domain_version(get_property('domain.version'))
-
+        c = self.domain_version
         if c[:variant] == 'Payara' && c[:version] == '4.1.152'
            {
             'java.awt.headless' => 'true',
