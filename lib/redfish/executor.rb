@@ -36,11 +36,6 @@ module Redfish
       output
     end
 
-    private
-
-    def last_exitstatus
-      $?.exitstatus
-    end
 
     def build_command(context, asadmin_command, args, options)
       cmd = []
@@ -62,6 +57,12 @@ module Redfish
       cmd += args
 
       cmd
+    end
+
+    private
+
+    def last_exitstatus
+      $?.exitstatus
     end
 
     def needs_user_change?(context)
