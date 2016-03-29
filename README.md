@@ -18,6 +18,9 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
     * ensure_admin_ready action? And also invoke from within restart?
     * Interpreter integration for create/delete
 
+* Extract per glassfish version config files that include all settings that are version specific such as
+  logging levels, logging attributes, jvm properties, realm_types etc
+
 * Add tasks to manage realm_types
 
 * Enable restart of app server under conditions such as;
