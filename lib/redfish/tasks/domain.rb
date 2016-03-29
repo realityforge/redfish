@@ -34,8 +34,6 @@ module Redfish
       end
 
       action :destroy do
-        check_properties
-
         if File.directory?(context.domain_directory)
           do_destroy
 
