@@ -59,9 +59,11 @@ class Redfish::TestContext < Redfish::TestCase
                                    4848,
                                    true,
                                    'admin',
-                                   nil)
+                                   nil,
+                                   :domains_directory => '/opt/glassfish/domains/')
 
     assert_equal context.install_dir, '/opt/glassfish'
+    assert_equal context.domains_directory, '/opt/glassfish/domains'
   end
   def test_domain_version
     context = Redfish::Context.new(Redfish::Executor.new, '/opt/glassfish', 'appserver', 4848, true, 'admin', nil)

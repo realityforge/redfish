@@ -38,6 +38,8 @@ module Redfish
       !!@echo
     end
 
+    # The directory that contains the domains. If nil then assumes the default directory.
+    attr_reader :domains_directory
     # The path to the authbind executable, if glassfish must run as a subprocess of authbind.
     attr_reader :authbind_executable
     # The user that the asadmin command executes as.
@@ -50,6 +52,11 @@ module Redfish
         executor, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
 
       @install_dir = install_dir[-1] == '/' ? install_dir[0...-1] : install_dir
+      domains_directory = options[:domains_directory]
+      if domains_directory
+        @domains_directory = domains_directory[-1] == '/' ? domains_directory[0...-1] : domains_directory
+      end
+
       @echo = options[:echo].nil? ? false : !!options[:echo]
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]
