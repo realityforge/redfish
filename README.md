@@ -11,6 +11,8 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
     * Raise an exception if any unprocessed data unless attribute starts with _
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10"
 
+* Add equivalent of secure_admin command
+
 * Store domain_password in context, generate password file within domain dir once app is created, before
   domain is created create a temp file on demand, perhaps lifecycle scoped to context?
 
