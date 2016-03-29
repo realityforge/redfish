@@ -44,7 +44,7 @@ class Redfish::TestCase < Minitest::Test
     @temp_dir
   end
 
-  def test_domain_dir
+  def test_domains_dir
     "#{temp_dir}/domains"
   end
 
