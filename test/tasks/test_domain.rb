@@ -32,6 +32,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib")).returns('')
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib/ext")).returns('')
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
@@ -56,6 +57,8 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     assert File.directory?("#{test_domains_dir}/domain1/bin")
     assert File.directory?("#{test_domains_dir}/domain1/lib")
     assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
+    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
+
     cmd_script = IO.read("#{test_domains_dir}/domain1/bin/asadmin")
     assert_equal cmd_script, <<-CMD
 #!/bin/sh

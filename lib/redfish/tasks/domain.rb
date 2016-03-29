@@ -108,7 +108,18 @@ module Redfish
         create_dir("#{context.domain_directory}/lib", 0755)
         create_dir("#{context.domain_directory}/lib/ext", 0755)
 
+        cmd = "#{context.domain_directory}/bin/asadmin"
+        File.open(cmd, 'wb') do |f|
+          f.write <<-SH
+#!/bin/sh
+
+#{context.build_command('"$@"', [], :remote_command => true, :terse => false, :echo => true, :sudo => false).join(' ')}
+    SH
+        end
+        FileUtils.chmod 0700, cmd
+        FileUtils.chown context.system_user, context.system_group, cmd if context.system_user || context.system_group
       end
+
       def create_dir(directory, mode)
         FileUtils.mkdir_p(directory)
         FileUtils.chmod mode, directory
