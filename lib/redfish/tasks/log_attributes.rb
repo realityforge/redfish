@@ -18,19 +18,27 @@ module Redfish
       private
 
       attribute :attributes, :kind_of => Hash, :required => true
+      attribute :default_attributes, :type => :boolean, :default => true
 
       action :set do
         existing = current_attributes
         attributes_to_update = {}
 
-        self.attributes.each_pair do |key, level|
+        attr = expected_attributes
+        attr.each_pair do |key, level|
           attributes_to_update[key] = level unless existing[key] == level
         end
 
         unless attributes_to_update.empty?
           args = []
-          # TODO: Set payara specific arg here if use one of the non-standard args
-          args << self.attributes.collect{|k,v| "#{k}=#{v}"}.join(':')
+
+          c = self.domain_version
+
+          if c[:variant] == 'Payara' && attr.keys.any? { |a| !standard_attributes.include?(a.to_s) }
+            args << '--validate=false'
+          end
+
+          args << attr.collect { |k, v| "#{k}=#{v}" }.join(':')
 
           context.exec('set-log-attributes', args)
 
@@ -53,6 +61,64 @@ module Redfish
           current_attributes[key] = value[1, value.size - 2]
         end
         current_attributes
+      end
+
+      def expected_attributes
+        (self.default_attributes ? default_log_attributes : {}).merge(self.attributes)
+      end
+
+      # The set of default log attribtues for different versions of payara/glassfish
+      def default_log_attributes
+        c = self.domain_version
+        if c[:variant] == 'Payara' && c[:version] == '4.1.1.154'
+          {
+            'handlers' => 'java.util.logging.ConsoleHandler',
+            'handlerServices' => 'com.sun.enterprise.server.logging.GFFileHandler,com.sun.enterprise.server.logging.SyslogHandler',
+            'java.util.logging.ConsoleHandler.formatter' => 'com.sun.enterprise.server.logging.UniformLogFormatter',
+            'com.sun.enterprise.server.logging.GFFileHandler.formatter' => 'com.sun.enterprise.server.logging.ODLLogFormatter',
+            'com.sun.enterprise.server.logging.GFFileHandler.file' => '${com.sun.aas.instanceRoot}/logs/server.log',
+            'com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes' => '0',
+            'com.sun.enterprise.server.logging.GFFileHandler.flushFrequency' => '1',
+            'java.util.logging.FileHandler.limit' => '50000',
+            'com.sun.enterprise.server.logging.GFFileHandler.logtoConsole' => 'false',
+            'com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes' => '2000000',
+            'com.sun.enterprise.server.logging.GFFileHandler.excludeFields' => '',
+            'com.sun.enterprise.server.logging.GFFileHandler.multiLineMode' => 'true',
+            'com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging' => 'false',
+            'java.util.logging.FileHandler.count' => '1',
+            'com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours' => '0',
+            'log4j.logger.org.hibernate.validator.util.Version' => 'warn',
+            'com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles' => '0',
+            'com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange' => 'false',
+            'java.util.logging.FileHandler.pattern' => '%h/java%u.log',
+            'java.util.logging.FileHandler.formatter' => 'java.util.logging.XMLFormatter'
+          }
+        else
+          raise "Unable to derive default log attributes for version #{c.inspect}"
+        end
+      end
+
+      # The set of attributes that the non-payara asadmin can modify
+      def standard_attributes
+        %w(
+          com.sun.enterprise.server.logging.GFFileHandler.alarms
+          com.sun.enterprise.server.logging.GFFileHandler.file
+          com.sun.enterprise.server.logging.GFFileHandler.flushFrequency
+          com.sun.enterprise.server.logging.GFFileHandler.formatter
+          com.sun.enterprise.server.logging.GFFileHandler.logtoConsole
+          com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles
+          com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours
+          com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes
+          com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes
+          com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging
+          handlers
+          java.util.logging.ConsoleHandler.formatter
+          java.util.logging.FileHandler.count
+          java.util.logging.FileHandler.formatter
+          java.util.logging.FileHandler.limit
+          java.util.logging.FileHandler.pattern
+          log4j.logger.org.hibernate.validator.util.Version
+        )
       end
     end
   end

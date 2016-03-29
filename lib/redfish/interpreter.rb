@@ -31,7 +31,12 @@ module Redfish #nodoc
   #       'url' => '/some/path/lib/jasypt-1.9.0.jar'
   #     }
   #   },
-  #   'log_levels' => {'iris' => 'WARNING', 'iris.planner' => 'INFO'},
+  #   'logging' => {
+  #     'default_attributes' => true,
+  #     'attributes' => {'handlers' => 'java.util.logging.ConsoleHandler'}
+  #     'default_levels' => true,
+  #     'levels' => {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
+  #   },
   #   'thread_pools' => {
   #     'thread-pool-1' => {
   #       'maxthreadpoolsize' => 200,
@@ -166,9 +171,9 @@ module Redfish #nodoc
 
       interpret_jvm_options(run_context, data['jvm_options'] || {})
 
-      interpret_log_levels(run_context, data['log_levels']) if data['log_levels']
-
-      interpret_log_attributes(run_context, data['log_attributes']) if data['log_attributes']
+      if managed?(data['logging'])
+        interpret_logging(run_context, data['logging'] || {})
+      end
 
       libraries = psort(data['libraries'])
       libraries.values.each do |config|
@@ -338,12 +343,24 @@ module Redfish #nodoc
         action(:set)
     end
 
-    def interpret_log_levels(run_context, config)
-      run_context.task('log_levels', 'levels' => config).action(:set)
+    def interpret_logging(run_context, config)
+      if managed?(config['levels'])
+        default_levels = config['default_levels'].nil? ? true : config['default_levels']
+        interpret_log_levels(run_context, default_levels, config['levels'] || {})
+      end
+
+      if managed?(config['attributes'])
+        default_attributes = config['default_attributes'].nil? ? true : config['default_attributes']
+        interpret_log_attributes(run_context, default_attributes, config['attributes'])
+      end
     end
 
-    def interpret_log_attributes(run_context, config)
-      run_context.task('log_attributes', 'attributes' => config).action(:set)
+    def interpret_log_levels(run_context, default_levels, config)
+      run_context.task('log_levels', 'levels' => psort(config), 'default_levels' => default_levels).action(:set)
+    end
+
+    def interpret_log_attributes(run_context, default_attributes, config)
+      run_context.task('log_attributes', 'default_attributes' => default_attributes, 'attributes' => psort(config)).action(:set)
     end
 
     def interpret_library(run_context, config)

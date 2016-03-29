@@ -16,7 +16,7 @@ require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
   def test_interpret_set
-    data = {'log_levels' => {'iris' => 'WARNING', 'iris.planner' => 'INFO'}}
+    data = {'logging' => {'default_levels' => true, 'levels' => {'managed' => true, 'iris' => 'WARNING', 'iris.planner' => 'INFO'}}}
 
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
@@ -30,7 +30,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
       returns('')
     executor.expects(:exec).with(equals(context),
                                  equals('set-log-levels'),
-                                 equals(%w(iris=WARNING:iris.planner=INFO)),
+                                 equals(%w(com.sun.enterprise.server.logging.GFFileHandler.level=ALL:com.sun.enterprise.server.logging.SyslogHandler.level=ALL:javax.enterprise.system.tools.admin.level=INFO:org.apache.jasper.level=INFO:javax.enterprise.system.core.level=INFO:javax.enterprise.system.core.classloading.level=INFO:java.util.logging.ConsoleHandler.level=FINEST:javax.enterprise.system.tools.deployment.level=INFO:javax.enterprise.system.core.transaction.level=INFO:org.apache.catalina.level=INFO:org.apache.coyote.level=INFO:javax.level=INFO:javax.enterprise.system.util.level=INFO:javax.enterprise.resource.resourceadapter.level=INFO:javax.enterprise.system.core.config.level=INFO:javax.enterprise.system.level=INFO:javax.enterprise.system.core.security.level=INFO:javax.enterprise.system.container.cmp.level=INFO:javax.enterprise.system.core.selfmanagement.level=INFO:.level=INFO:javax.enterprise.resource.jdo.level=INFO:javax.enterprise.resource.sqltrace.level=FINE:org.jvnet.hk2.osgiadapter.level=INFO:javax.enterprise.system.ssl.security.level=INFO:ShoalLogger.level=CONFIG:javax.enterprise.resource.corba.level=INFO:javax.enterprise.resource.jta.level=INFO:javax.enterprise.system.webservices.saaj.level=INFO:javax.enterprise.system.container.ejb.level=INFO:javax.enterprise.system.container.ejb.mdb.level=INFO:javax.enterprise.resource.javamail.level=INFO:javax.enterprise.system.webservices.rpc.level=INFO:javax.enterprise.system.container.web.level=INFO:javax.enterprise.resource.jms.level=INFO:javax.enterprise.system.webservices.registry.level=INFO:javax.enterprise.resource.webcontainer.jsf.application.level=INFO:javax.enterprise.resource.webcontainer.jsf.resource.level=INFO:javax.enterprise.resource.webcontainer.jsf.config.level=INFO:javax.enterprise.resource.webcontainer.jsf.context.level=INFO:javax.enterprise.resource.webcontainer.jsf.facelets.level=INFO:javax.enterprise.resource.webcontainer.jsf.lifecycle.level=INFO:javax.enterprise.resource.webcontainer.jsf.managedbean.level=INFO:javax.enterprise.resource.webcontainer.jsf.renderkit.level=INFO:javax.enterprise.resource.webcontainer.jsf.taglib.level=INFO:javax.enterprise.resource.webcontainer.jsf.timing.level=INFO:javax.org.glassfish.persistence.level=INFO:javax.enterprise.system.tools.backup.level=INFO:org.glassfish.admingui.level=INFO:org.glassfish.naming.level=INFO:org.eclipse.persistence.session.level=INFO:javax.enterprise.system.tools.deployment.dol.level=WARNING:javax.enterprise.system.tools.deployment.common.level=WARNING:iris=WARNING:iris.planner=INFO)),
                                  equals({})).
       returns('')
 
@@ -38,7 +38,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
   end
 
   def test_interpret_set_when_matches
-    data = {'log_levels' => {'iris' => 'WARNING', 'iris.planner' => 'INFO'}}
+    data = {'logging' => {'default_levels' => false, 'levels' => {'managed' => true, 'iris' => 'WARNING', 'iris.planner' => 'INFO'}}}
 
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
@@ -63,9 +63,34 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
     assert_equal t.to_s, 'log_levels[iris=WARNING,iris.planner=INFO]'
   end
 
+  def test_set_when_levels_no_match_include_defaults
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('domain.version' => '270')
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-log-levels'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set-log-levels'),
+                                 equals( %w(com.sun.enterprise.server.logging.GFFileHandler.level=ALL:com.sun.enterprise.server.logging.SyslogHandler.level=ALL:javax.enterprise.system.tools.admin.level=INFO:org.apache.jasper.level=INFO:javax.enterprise.system.core.level=INFO:javax.enterprise.system.core.classloading.level=INFO:java.util.logging.ConsoleHandler.level=FINEST:javax.enterprise.system.tools.deployment.level=INFO:javax.enterprise.system.core.transaction.level=INFO:org.apache.catalina.level=INFO:org.apache.coyote.level=INFO:javax.level=INFO:javax.enterprise.system.util.level=INFO:javax.enterprise.resource.resourceadapter.level=INFO:javax.enterprise.system.core.config.level=INFO:javax.enterprise.system.level=INFO:javax.enterprise.system.core.security.level=INFO:javax.enterprise.system.container.cmp.level=INFO:javax.enterprise.system.core.selfmanagement.level=INFO:.level=INFO:javax.enterprise.resource.jdo.level=INFO:javax.enterprise.resource.sqltrace.level=FINE:org.jvnet.hk2.osgiadapter.level=INFO:javax.enterprise.system.ssl.security.level=INFO:ShoalLogger.level=CONFIG:javax.enterprise.resource.corba.level=INFO:javax.enterprise.resource.jta.level=INFO:javax.enterprise.system.webservices.saaj.level=INFO:javax.enterprise.system.container.ejb.level=INFO:javax.enterprise.system.container.ejb.mdb.level=INFO:javax.enterprise.resource.javamail.level=INFO:javax.enterprise.system.webservices.rpc.level=INFO:javax.enterprise.system.container.web.level=INFO:javax.enterprise.resource.jms.level=INFO:javax.enterprise.system.webservices.registry.level=INFO:javax.enterprise.resource.webcontainer.jsf.application.level=INFO:javax.enterprise.resource.webcontainer.jsf.resource.level=INFO:javax.enterprise.resource.webcontainer.jsf.config.level=INFO:javax.enterprise.resource.webcontainer.jsf.context.level=INFO:javax.enterprise.resource.webcontainer.jsf.facelets.level=INFO:javax.enterprise.resource.webcontainer.jsf.lifecycle.level=INFO:javax.enterprise.resource.webcontainer.jsf.managedbean.level=INFO:javax.enterprise.resource.webcontainer.jsf.renderkit.level=INFO:javax.enterprise.resource.webcontainer.jsf.taglib.level=INFO:javax.enterprise.resource.webcontainer.jsf.timing.level=INFO:javax.org.glassfish.persistence.level=INFO:javax.enterprise.system.tools.backup.level=INFO:org.glassfish.admingui.level=INFO:org.glassfish.naming.level=INFO:org.eclipse.persistence.session.level=INFO:javax.enterprise.system.tools.deployment.dol.level=WARNING:javax.enterprise.system.tools.deployment.common.level=WARNING:iris=WARNING:iris.planner=INFO)),
+                                 equals({})).
+      returns('')
+
+    t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
+    t.perform_action(:set)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
   def test_set_when_levels_no_match
     executor = Redfish::Executor.new
     t = new_task(executor)
+
+    t.context.cache_properties('domain.version' => '270')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-log-levels'),
@@ -78,6 +103,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    t.default_levels = false
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
     t.perform_action(:set)
 
@@ -87,6 +113,8 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
   def test_set_when_levels_partially_match
     executor = Redfish::Executor.new
     t = new_task(executor)
+
+    t.context.cache_properties('domain.version' => '270')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-log-levels'),
@@ -99,6 +127,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    t.default_levels = false
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO', 'iris.acal' => 'WARNING'}
     t.perform_action(:set)
 
@@ -109,12 +138,15 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
+    t.context.cache_properties('domain.version' => '270')
+
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-log-levels'),
                                  equals([]),
                                  equals(:terse => true, :echo => false)).
       returns("other\t<INFO>\niris\t<WARNING>\niris.planner\t<INFO>\njavax\t<SEVERE>")
 
+    t.default_levels = false
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
     t.perform_action(:set)
 

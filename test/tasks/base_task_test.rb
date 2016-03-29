@@ -99,6 +99,13 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
         end
       end
 
+      data['logging'] = {} unless data.has_key?('logging')
+      logging = data['logging']
+      logging['levels'] = {} unless logging.has_key?('levels')
+      logging['levels']['managed'] = false unless logging['levels'].has_key?('managed')
+      logging['attributes'] = {} unless logging.has_key?('attributes')
+      logging['attributes']['managed'] = false unless logging['attributes'].has_key?('managed')
+
       if data.has_key?('applications')
         data['applications'].each_pair do |key, application_config|
           next if key == 'managed' && (application_config.is_a?(TrueClass) || application_config.is_a?(FalseClass))

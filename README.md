@@ -12,8 +12,6 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
     * Raise an exception if any unprocessed data unless attribute starts with _
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10"
 
-* Update DSL to specify payara specific arg when setting non-standard logging properties
-
 * Enhance domain task to add:
     * ensure_admin_ready action? And also invoke from within restart?
     * Interpreter integration for create/delete
