@@ -173,6 +173,6 @@ class Redfish::TestTask < Redfish::TestCase
   end
 
   def new_context
-    Redfish::Context.new(Redfish::Executor.new, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, :terse => false, :echo => true)
+    create_simple_context(Redfish::Executor.new)
   end
 end
