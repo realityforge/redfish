@@ -58,8 +58,13 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def new_task(executor = Redfish::Executor.new, task_suffix = '')
+    context = create_simple_context(executor)
+    new_task_with_context(context, task_suffix)
+  end
+
+  def new_task_with_context(context, task_suffix = '')
     t = task_class(task_suffix).new
-    t.run_context = Redfish::RunContext.new(create_simple_context(executor))
+    t.run_context = Redfish::RunContext.new(context)
     t
   end
 
