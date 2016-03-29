@@ -118,6 +118,8 @@ module Redfish
         end
         FileUtils.chmod 0700, cmd
         FileUtils.chown context.system_user, context.system_group, cmd if context.system_user || context.system_group
+
+        FileUtils.rm_f "#{context.domain_directory}/docroot/index.html"
       end
 
       def create_dir(directory, mode)
