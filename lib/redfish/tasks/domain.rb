@@ -22,6 +22,10 @@ module Redfish
       attribute :common_name, :kind_of => String, :default => nil
       # A set of domain properties to use to configure the domain.
       attribute :properties, :kind_of => Hash, :default => {}
+      # If false will wait until all threads associated with the domain stop before stoppping domain
+      attribute :force, :type => :boolean, :default => true
+      # If true use OS functionality to stop domain
+      attribute :kill, :type => :boolean, :default => false
 
       action :create do
         check_properties
@@ -31,6 +35,28 @@ module Redfish
 
           updated_by_last_action
         end
+      end
+
+      action :start do
+        unless running?
+          do_start
+
+          updated_by_last_action
+        end
+      end
+
+      action :stop do
+        if running?
+          do_stop
+
+          updated_by_last_action
+        end
+      end
+
+      action :restart do
+        do_restart
+
+        updated_by_last_action
       end
 
       action :destroy do
@@ -76,6 +102,37 @@ module Redfish
         context.exec('create-domain', args)
       end
 
+      def do_start
+        args = []
+        args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
+
+        args << context.domain_name.to_s
+
+        context.exec('start-domain', args)
+      end
+
+      def do_stop
+        args = []
+        args << "--force=#{self.force}"
+        args << "--kill=#{self.kill}"
+        args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
+
+        args << context.domain_name.to_s
+
+        context.exec('stop-domain', args)
+      end
+
+      def do_restart
+        args = []
+        args << "--force=#{self.force}"
+        args << "--kill=#{self.kill}"
+        args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
+
+        args << context.domain_name.to_s
+
+        context.exec('restart-domain', args)
+      end
+
       def do_destroy
         args = []
         args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
@@ -91,6 +148,12 @@ module Redfish
 
       def instance_key
         "name=#{context.domain_name} dir=#{context.domain_directory}"
+      end
+
+      def running?
+        args = []
+        args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
+        (context.exec('list-domains', args, :terse => true, :echo => false) =~ /^#{Regexp.escape(context.domain_name)} running$/)
       end
     end
   end

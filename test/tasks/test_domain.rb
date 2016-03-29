@@ -128,4 +128,89 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     ensure_task_updated_by_last_action(t)
   end
+
+  def test_start_when_not_running
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domain_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domain_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 not running')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('start-domain'),
+                                 equals(%W(--domaindir #{test_domain_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:start)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_start_when_running
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domain_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domain_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 running')
+
+    t.perform_action(:start)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
+  def test_stop_when_running
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domain_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domain_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 running')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('stop-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domain_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:stop)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_stop_when_not_running
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domain_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domain_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 not running')
+
+    t.perform_action(:stop)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
+  def test_restart
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domain_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('restart-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domain_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:restart)
+
+    ensure_task_updated_by_last_action(t)
+  end
 end
