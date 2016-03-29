@@ -100,5 +100,9 @@ module Redfish
     def exec(asadmin_command, args = [], options = {})
       @executor.exec(self, asadmin_command, args, options)
     end
+
+    def build_command(asadmin_command, args = [], options = {})
+      @executor.build_command(self, asadmin_command, args, options)
+    end
   end
 end
