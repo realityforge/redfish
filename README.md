@@ -7,8 +7,7 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 # TODO
 
 * Enhance Json DSL
-    * Enable removal of un defined elements. Controllable per-element.
-      - jms_resource/admin_object
+    * Enable removal of un defined jms_resource/admin_object elements.
     * Raise an exception if any unprocessed data unless attribute starts with _
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10"
 
