@@ -32,6 +32,8 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib")).returns('')
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib/ext")).returns('')
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/config")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/config/redfish.password")).returns('')
     FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
 
     executor.expects(:exec).with(equals(t.context),
@@ -63,7 +65,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     assert_equal cmd_script, <<-CMD
 #!/bin/sh
 
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --port 4848 "$@"
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 "$@"
     CMD
   end
 

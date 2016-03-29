@@ -25,8 +25,8 @@ module Redfish
     attr_reader :domain_secure
     # The username to use when communicating with the domain.
     attr_reader :domain_username
-    # The password file used when connecting to glassfish.
-    attr_reader :domain_password_file
+    # The password to use when communicating with the domain.
+    attr_reader :domain_password
 
     # Use terse output from the underlying asadmin.
     def terse?
@@ -47,9 +47,9 @@ module Redfish
     # The group that the asadmin command executes as.
     attr_reader :system_group
 
-    def initialize(executor, install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file, options = {})
-      @executor, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password_file =
-        executor, domain_name, domain_admin_port, domain_secure, domain_username, domain_password_file
+    def initialize(executor, install_dir, domain_name, domain_admin_port, domain_secure, domain_username, domain_password, options = {})
+      @executor, @domain_name, @domain_admin_port, @domain_secure, @domain_username, @domain_password =
+        executor, domain_name, domain_admin_port, domain_secure, domain_username, domain_password
 
       @install_dir = install_dir[-1] == '/' ? install_dir[0...-1] : install_dir
       domains_directory = options[:domains_directory]
@@ -69,6 +69,16 @@ module Redfish
     def domain_directory
       top_level_directory = self.domains_directory.nil? ? "#{self.install_dir}/glassfish/domains" : self.domains_directory
       "#{top_level_directory}/#{self.domain_name}"
+    end
+
+    # The password file used when connecting to glassfish. Assume it is located inside domain in standard location if at all.
+    def domain_password_file
+      password_file = domain_password_file_location
+      File.exist?(password_file) ? password_file : nil
+    end
+
+    def domain_password_file_location
+      "#{domain_directory}/config/redfish.password"
     end
 
     def property_cache?

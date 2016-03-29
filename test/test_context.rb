@@ -22,7 +22,7 @@ class Redfish::TestContext < Redfish::TestCase
     domain_admin_port = 4848
     domain_secure = true
     domain_username = 'admin'
-    domain_password_file = '/etc/glassfish/password'
+    domain_password = 'mypassword'
     system_user = 'glassfish'
     system_group = 'glassfish_group'
 
@@ -32,7 +32,7 @@ class Redfish::TestContext < Redfish::TestCase
                                    domain_admin_port,
                                    domain_secure,
                                    domain_username,
-                                   domain_password_file,
+                                   domain_password,
                                    :system_user => system_user,
                                    :system_group => system_group,
                                    :terse => true,
@@ -42,7 +42,7 @@ class Redfish::TestContext < Redfish::TestCase
     assert_equal context.domain_admin_port, domain_admin_port
     assert_equal context.domain_secure, domain_secure
     assert_equal context.domain_username, domain_username
-    assert_equal context.domain_password_file, domain_password_file
+    assert_equal context.domain_password, domain_password
 
     assert_equal context.terse?, true
     assert_equal context.echo?, true
@@ -89,6 +89,22 @@ class Redfish::TestContext < Redfish::TestCase
                                    nil)
 
     assert_equal context.domain_directory, '/opt/glassfish/glassfish/domains/appserver'
+  end
+
+  def test_domain_password_file_only_non_nil_if_present
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   '/opt/glassfish/',
+                                   'appserver',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   nil,
+                                   :domains_directory => test_domains_dir)
+
+    assert_equal context.domain_password_file, nil
+    FileUtils.mkdir_p File.dirname(context.domain_password_file_location)
+    FileUtils.touch context.domain_password_file_location
+    assert_equal context.domain_password_file, context.domain_password_file_location
   end
 
   def test_domain_version

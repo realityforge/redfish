@@ -108,13 +108,25 @@ module Redfish
         create_dir("#{context.domain_directory}/lib", 0755)
         create_dir("#{context.domain_directory}/lib/ext", 0755)
 
+        # This line is probably not needed outside tests...
+        create_dir("#{context.domain_directory}/config", 0700)
+
+        pass_file = context.domain_password_file_location
+        File.open(pass_file, 'wb') do |f|
+          f.write <<-PASS
+AS_ADMIN_MASTERPASSWORD=#{context.domain_password}
+AS_ADMIN_PASSWORD=#{context.domain_password}
+          PASS
+        end
+        FileUtils.chmod 0400, pass_file
+        FileUtils.chown context.system_user, context.system_group, pass_file if context.system_user || context.system_group
         cmd = "#{context.domain_directory}/bin/asadmin"
         File.open(cmd, 'wb') do |f|
           f.write <<-SH
 #!/bin/sh
 
 #{context.build_command('"$@"', [], :remote_command => true, :terse => false, :echo => true, :sudo => false).join(' ')}
-    SH
+          SH
         end
         FileUtils.chmod 0700, cmd
         FileUtils.chown context.system_user, context.system_group, cmd if context.system_user || context.system_group
