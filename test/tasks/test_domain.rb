@@ -24,7 +24,14 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_create_when_not_present
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor,
+                                                    :domains_directory => test_domains_dir,
+                                                    :system_user => 'bob',
+                                                    :system_group => 'bobgrp'))
+
+    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib/ext")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin")).returns('')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
@@ -46,6 +53,9 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     ensure_task_updated_by_last_action(t)
 
+    assert File.directory?("#{test_domains_dir}/domain1/bin")
+    assert File.directory?("#{test_domains_dir}/domain1/lib")
+    assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
     cmd_script = IO.read("#{test_domains_dir}/domain1/bin/asadmin")
     assert_equal cmd_script, <<-CMD
 #!/bin/sh

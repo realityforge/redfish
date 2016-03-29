@@ -100,6 +100,19 @@ module Redfish
         args << context.domain_name.to_s
 
         context.exec('create-domain', args)
+
+        # Directory required for Payara 4.1.151
+        create_dir("#{context.domain_directory}/bin", 0755)
+
+        # Directories required for Payara 4.1.152
+        create_dir("#{context.domain_directory}/lib", 0755)
+        create_dir("#{context.domain_directory}/lib/ext", 0755)
+
+      end
+      def create_dir(directory, mode)
+        FileUtils.mkdir_p(directory)
+        FileUtils.chmod mode, directory
+        FileUtils.chown context.system_user, context.system_group, directory if context.system_user || context.system_group
       end
 
       def do_start
