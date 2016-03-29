@@ -65,6 +65,12 @@ module Redfish
       @property_cache = nil
     end
 
+    # Directory of specific domain context is referencing
+    def domain_directory
+      top_level_directory = self.domains_directory.nil? ? "#{self.install_dir}/glassfish/domains" : self.domains_directory
+      "#{top_level_directory}/#{self.domain_name}"
+    end
+
     def property_cache?
       !@property_cache.nil?
     end
