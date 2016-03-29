@@ -38,6 +38,8 @@ module Redfish
       !!@echo
     end
 
+    # The path to the authbind executable, if glassfish must run as a subprocess of authbind.
+    attr_reader :authbind_executable
     # The user that the asadmin command executes as.
     attr_reader :system_user
     # The group that the asadmin command executes as.
@@ -50,6 +52,7 @@ module Redfish
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]
       @system_group = options[:system_group]
+      @authbind_executable = options[:authbind_executable]
       @property_cache = nil
     end
 

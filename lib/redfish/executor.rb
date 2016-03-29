@@ -49,6 +49,11 @@ module Redfish
         cmd << '-g' << context.system_group.to_s unless context.system_group.nil?
       end
 
+      unless context.authbind_executable.nil?
+        cmd << context.authbind_executable
+        cmd << '--deep'
+      end
+
       cmd << asadmin_script(context)
       cmd += asadmin_command_prefix(context, options)
       cmd << asadmin_command

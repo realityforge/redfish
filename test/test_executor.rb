@@ -25,6 +25,18 @@ class Redfish::TestExecutor < Redfish::TestCase
     assert_equal %w(/opt/payara-4.1.151//glassfish/bin/asadmin --terse=true --echo=false --user admin --port 4848 set a=b),
                  executor.send(:build_command, new_context(executor), 'set', ['a=b'], :terse => true, :echo => false)
 
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   false,
+                                   'admin',
+                                   nil,
+                                   :authbind_executable => '/usr/bin/authbind')
+
+    assert_equal %w(/usr/bin/authbind --deep /opt/payara-4.1.151//glassfish/bin/asadmin --terse=true --echo=false --user admin --port 4848 set a=b),
+                 executor.send(:build_command, context, 'set', ['a=b'], :terse => true, :echo => false)
+
     Etc.expects(:getlogin).returns('bob')
     assert_equal %w(/usr/bin/sudo -u glassfish -g glassfish-group /opt/payara-4.1.151//glassfish/bin/asadmin --terse=false --echo=false --user admin --passwordfile=/etc/pass --secure --port 4848 set a=b),
                  executor.send(:build_command,
