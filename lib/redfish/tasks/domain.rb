@@ -80,11 +80,21 @@ module Redfish
       end
 
       def do_create
+        options = {}
+
         args = []
         args << '--checkports=false'
         args << '--savelogin=false'
         args << '--savemasterpassword=false'
-        if context.domain_password_file
+        temp_file = nil
+        if context.domain_password
+          require 'tempfile'
+
+          temp_file = Tempfile.new("#{context.domain_name}create")
+          temp_file.write("AS_ADMIN_MASTERPASSWORD=#{context.domain_password}\nAS_ADMIN_PASSWORD=#{context.domain_password}\n")
+          temp_file.close
+
+          options[:domain_password_file] = temp_file.path
           args << '--nopassword=false'
           args << '--usemasterpassword=true'
         end
@@ -99,7 +109,11 @@ module Redfish
 
         args << context.domain_name.to_s
 
-        context.exec('create-domain', args)
+        begin
+          context.exec('create-domain', args, options)
+        ensure
+          temp_file.unlink if temp_file
+        end
 
         # Directory required for Payara 4.1.151
         create_dir("#{context.domain_directory}/bin", 0755)
