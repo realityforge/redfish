@@ -75,12 +75,13 @@ module Redfish
       terse = options[:terse].nil? ? context.terse? : options[:terse]
       echo = options[:echo].nil? ? context.echo? : options[:echo]
       remote_command = options[:remote_command].nil? || !!options[:remote_command]
+      domain_password_file = options[:domain_password_file] || context.domain_password_file
 
       args = []
       args << "--terse=#{terse}"
       args << "--echo=#{echo}"
       args << '--user' << context.domain_username.to_s if context.domain_username
-      args << "--passwordfile=#{context.domain_password_file}" if context.domain_password_file
+      args << "--passwordfile=#{domain_password_file}" if domain_password_file
       if remote_command
         args << '--secure' if context.domain_secure
         args << '--port' <<  context.domain_admin_port.to_s
