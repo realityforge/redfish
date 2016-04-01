@@ -84,7 +84,7 @@ module Redfish
       args << "--passwordfile=#{domain_password_file}" if domain_password_file
       if remote_command
         args << '--secure' if context.domain_secure
-        args << '--port' <<  context.domain_admin_port.to_s
+        args << '--port' << context.domain_admin_port.to_s
       end
     end
 
