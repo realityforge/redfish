@@ -278,6 +278,30 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     ensure_task_updated_by_last_action(t)
   end
 
+  def test_ensure_active_in_secure_domain
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   1234,
+                                   true,
+                                   'admin1',
+                                   'password2',
+                                   :domains_directory => test_domains_dir)
+    t = new_task_with_context(context)
+
+    %w(/ /management/domain/nodes /management/domain/applications).each do |path|
+      t.expects(:is_url_responding_with_ok?).with(equals("https://127.0.0.1:1234#{path}"),
+                                                  equals('admin1'),
+                                                  equals('password2')).
+        returns(true)
+    end
+
+    t.perform_action(:ensure_active)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
   def test_ensure_active_when_not_active
     executor = Redfish::Executor.new
     context = Redfish::Context.new(executor,

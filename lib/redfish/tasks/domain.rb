@@ -22,10 +22,6 @@ module Redfish
       attribute :common_name, :kind_of => String, :default => nil
       # A set of domain properties to use to configure the domain.
       attribute :properties, :kind_of => Hash, :default => {}
-      # If true will create a domain that has a management interface remotely accessible, false otherwise.
-      # in actions other than create this is used to control whether ssl or vanilla http is used to connect
-      # to admin interface
-      attribute :remote_access, :type => :boolean, :default => false
       # Maximum time to wait for the management interface to become active
       attribute :max_mx_wait_time, :type => :integer, :default => 120
 
@@ -210,7 +206,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
       end
 
       def do_ensure_active
-        base_url = "http#{self.remote_access ? 's' : ''}://127.0.0.1:#{context.domain_admin_port}"
+        base_url = "http#{context.domain_secure ? 's' : ''}://127.0.0.1:#{context.domain_admin_port}"
 
         fail_count = 0
         loop do
