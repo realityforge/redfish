@@ -29,12 +29,12 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
                                                     :system_user => 'bob',
                                                     :system_group => 'bobgrp'))
 
-    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib")).returns('')
-    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib/ext")).returns('')
-    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin")).returns('')
-    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/config")).returns('')
-    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/config/redfish.password")).returns('')
-    FileUtils.expects(:chown).with(equals('bob'),equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib/ext")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config/redfish.password")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
