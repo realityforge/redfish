@@ -280,7 +280,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
             res = h.request(request)
             return true if res.code.to_s == '200'
           end
-          Redfish.info("GlassFish not responding OK - #{res.code} to #{url}")
+          Redfish.debug("GlassFish not responding OK - #{res.code} to #{url}")
         rescue Exception => e
           Redfish.info("Error while accessing GlassFish web interface at #{url}: #{e}")
           Redfish.debug(e.message)
