@@ -86,7 +86,7 @@ module Redfish
 
       # Is the domain management only accessible over ssl?
       def secure_admin?
-        get_property('secure-admin.enabled') == 'true'
+        File.exist?("#{context.domain_directory}/config/secure.marker")
       end
 
       def check_properties
@@ -223,6 +223,11 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
 
         # The enable-secure-admin command changes so much state it is easier to reset and start again
         context.remove_property_cache if context.property_cache?
+
+        secure_marker_file = "#{context.domain_directory}/config/secure.marker"
+        FileUtils.touch secure_marker_file
+        FileUtils.chmod 0400, secure_marker_file
+        FileUtils.chown context.system_user, context.system_group, secure_marker_file if context.system_user || context.system_group
 
         do_restart(:secure => false)
       end

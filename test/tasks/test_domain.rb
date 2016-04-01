@@ -387,7 +387,9 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
                                    true,
                                    'admin',
                                    'password',
-                                   :domains_directory => test_domains_dir)
+                                   :domains_directory => test_domains_dir,
+                                   :system_user => 'bob',
+                                   :system_group => 'bobgrp')
     t = new_task_with_context(context)
 
     t.context.cache_properties({})
@@ -407,7 +409,12 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     # Mock out the ensure active
     t.expects(:do_ensure_active)
 
+    FileUtils.mkdir_p "#{test_domains_dir}/domain1/config"
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config/secure.marker")).returns('')
+
     t.perform_action(:enable_secure_admin)
+
+    assert File.exist?("#{test_domains_dir}/domain1/config/secure.marker")
 
     # Cache should have been destroyed when action completed
     assert !context.property_cache?
@@ -427,7 +434,9 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
                                    :domains_directory => test_domains_dir)
     t = new_task_with_context(context)
 
-    t.context.cache_properties('secure-admin.enabled' => 'true')
+    t.context.cache_properties({})
+    FileUtils.mkdir_p "#{test_domains_dir}/domain1/config"
+    FileUtils.touch "#{test_domains_dir}/domain1/config/secure.marker"
 
     t.perform_action(:enable_secure_admin)
 
