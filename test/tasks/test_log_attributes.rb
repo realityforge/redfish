@@ -64,7 +64,7 @@ class Redfish::Tasks::TestLogAttributes < Redfish::Tasks::BaseTaskTest
 
     t.attributes = {'handlers' => 'java.util.logging.ConsoleHandler', 'java.util.logging.ConsoleHandler.formatter' => 'com.sun.enterprise.server.logging.UniformLogFormatter'}
 
-    assert_equal t.to_s, 'log_attributes[handlers=java.util.logging.ConsoleHandler,java.util.logging.ConsoleHandler.formatter=com.sun.enterprise.server.logging.UniformLogFormatter]'
+    assert_equal t.to_s, "log_attributes[default_attributes=true, attributes='handlers=java.util.logging.ConsoleHandler,java.util.logging.ConsoleHandler.formatter=com.sun.enterprise.server.logging.UniformLogFormatter']"
   end
 
   def test_set_when_attributes_no_match_with_no_defaults

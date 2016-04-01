@@ -60,7 +60,7 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
 
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
 
-    assert_equal t.to_s, 'log_levels[iris=WARNING,iris.planner=INFO]'
+    assert_equal t.to_s, "log_levels[default_levels=true, levels='iris=WARNING,iris.planner=INFO']"
   end
 
   def test_set_when_levels_no_match_include_defaults

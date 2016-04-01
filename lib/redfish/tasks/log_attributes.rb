@@ -47,7 +47,7 @@ module Redfish
       end
 
       def instance_key
-        self.attributes.collect{|k,v| "#{k}=#{v}"}.join(',')
+        "default_attributes=#{self.default_attributes}, attributes='#{self.attributes.collect{|k,v| "#{k}=#{v}"}.join(',')}'"
       end
 
       def current_attributes

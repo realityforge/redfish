@@ -47,7 +47,7 @@ module Redfish
       end
 
       def instance_key
-        self.levels.collect{|k,v| "#{k}=#{v}"}.join(',')
+        "default_levels=#{self.default_levels}, levels='#{self.levels.collect{|k,v| "#{k}=#{v}"}.join(',')}'"
       end
 
       def current_levels
