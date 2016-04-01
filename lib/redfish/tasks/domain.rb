@@ -221,6 +221,9 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
       def do_enable_secure_admin
         context.exec('enable-secure-admin', [], :secure => false)
 
+        # The enable-secure-admin command changes so much state it is easier to reset and start again
+        context.remove_property_cache if context.property_cache?
+
         do_restart(:secure => false)
       end
 

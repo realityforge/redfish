@@ -409,6 +409,9 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:enable_secure_admin)
 
+    # Cache should have been destroyed when action completed
+    assert !context.property_cache?
+
     ensure_task_updated_by_last_action(t)
   end
 
@@ -427,6 +430,9 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     t.context.cache_properties('secure-admin.enabled' => 'true')
 
     t.perform_action(:enable_secure_admin)
+
+    # Cache should not have been destroyed as action did not cause update
+    assert context.property_cache?
 
     ensure_task_not_updated_by_last_action(t)
   end
