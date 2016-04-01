@@ -246,6 +246,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
           res = nil
           http = Net::HTTP.new(uri.hostname, uri.port)
           if url =~ /https\:/
+            require 'net/https'
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           end
