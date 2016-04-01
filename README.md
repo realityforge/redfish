@@ -16,6 +16,10 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 * Extract per glassfish version config files that include all settings that are version specific such as
   logging levels, logging attributes, jvm properties, realm_types etc
 
+* Enhance this project or another addon lib (buildr_plus?) to pragmatically generate the json definition.
+  Add all sorts of short cuts as per our current chef infrastructure. Also new short cuts such as if the
+  "secure" flag is set then define an admin realm.
+
 * Add tasks to manage realm_types
 
 * Enable restart of app server under conditions such as;
