@@ -18,6 +18,21 @@ module Redfish
       private
 
       action :create do
+        do_create
+      end
+
+      action :create_unless_present do
+        do_create unless context.property_cache?
+      end
+
+      action :destroy do
+        if context.property_cache?
+          context.remove_property_cache
+          updated_by_last_action
+        end
+      end
+
+      def do_create
         properties = load_properties('*')
 
         skip = false
@@ -31,13 +46,6 @@ module Redfish
 
         unless skip
           context.cache_properties(properties)
-          updated_by_last_action
-        end
-      end
-
-      action :destroy do
-        if context.property_cache?
-          context.remove_property_cache
           updated_by_last_action
         end
       end
