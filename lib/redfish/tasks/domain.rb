@@ -25,7 +25,7 @@ module Redfish
       # Maximum time to wait for the management interface to become active
       attribute :max_mx_wait_time, :type => :integer, :default => 120
 
-      # If false will wait until all threads associated with the domain stop before stoppping domain
+      # If false will wait until all threads associated with the domain stop before stopping domain
       attribute :force, :type => :boolean, :default => true
       # If true use OS functionality to stop domain
       attribute :kill, :type => :boolean, :default => false
