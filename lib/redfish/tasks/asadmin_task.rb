@@ -58,18 +58,18 @@ module Redfish
         end
       end
 
-      def load_properties(pattern)
-        output = context.exec('get', [pattern], :terse => true, :echo => false)
+      def load_properties(pattern, options = {})
+        output = context.exec('get', [pattern], {:terse => true, :echo => false}.merge(options))
         parse_properties(output)
       end
 
-      def load_property(key)
-        result = load_properties(key)
+      def load_property(key, options = {})
+        result = load_properties(key, options)
         result.empty? ? nil : result.values[0]
       end
 
-      def get_property(key)
-        context.property_cache? ? context.property_cache[key] : load_property(key)
+      def get_property(key, options = {})
+        context.property_cache? ? context.property_cache[key] : load_property(key, options)
       end
 
       def parse_properties(output)
