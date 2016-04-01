@@ -167,7 +167,7 @@ module Redfish #nodoc
     end
 
     def interpret(run_context, data)
-      pre_interpret_actions(run_context)
+      run_context.task('property_cache').action(:create)
 
       interpret_jvm_options(run_context, data['jvm_options'] || {})
 
@@ -315,21 +315,13 @@ module Redfish #nodoc
         end
       end
 
-      post_interpret_actions(run_context)
+      run_context.task('property_cache').action(:destroy)
     end
 
     private
 
     def managed?(data)
       (data.nil? || data['managed'].nil?) ? true : !!data['managed']
-    end
-
-    def pre_interpret_actions(run_context)
-      run_context.task('property_cache').action(:create)
-    end
-
-    def post_interpret_actions(run_context)
-      run_context.task('property_cache').action(:destroy)
     end
 
     def interpret_jvm_options(run_context, config)
