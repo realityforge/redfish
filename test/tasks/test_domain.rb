@@ -377,4 +377,57 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     ensure_task_not_updated_by_last_action(t)
   end
+
+  def test_enable_secure_admin
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   'password',
+                                   :domains_directory => test_domains_dir)
+    t = new_task_with_context(context)
+
+    t.context.cache_properties({})
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('enable-secure-admin'),
+                                 equals([]),
+                                 equals({:secure => false})).
+      returns('')
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('restart-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domains_dir} domain1)),
+                                 equals({:secure => false})).
+      returns('')
+
+    # Mock out the ensure active
+    t.expects(:do_ensure_active)
+
+    t.perform_action(:enable_secure_admin)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_enable_secure_admin_when_already_secure
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   'password',
+                                   :domains_directory => test_domains_dir)
+    t = new_task_with_context(context)
+
+    t.context.cache_properties('secure-admin.enabled' => 'true')
+
+    t.perform_action(:enable_secure_admin)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
 end

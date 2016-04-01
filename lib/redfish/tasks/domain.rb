@@ -68,12 +68,25 @@ module Redfish
         updated_by_last_action
       end
 
+      action :enable_secure_admin do
+        unless secure_admin?
+          do_enable_secure_admin
+
+          updated_by_last_action
+        end
+      end
+
       action :destroy do
         if File.directory?(context.domain_directory)
           do_destroy
 
           updated_by_last_action
         end
+      end
+
+      # Is the domain management interface remotely accessible?
+      def secure_admin?
+        get_property('secure-admin.enabled') == 'true'
       end
 
       def check_properties
@@ -183,7 +196,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         context.exec('stop-domain', args)
       end
 
-      def do_restart
+      def do_restart(options = {})
         args = []
         args << "--force=#{self.force}"
         args << "--kill=#{self.kill}"
@@ -191,7 +204,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
 
         args << context.domain_name.to_s
 
-        context.exec('restart-domain', args)
+        context.exec('restart-domain', args, options)
 
         do_ensure_active
       end
@@ -203,6 +216,12 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         args << context.domain_name.to_s
 
         context.exec('delete-domain', args)
+      end
+
+      def do_enable_secure_admin
+        context.exec('enable-secure-admin', [], :secure => false)
+
+        do_restart(:secure => false)
       end
 
       def do_ensure_active
