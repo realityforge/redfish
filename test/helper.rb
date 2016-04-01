@@ -49,7 +49,14 @@ class Redfish::TestCase < Minitest::Test
   end
 
   def create_simple_context(executor, options = {})
-    Redfish::Context.new(executor, '/opt/payara-4.1.151/', 'domain1', 4848, false, 'admin', nil, options)
+    Redfish::Context.new(executor,
+                         '/opt/payara-4.1.151/',
+                         'domain1',
+                         4848,
+                         false,
+                         'admin',
+                         nil,
+                         {:domains_directory => test_domains_dir}.merge(options))
   end
 end
 

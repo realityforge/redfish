@@ -19,7 +19,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    assert_equal t.to_s, 'domain[name=domain1 dir=/opt/payara-4.1.151/glassfish/domains/domain1]'
+    assert_equal t.to_s, "domain[name=domain1 dir=#{test_domains_dir}/domain1]"
   end
 
   def test_create_when_not_present
