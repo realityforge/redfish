@@ -186,6 +186,21 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     ensure_task_not_updated_by_last_action(t)
   end
 
+  def test_start_when_running_but_requires_restart
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domains_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 running, restart required to apply configuration changes')
+
+    t.perform_action(:start)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   def test_stop_when_running
     executor = Redfish::Executor.new
     t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
