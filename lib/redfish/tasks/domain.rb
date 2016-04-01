@@ -84,7 +84,7 @@ module Redfish
         end
       end
 
-      # Is the domain management interface remotely accessible?
+      # Is the domain management only accessible over ssl?
       def secure_admin?
         get_property('secure-admin.enabled') == 'true'
       end
