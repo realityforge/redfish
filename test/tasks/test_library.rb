@@ -145,12 +145,15 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
   end
 
   def test_interpret_create_and_delete
-    data = {'libraries' => {'managed' => true, 'jtds' => {'file' => '/opt/jtds/jtds-1.3.1.jar', 'library_type' => 'ext'}}}
+    data = {'libraries' => {'managed' => true,
+                            'jtds' => {'file' => '/opt/jtds/jtds-1.3.1.jar', 'library_type' => 'ext'},
+                            'activemq' => {'file' => '/opt/jtds/activemq-1.3.1.jar', 'library_type' => 'ext'}}}
 
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    existing = %w(other.jar pgsql.jar)
+    todelete = %w(other.jar pgsql.jar)
+    existing = todelete + %w(activemq-1.3.1.jar)
 
     setup_interpreter_expects(executor, context, '')
 
@@ -179,7 +182,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    existing.each do |element|
+    todelete.each do |element|
       executor.expects(:exec).with(equals(context),
                                    equals('remove-library'),
                                    equals(%W(--type ext #{element})),
@@ -187,7 +190,7 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
         returns('')
     end
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 2)
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + todelete.size, :additional_unchanged_task_count => 2 + 1)
   end
 
   def test_cleaner_deletes_unexpected_element
