@@ -22,6 +22,13 @@ module Redfish
       attribute :common_name, :kind_of => String, :default => nil
       # A set of domain properties to use to configure the domain.
       attribute :properties, :kind_of => Hash, :default => {}
+      # If true will create a domain that has a management interface remotely accessible, false otherwise.
+      # in actions other than create this is used to control whether ssl or vanilla http is used to connect
+      # to admin interface
+      attribute :remote_access, :type => :boolean, :default => false
+      # Maximum time to wait for the management interface to become active
+      attribute :max_mx_wait_time, :type => :integer, :default => 120
+
       # If false will wait until all threads associated with the domain stop before stoppping domain
       attribute :force, :type => :boolean, :default => true
       # If true use OS functionality to stop domain
@@ -55,6 +62,12 @@ module Redfish
 
       action :restart do
         do_restart
+
+        updated_by_last_action
+      end
+
+      action :ensure_active do
+        do_ensure_active
 
         updated_by_last_action
       end
@@ -183,6 +196,8 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         args << context.domain_name.to_s
 
         context.exec('restart-domain', args)
+
+        do_ensure_active
       end
 
       def do_destroy
@@ -192,6 +207,22 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         args << context.domain_name.to_s
 
         context.exec('delete-domain', args)
+      end
+
+      def do_ensure_active
+        base_url = "http#{self.remote_access ? 's' : ''}://127.0.0.1:#{context.domain_admin_port}"
+
+        fail_count = 0
+        loop do
+          # Break out of loop if can successfully hit all these urls
+          break if %w(/ /management/domain/nodes /management/domain/applications).all? do |path|
+            is_url_responding_with_ok?("#{base_url}#{path}", context.domain_username, context.domain_password)
+          end
+
+          fail_count = fail_count + 1
+          raise 'GlassFish failed to become operational' if fail_count > self.max_mx_wait_time
+          Kernel.sleep 1
+        end
       end
 
       def valid_properties
@@ -206,6 +237,32 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         args = []
         args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
         (context.exec('list-domains', args, :terse => true, :echo => false) =~ /^#{Regexp.escape(context.domain_name)} running$/)
+      end
+
+      def is_url_responding_with_ok?(url, username, password)
+        require 'net/http'
+        begin
+          uri = URI(url)
+          res = nil
+          http = Net::HTTP.new(uri.hostname, uri.port)
+          if url =~ /https\:/
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          end
+          http.start do |h|
+            request = Net::HTTP::Get.new(uri.request_uri)
+            request.basic_auth username, password
+            request['Accept'] = 'application/json'
+            res = h.request(request)
+            return true if res.code.to_s == '200'
+          end
+          Redfish.info("GlassFish not responding OK - #{res.code} to #{url}")
+        rescue Exception => e
+          Redfish.info("Error while accessing GlassFish web interface at #{url}: #{e}")
+          Redfish.debug(e.message)
+          Redfish.debug(e.backtrace.join("\n"))
+          return false
+        end
       end
     end
   end

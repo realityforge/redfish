@@ -17,7 +17,6 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
   domain is created create a temp file on demand, perhaps lifecycle scoped to context?
 
 * Enhance domain task to add:
-    * ensure_admin_ready action? And also invoke from within restart?
     * Interpreter integration for create/delete
 
 * Extract per glassfish version config files that include all settings that are version specific such as

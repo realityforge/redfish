@@ -231,8 +231,111 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    # Mock out the ensure active
+    t.expects(:do_ensure_active)
+
     t.perform_action(:restart)
 
     ensure_task_updated_by_last_action(t)
+  end
+
+  def test_ensure_active
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   false,
+                                   'admin',
+                                   'password',
+                                   :domains_directory => test_domains_dir)
+    t = new_task_with_context(context)
+
+    %w(/ /management/domain/nodes /management/domain/applications).each do |path|
+      t.expects(:is_url_responding_with_ok?).with(equals("http://127.0.0.1:4848#{path}"),
+                                                  equals('admin'),
+                                                  equals('password')).
+        returns(true)
+    end
+
+    t.perform_action(:ensure_active)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_ensure_active_when_not_active
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   false,
+                                   'admin',
+                                   'password',
+                                   :domains_directory => test_domains_dir)
+    t = new_task_with_context(context)
+
+    s = sequence('main')
+
+    t.expects(:is_url_responding_with_ok?).with(equals('http://127.0.0.1:4848/'),
+                                                equals('admin'),
+                                                equals('password')).
+      returns(false).
+      in_sequence(s)
+
+    Kernel.expects(:sleep).with(equals(1)).in_sequence(s)
+
+    %w(/ /management/domain/nodes /management/domain/applications).each do |path|
+      t.expects(:is_url_responding_with_ok?).with(equals("http://127.0.0.1:4848#{path}"),
+                                                  equals('admin'),
+                                                  equals('password')).
+        returns(true).
+        in_sequence(s)
+    end
+
+    t.max_mx_wait_time = 1
+    t.perform_action(:ensure_active)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_ensure_active_when_not_active_in_time
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   false,
+                                   'admin',
+                                   'password',
+                                   :domains_directory => test_domains_dir)
+    t = new_task_with_context(context)
+
+    s = sequence('main')
+
+    t.expects(:is_url_responding_with_ok?).with(equals('http://127.0.0.1:4848/'),
+                                                equals('admin'),
+                                                equals('password')).
+      returns(false).
+      in_sequence(s)
+
+    Kernel.expects(:sleep).with(equals(1)).in_sequence(s)
+
+    t.expects(:is_url_responding_with_ok?).with(equals('http://127.0.0.1:4848/'),
+                                                equals('admin'),
+                                                equals('password')).
+      returns(false).
+      in_sequence(s)
+
+
+    t.max_mx_wait_time = 1
+
+    begin
+      t.perform_action(:ensure_active)
+    rescue => e
+      assert_equal e.message, 'GlassFish failed to become operational'
+    end
+
+    ensure_task_not_updated_by_last_action(t)
   end
 end
