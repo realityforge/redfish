@@ -141,17 +141,45 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       end
     end
 
+    include_domain_create = !options[:exclude_domain_create].nil? && options[:exclude_domain_create]
+
+    unless include_domain_create
+      executor = context.instance_variable_get('@executor')
+      executor.expects(:exec).
+        with(equals(context),
+             equals('create-domain'),
+             equals(%W(--checkports=false --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
+             equals({})).
+        returns('')
+      executor.expects(:exec).
+        with(equals(context),
+             equals('list-domains'),
+             equals(%W(--domaindir #{test_domains_dir})),
+             equals({:terse => true, :echo => false})).
+        returns('')
+      executor.expects(:exec).
+        with(equals(context),
+             equals('start-domain'),
+             equals(%W(--domaindir #{test_domains_dir} domain1)),
+             equals({})).
+        returns('')
+    end
+
     run_context = interpret(context, data)
 
     updated_records = to_updated_resource_records(run_context)
     unchanged_records = to_unchanged_resource_records(run_context)
 
-    expected_updated = (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
+    domain_create_count = include_domain_create ? 0 : 3
+
+    expected_updated = domain_create_count + (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
     assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
     expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records)
+
+    assert_domain_create_records(updated_records) unless include_domain_create
 
     record_under_test = get_record_under_test(task_ran ? updated_records : unchanged_records, expected_task_action)
     ensure_task_record(record_under_test, task_ran, false)
@@ -194,6 +222,12 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       returns(results)
   end
 
+  def assert_domain_create_records(records)
+    assert_equal records.select { |r| r.task.class.registered_name == 'domain' && r.action == :create }.size, 1
+    assert_equal records.select { |r| r.task.class.registered_name == 'domain' && r.action == :start }.size, 1
+    assert_equal records.select { |r| r.task.class.registered_name == 'domain' && r.action == :ensure_active }.size, 1
+  end
+
   def assert_property_cache_records(records)
     assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :create }.size, 1
     assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :destroy }.size, 1
@@ -215,6 +249,11 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   def interpret(context, data)
     run_context = Redfish::RunContext.new(context)
     Redfish::Interpreter.interpret(run_context, data)
+    run_context.execution_records.each do |execution_record|
+      if execution_record.task.is_a?(Redfish::Tasks::Domain)
+        execution_record.task.stubs(:do_ensure_active)
+      end
+    end
     run_context.converge
     run_context
   end

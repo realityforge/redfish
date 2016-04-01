@@ -7,12 +7,11 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 # TODO
 
 * Enhance Json DSL
+    * Enhance domain configuration so can be shutdown if "created"
+    * Add tests for domain interpretation
     * Enable removal of un defined jms_resource/admin_object elements.
     * Raise an exception if any unprocessed data unless attribute starts with _
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10"
-
-* Enhance domain task to add:
-    * Interpreter integration for create/delete
 
 * Extract per glassfish version config files that include all settings that are version specific such as
   logging levels, logging attributes, jvm properties, realm_types etc

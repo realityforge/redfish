@@ -167,6 +167,12 @@ module Redfish #nodoc
     end
 
     def interpret(run_context, data)
+      domain_options = domain_options(data['domain'] || {})
+
+      run_context.task('domain', domain_options).action(:create)
+      run_context.task('domain', domain_options).action(:start)
+      run_context.task('domain', domain_options).action(:enable_secure_admin) if run_context.app_context.domain_secure
+      run_context.task('domain', domain_options).action(:ensure_active)
       run_context.task('property_cache').action(:create)
 
       interpret_jvm_options(run_context, data['jvm_options'] || {})
@@ -323,6 +329,15 @@ module Redfish #nodoc
 
     def managed?(data)
       (data.nil? || data['managed'].nil?) ? true : !!data['managed']
+    end
+
+    def domain_options(domain_data)
+      options = {}
+
+      options['template'] = domain_data['template']
+      options['max_mx_wait_time'] = domain_data['max_mx_wait_time']
+      options['common_name'] = domain_data['common_name']
+      options['properties'] = (domain_data['properties'] || {}).dup
     end
 
     def interpret_jvm_options(run_context, config)
