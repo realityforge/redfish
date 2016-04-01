@@ -20,7 +20,7 @@ module Redfish
       Redfish.debug("Executing #{cmd.join(' ')}")
 
       output = nil
-      IO.popen(cmd,'r') do |pipe|
+      IO.popen(cmd, 'r') do |pipe|
         output = pipe.read
       end
 
