@@ -27,6 +27,8 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
     * update of jvm options
     * change the jms host (or maybe just the default jms host?)
 
+* Use "_get-restart-required" asadmin command to determine whether change is required. Possibly after each section?
+
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.
 
