@@ -24,7 +24,7 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 
 * Enable restart of app server under conditions such as;
     * update of realm_types
-    * update of libraries
+    * update of libraries - set pending flag in context then add to interpreter to read that before running, restart_if_required should be configurable to only check context
 
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.
