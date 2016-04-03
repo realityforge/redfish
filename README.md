@@ -8,7 +8,7 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 
 * Enhance Json DSL
     * Enhance domain configuration so can be shutdown if "created"
-    * Add tests for domain interpretation
+    * Add tests for domain interpretation - create phase as well as restart_if_required
     * Enable removal of un defined jms_resource/admin_object elements.
     * Raise an exception if any unprocessed data unless attribute starts with _
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10"
@@ -25,10 +25,6 @@ Redfish is a lightweight ruby library for configuring GlassFish or Payara server
 * Enable restart of app server under conditions such as;
     * update of realm_types
     * update of libraries
-    * update of jvm options
-    * change the jms host (or maybe just the default jms host?)
-
-* Use "_get-restart-required" asadmin command to determine whether change is required. Possibly after each section?
 
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.

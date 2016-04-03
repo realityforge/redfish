@@ -163,6 +163,12 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
              equals(%W(--domaindir #{test_domains_dir} domain1)),
              equals({})).
         returns('')
+      executor.expects(:exec).
+        with(equals(context),
+             equals('_get-restart-required'),
+             equals([]),
+             equals({:terse => true, :echo => false})).
+        returns("false\n").at_least(7)
     end
 
     run_context = interpret(context, data)
@@ -171,15 +177,17 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     unchanged_records = to_unchanged_resource_records(run_context)
 
     domain_create_count = include_domain_create ? 0 : 3
+    domain_restart_check = include_domain_create ? 0 : 7
 
     expected_updated = domain_create_count + (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
     assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
-    expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count])
+    expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count]) + domain_restart_check
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records)
 
     assert_domain_create_records(updated_records) unless include_domain_create
+    assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, 7 unless include_domain_create
 
     record_under_test = get_record_under_test(task_ran ? updated_records : unchanged_records, expected_task_action)
     ensure_task_record(record_under_test, task_ran, false)

@@ -176,9 +176,11 @@ module Redfish #nodoc
       run_context.task('property_cache').action(:create)
 
       interpret_jvm_options(run_context, data['jvm_options'] || {})
+      restart_domain_if_required(run_context, domain_options)
 
       if managed?(data['logging'])
         interpret_logging(run_context, data['logging'] || {})
+        restart_domain_if_required(run_context, domain_options)
       end
 
       libraries = psort(data['libraries'])
@@ -190,6 +192,7 @@ module Redfish #nodoc
       thread_pools.each_pair do |key, config|
         interpret_thread_pool(run_context, key, config)
       end
+      restart_domain_if_required(run_context, domain_options)
 
       iiop_listeners = psort(data['iiop_listeners'])
       iiop_listeners.each_pair do |key, config|
@@ -224,11 +227,13 @@ module Redfish #nodoc
       auth_realms.each_pair do |key, config|
         interpret_auth_realm(run_context, key, config)
       end
+      restart_domain_if_required(run_context, domain_options)
 
       jms_hosts = psort(data['jms_hosts'])
       jms_hosts.each_pair do |key, config|
         interpret_jms_hosts(run_context, key, config)
       end
+      restart_domain_if_required(run_context, domain_options)
 
       jdbc_connection_pools = psort(data['jdbc_connection_pools'])
       jdbc_connection_pools.each_pair do |key, config|
@@ -239,6 +244,7 @@ module Redfish #nodoc
       resource_adapters.each_pair do |key, config|
         interpret_resource_adapter(run_context, key, config)
       end
+      restart_domain_if_required(run_context, domain_options)
 
       psort(data['jms_resources']).each_pair do |key, config|
         interpret_jms_resource(run_context, key, config)
@@ -322,7 +328,13 @@ module Redfish #nodoc
         end
       end
 
+      restart_domain_if_required(run_context, domain_options)
+
       run_context.task('property_cache').action(:destroy)
+    end
+
+    def restart_domain_if_required(run_context, domain_options)
+      run_context.task('domain', domain_options).action(:restart_if_required)
     end
 
     private
