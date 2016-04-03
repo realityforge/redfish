@@ -14,6 +14,8 @@
 
 class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
+  DOMAIN_RESTART_IF_REQUIRED_ACTIONS = 7
+
   protected
 
   def ensure_task_updated_by_last_action(task)
@@ -168,7 +170,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
              equals('_get-restart-required'),
              equals([]),
              equals({:terse => true, :echo => false})).
-        returns("false\n").at_least(7)
+        returns("false\n").
+        at_least(DOMAIN_RESTART_IF_REQUIRED_ACTIONS)
     end
 
     run_context = interpret(context, data)
@@ -177,17 +180,23 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     unchanged_records = to_unchanged_resource_records(run_context)
 
     domain_create_count = include_domain_create ? 0 : 3
-    domain_restart_check = include_domain_create ? 0 : 7
+    domain_restart_check = include_domain_create ? 0 : DOMAIN_RESTART_IF_REQUIRED_ACTIONS
 
-    expected_updated = domain_create_count + (task_ran ? 1 : 0) + 2 + (options[:additional_task_count].nil? ? 0 : options[:additional_task_count])
+    additional_task_count = options[:additional_task_count].nil? ? 0 : options[:additional_task_count]
+    additional_unchanged_task_count = options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count]
+
+    expected_updated = domain_create_count + (task_ran ? 1 : 0) + 2 + additional_task_count
     assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
-    expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + (options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count]) + domain_restart_check
+
+    expected_unchanged = (task_ran ? 0 : 1) + (options[:exclude_jvm_options].nil? ? 1 : 0) + additional_unchanged_task_count + domain_restart_check
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records)
 
-    assert_domain_create_records(updated_records) unless include_domain_create
-    assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, 7 unless include_domain_create
+    unless include_domain_create
+      assert_domain_create_records(updated_records)
+      assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, DOMAIN_RESTART_IF_REQUIRED_ACTIONS
+    end
 
     record_under_test = get_record_under_test(task_ran ? updated_records : unchanged_records, expected_task_action)
     ensure_task_record(record_under_test, task_ran, false)
