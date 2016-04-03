@@ -62,6 +62,15 @@ module Redfish
         updated_by_last_action
       end
 
+      # Restart domain if pending configuration flag is true
+      action :restart_if_required do
+        if pending_configuration_changes?
+          do_restart
+
+          updated_by_last_action
+        end
+      end
+
       action :ensure_active do
         do_ensure_active
 
@@ -87,6 +96,11 @@ module Redfish
       # Is the domain management only accessible over ssl?
       def secure_admin?
         File.exist?("#{context.domain_directory}/config/secure.marker")
+      end
+
+      # Return true if there are pending changes to domain that require a restart
+      def pending_configuration_changes?
+        (context.exec('_get-restart-required', [], :terse => true, :echo => false) =~ /^true$/)
       end
 
       def check_properties

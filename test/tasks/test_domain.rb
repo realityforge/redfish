@@ -254,6 +254,44 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     ensure_task_updated_by_last_action(t)
   end
 
+  def test_restart_if_required
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('_get-restart-required'),
+                                 equals([]),
+                                 equals({:terse => true, :echo => false})).
+      returns("true\n")
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('restart-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domains_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    # Mock out the ensure active
+    t.expects(:do_ensure_active)
+
+    t.perform_action(:restart_if_required)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_restart_if_required_when_not_required
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('_get-restart-required'),
+                                 equals([]),
+                                 equals({:terse => true, :echo => false})).
+      returns("false\n")
+
+    t.perform_action(:restart_if_required)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   def test_ensure_active
     executor = Redfish::Executor.new
     context = Redfish::Context.new(executor,
