@@ -48,7 +48,7 @@ class Redfish::TestCase < Minitest::Test
     "#{temp_dir}/domains"
   end
 
-  def create_simple_context(executor, options = {})
+  def create_simple_context(executor = Redfish::Executor.new, options = {})
     Redfish::Context.new(executor,
                          '/opt/payara-4.1.151/',
                          'domain1',
