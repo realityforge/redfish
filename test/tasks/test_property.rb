@@ -57,8 +57,8 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    executor.expects(:exec).with(equals(t.context),equals('get'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)),equals(:terse => true, :echo => false)).returns('')
-    executor.expects(:exec).with(equals(t.context),equals('set'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)),equals(:terse => true, :echo => false)).returns('')
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)), equals(:terse => true, :echo => false)).returns('')
+    executor.expects(:exec).with(equals(t.context), equals('set'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)), equals(:terse => true, :echo => false)).returns('')
 
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
@@ -71,7 +71,7 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    executor.expects(:exec).with(equals(t.context),equals('get'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)),equals(:terse => true, :echo => false)).returns('configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)), equals(:terse => true, :echo => false)).returns('configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
 
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
@@ -86,7 +86,7 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
 
     t.context.cache_properties('configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'false')
 
-    executor.expects(:exec).with(equals(t.context),equals('set'),equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)),equals(:terse => true, :echo => false)).returns('')
+    executor.expects(:exec).with(equals(t.context), equals('set'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)), equals(:terse => true, :echo => false)).returns('')
 
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
