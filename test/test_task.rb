@@ -173,6 +173,6 @@ class Redfish::TestTask < Redfish::TestCase
   end
 
   def new_context
-    create_simple_context(Redfish::Executor.new)
+    create_simple_context
   end
 end
