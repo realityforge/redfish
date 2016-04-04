@@ -27,7 +27,6 @@ replace setup.sh infrastructure, (D) for docker integration.
 
 * Enable restart of app server under conditions such as;
     * update of realm_types (C), (D), (L)
-    * update of libraries - set pending flag in context then add to interpreter to read that
 
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.

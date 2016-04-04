@@ -14,7 +14,8 @@
 
 class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
-  DOMAIN_RESTART_IF_REQUIRED_ACTIONS = 7
+  DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS = 1
+  DOMAIN_RESTART_IF_REQUIRED_ACTIONS = 7 + DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS
 
   protected
 
@@ -171,7 +172,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
              equals([]),
              equals({:terse => true, :echo => false})).
         returns("false\n").
-        at_least(DOMAIN_RESTART_IF_REQUIRED_ACTIONS)
+        at_least(DOMAIN_RESTART_IF_REQUIRED_ACTIONS - DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS)
     end
 
     run_context = interpret(context, data)

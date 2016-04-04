@@ -80,9 +80,40 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    assert !t.context.restart_required?
+
     t.file = '/opt/jtds/jtds-1.3.1.jar'
     t.library_type = 'ext'
     t.perform_action(:create)
+
+    assert !t.context.restart_required?
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_create_when_no_such_library_and_require_restart_set
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('add-library'),
+                                 equals(%w(--type ext --upload false /opt/jtds/jtds-1.3.1.jar)),
+                                 equals({})).
+      returns('')
+
+    assert !t.context.restart_required?
+
+    t.file = '/opt/jtds/jtds-1.3.1.jar'
+    t.library_type = 'ext'
+    t.require_restart = true
+    t.perform_action(:create)
+
+    assert t.context.restart_required?
 
     ensure_task_updated_by_last_action(t)
   end
@@ -97,9 +128,13 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
                                  equals(:terse => true, :echo => false)).
       returns("jtds-1.3.1.jar\n")
 
+    assert !t.context.restart_required?
+
     t.file = '/opt/jtds/jtds-1.3.1.jar'
     t.library_type = 'ext'
     t.perform_action(:create)
+
+    assert !t.context.restart_required?
 
     ensure_task_not_updated_by_last_action(t)
   end
@@ -119,13 +154,43 @@ class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    assert !t.context.restart_required?
+
     t.file = '/opt/jtds/jtds-1.3.1.jar'
     t.library_type = 'ext'
     t.perform_action(:destroy)
 
+    assert !t.context.restart_required?
+
     ensure_task_updated_by_last_action(t)
   end
 
+  def test_destroy_when_library_exists_and_require_restart_set
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-libraries'),
+                                 equals(%w(--type ext)),
+                                 equals(:terse => true, :echo => false)).
+      returns("jtds-1.3.1.jar\n")
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('remove-library'),
+                                 equals(%w(--type ext jtds-1.3.1.jar)),
+                                 equals({})).
+      returns('')
+
+    assert !t.context.restart_required?
+
+    t.file = '/opt/jtds/jtds-1.3.1.jar'
+    t.library_type = 'ext'
+    t.require_restart = true
+    t.perform_action(:destroy)
+
+    assert t.context.restart_required?
+
+    ensure_task_updated_by_last_action(t)
+  end
 
   def test_destroy_when_library_no_exist
     executor = Redfish::Executor.new

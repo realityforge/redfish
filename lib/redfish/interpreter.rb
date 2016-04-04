@@ -187,6 +187,7 @@ module Redfish #nodoc
       libraries.values.each do |config|
         interpret_library(run_context, config)
       end
+      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
 
       thread_pools = psort(data['thread_pools'])
       thread_pools.each_pair do |key, config|

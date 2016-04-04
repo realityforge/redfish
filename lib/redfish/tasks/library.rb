@@ -22,6 +22,7 @@ module Redfish
       attribute :library_type, :equal_to => LIBRARY_TYPES, :default => 'common', :identity_field => true
       attribute :file, :kind_of => String, :required => true, :identity_field => true
       attribute :upload, :type => :boolean, :default => false
+      attribute :require_restart, :type => :boolean, :default => false
 
       action :create do
         unless present?
