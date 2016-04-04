@@ -274,7 +274,66 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     t.perform_action(:restart_if_required)
 
+    assert !t.context.restart_required?
+
     ensure_task_updated_by_last_action(t)
+  end
+
+  def test_restart_if_required_using_context
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('restart-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domains_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    t.context.require_restart!
+
+    # Mock out the ensure active
+    t.expects(:do_ensure_active)
+
+    t.perform_action(:restart_if_required)
+
+    assert !t.context.restart_required?
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_restart_if_required_using_context_only
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('restart-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domains_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    t.context.require_restart!
+
+    # Mock out the ensure active
+    t.expects(:do_ensure_active)
+
+    t.context_only = true
+
+    t.perform_action(:restart_if_required)
+
+    assert !t.context.restart_required?
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_restart_if_required_using_context_only_not_required
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+
+    t.context_only = true
+
+    t.perform_action(:restart_if_required)
+
+    ensure_task_not_updated_by_last_action(t)
   end
 
   def test_restart_if_required_when_not_required

@@ -25,6 +25,8 @@ module Redfish
       # Maximum time to wait for the management interface to become active
       attribute :max_mx_wait_time, :type => :integer, :default => 120
 
+      # When checking whether the domain needs a restart, only check the context and don't run asadmin command
+      attribute :context_only, :type => :boolean, :default => false
       # If false will wait until all threads associated with the domain stop before stopping domain
       attribute :force, :type => :boolean, :default => true
       # If true use OS functionality to stop domain
@@ -100,6 +102,8 @@ module Redfish
 
       # Return true if there are pending changes to domain that require a restart
       def pending_configuration_changes?
+        return true if context.restart_required?
+        return false if self.context_only
         (context.exec('_get-restart-required', [], :terse => true, :echo => false) =~ /^true$/)
       end
 
@@ -221,6 +225,8 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         context.exec('restart-domain', args, options)
 
         do_ensure_active
+
+        context.domain_restarted!
       end
 
       def do_destroy
