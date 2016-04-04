@@ -98,6 +98,11 @@ module Redfish
       def escape_property(string)
         string.to_s.gsub(/([#{Regexp.escape('+\/,=:.!$%^&*|{}[]"`~;')}])/) { |match| "\\#{match}" }
       end
+
+      def updated_by_last_action
+        context.require_restart! if self.respond_to?(:require_restart) && self.require_restart
+        super
+      end
     end
   end
 end
