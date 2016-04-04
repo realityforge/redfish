@@ -15,21 +15,13 @@
 require File.expand_path('../helper', __FILE__)
 
 class Redfish::TestRunContext < Redfish::TestCase
-
   def test_basic_interaction
-
-    run_context = Redfish::RunContext.new(new_context)
+    run_context = Redfish::RunContext.new(create_simple_context(Redfish::Executor.new))
 
     assert_equal run_context.execution_records.size, 0
 
     run_context.task('property', 'name' => 'myKey', 'value' => 'myValue').action(:set)
 
     assert_equal run_context.execution_records.size, 1
-  end
-
-  private
-
-  def new_context
-    create_simple_context(Redfish::Executor.new)
   end
 end
