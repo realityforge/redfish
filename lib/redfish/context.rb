@@ -63,6 +63,7 @@ module Redfish
       @system_group = options[:system_group]
       @authbind_executable = options[:authbind_executable]
       @property_cache = nil
+      @restart_required = false
     end
 
     # Directory of specific domain context is referencing
@@ -79,6 +80,18 @@ module Redfish
 
     def domain_password_file_location
       "#{domain_directory}/config/redfish.password"
+    end
+
+    def restart_required?
+      !!@restart_required
+    end
+
+    def require_restart!
+      @restart_required = true
+    end
+
+    def domain_restarted!
+      @restart_required = false
     end
 
     def property_cache?
