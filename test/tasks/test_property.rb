@@ -60,9 +60,32 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)), equals(:terse => true, :echo => false)).returns('')
     executor.expects(:exec).with(equals(t.context), equals('set'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)), equals(:terse => true, :echo => false)).returns('')
 
+    assert !t.context.restart_required?
+
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
     t.perform_action(:set)
+
+    assert !t.context.restart_required?
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_set_property_no_cache_and_not_set_with_require_restart_set
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)), equals(:terse => true, :echo => false)).returns('')
+    executor.expects(:exec).with(equals(t.context), equals('set'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)), equals(:terse => true, :echo => false)).returns('')
+
+    assert !t.context.restart_required?
+
+    t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
+    t.value = 'true'
+    t.require_restart = true
+    t.perform_action(:set)
+
+    assert t.context.restart_required?
 
     ensure_task_updated_by_last_action(t)
   end
@@ -73,9 +96,13 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context), equals('get'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping)), equals(:terse => true, :echo => false)).returns('configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true')
 
+    assert !t.context.restart_required?
+
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
     t.perform_action(:set)
+
+    assert !t.context.restart_required?
 
     ensure_task_not_updated_by_last_action(t)
   end
@@ -88,9 +115,34 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context), equals('set'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)), equals(:terse => true, :echo => false)).returns('')
 
+    assert !t.context.restart_required?
+
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
     t.perform_action(:set)
+
+    assert !t.context.restart_required?
+
+    ensure_task_updated_by_last_action(t)
+    assert_equal t.context.property_cache['configs.config.server-config.security-service.activate-default-principal-to-role-mapping'], 'true'
+  end
+
+  def test_set_property_cache_and_not_set_with_require_restart_set
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'false')
+
+    executor.expects(:exec).with(equals(t.context), equals('set'), equals(%w(configs.config.server-config.security-service.activate-default-principal-to-role-mapping=true)), equals(:terse => true, :echo => false)).returns('')
+
+    assert !t.context.restart_required?
+
+    t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
+    t.value = 'true'
+    t.require_restart = true
+    t.perform_action(:set)
+
+    assert t.context.restart_required?
 
     ensure_task_updated_by_last_action(t)
     assert_equal t.context.property_cache['configs.config.server-config.security-service.activate-default-principal-to-role-mapping'], 'true'
@@ -101,9 +153,13 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
 
     t.context.cache_properties('configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true')
 
+    assert !t.context.restart_required?
+
     t.name = 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping'
     t.value = 'true'
     t.perform_action(:set)
+
+    assert !t.context.restart_required?
 
     ensure_task_not_updated_by_last_action(t)
   end

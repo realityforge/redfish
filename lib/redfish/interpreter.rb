@@ -223,6 +223,7 @@ module Redfish #nodoc
       psort(data['properties']).each_pair do |key, config|
         interpret_property(run_context, key, config)
       end
+      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
 
       auth_realms = psort(data['auth_realms'])
       auth_realms.each_pair do |key, config|
