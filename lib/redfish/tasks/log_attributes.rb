@@ -32,9 +32,7 @@ module Redfish
         unless attributes_to_update.empty?
           args = []
 
-          c = self.domain_version
-
-          if c[:variant] == 'Payara' && attr.keys.any? { |a| !standard_attributes.include?(a.to_s) }
+          if self.domain_version.payara? && attr.keys.any? { |a| !standard_attributes.include?(a.to_s) }
             args << '--validate=false'
           end
 
@@ -64,38 +62,7 @@ module Redfish
       end
 
       def expected_attributes
-        (self.default_attributes ? default_log_attributes : {}).merge(self.attributes)
-      end
-
-      # The set of default log attribtues for different versions of payara/glassfish
-      def default_log_attributes
-        c = self.domain_version
-        if c[:variant] == 'Payara' && c[:version] == '4.1.1.154'
-          {
-            'handlers' => 'java.util.logging.ConsoleHandler',
-            'handlerServices' => 'com.sun.enterprise.server.logging.GFFileHandler,com.sun.enterprise.server.logging.SyslogHandler',
-            'java.util.logging.ConsoleHandler.formatter' => 'com.sun.enterprise.server.logging.UniformLogFormatter',
-            'com.sun.enterprise.server.logging.GFFileHandler.formatter' => 'com.sun.enterprise.server.logging.ODLLogFormatter',
-            'com.sun.enterprise.server.logging.GFFileHandler.file' => '${com.sun.aas.instanceRoot}/logs/server.log',
-            'com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes' => '0',
-            'com.sun.enterprise.server.logging.GFFileHandler.flushFrequency' => '1',
-            'java.util.logging.FileHandler.limit' => '50000',
-            'com.sun.enterprise.server.logging.GFFileHandler.logtoConsole' => 'false',
-            'com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes' => '2000000',
-            'com.sun.enterprise.server.logging.GFFileHandler.excludeFields' => '',
-            'com.sun.enterprise.server.logging.GFFileHandler.multiLineMode' => 'true',
-            'com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging' => 'false',
-            'java.util.logging.FileHandler.count' => '1',
-            'com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours' => '0',
-            'log4j.logger.org.hibernate.validator.util.Version' => 'warn',
-            'com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles' => '0',
-            'com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange' => 'false',
-            'java.util.logging.FileHandler.pattern' => '%h/java%u.log',
-            'java.util.logging.FileHandler.formatter' => 'java.util.logging.XMLFormatter'
-          }
-        else
-          raise "Unable to derive default log attributes for version #{c.inspect}"
-        end
+        (self.default_attributes ? self.domain_version.default_log_attributes : {}).merge(self.attributes)
       end
 
       # The set of attributes that the non-payara asadmin can modify

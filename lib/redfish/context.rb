@@ -105,9 +105,7 @@ module Redfish
 
     def domain_version(version = nil)
       version ||= property_cache['domain.version']
-      return {:variant => 'Payara', :version => '4.1.152'} if '#badassfish-b187' == version
-      return {:variant => 'Payara', :version => '4.1.1.154'} if '270' == version
-      raise "Unknown domain.version #{version}"
+      Redfish::VersionManager.version_by_version_key(version)
     end
 
     def cache_properties(properties)

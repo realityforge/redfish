@@ -16,9 +16,6 @@ replace setup.sh infrastructure, (D) for docker integration.
     * Raise an exception if any unprocessed data unless attribute starts with \_
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10" (C), (D), (L)
 
-* Extract per glassfish version config files that include all settings that are version specific such as
-  logging levels, logging attributes, jvm properties, realm_types etc
-
 * Enhance this project or another addon lib (buildr_plus?) to pragmatically generate the json definition.
   Add all sorts of short cuts as per our current chef infrastructure. Also new short cuts such as if the
   "secure" flag is set then define an admin realm. (D), (L)

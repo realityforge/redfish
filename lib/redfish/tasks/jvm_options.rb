@@ -58,55 +58,10 @@ module Redfish
       def derive_complete_defines
         defines = self.defines.dup
         if self.default_defines
-          defines.merge!(derive_default_defines)
+          defines.merge!(self.domain_version.default_jvm_defines)
         end
         defines.merge!(self.defines)
         defines
-      end
-
-      def derive_default_defines
-        c = self.domain_version
-        if c[:variant] == 'Payara' && c[:version] == '4.1.152'
-           {
-            'java.awt.headless' => 'true',
-            'jdk.corba.allowOutputStreamSubclass' => 'true',
-            'java.endorsed.dirs' => '${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed',
-            'java.security.policy' => '${com.sun.aas.instanceRoot}/config/server.policy',
-            'java.security.auth.login.config' => '${com.sun.aas.instanceRoot}/config/login.conf',
-            'com.sun.enterprise.security.httpsOutboundKeyAlias' => 's1as',
-            'javax.net.ssl.keyStore' => '${com.sun.aas.instanceRoot}/config/keystore.jks',
-            'javax.net.ssl.trustStore' => '${com.sun.aas.instanceRoot}/config/cacerts.jks',
-            'java.ext.dirs' => '${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext',
-            'jdbc.drivers' => 'org.apache.derby.jdbc.ClientDriver',
-            'ANTLR_USE_DIRECT_CLASS_LOADING' => 'true',
-            'com.sun.enterprise.config.config_environment_factory_class' => 'com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory',
-            'jdk.tls.rejectClientInitiatedRenegotiation' => 'true',
-
-            # The following removed in 154
-            'javax.xml.accessExternalSchema' => 'all',
-            'javax.management.builder.initial' => 'com.sun.enterprise.v3.admin.AppServerMBeanServerBuilder',
-            'com.ctc.wstx.returnNullForDefaultNamespace' => 'true'
-          }
-        elsif c[:variant] == 'Payara' && c[:version] == '4.1.1.154'
-          {
-            'java.awt.headless' => 'true',
-            'jdk.corba.allowOutputStreamSubclass' => 'true',
-            'java.endorsed.dirs' => '${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed',
-            'java.security.policy' => '${com.sun.aas.instanceRoot}/config/server.policy',
-            'java.security.auth.login.config' => '${com.sun.aas.instanceRoot}/config/login.conf',
-            'com.sun.enterprise.security.httpsOutboundKeyAlias' => 's1as',
-            'javax.net.ssl.keyStore' => '${com.sun.aas.instanceRoot}/config/keystore.jks',
-            'javax.net.ssl.trustStore' => '${com.sun.aas.instanceRoot}/config/cacerts.jks',
-            'java.ext.dirs' => '${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext',
-            'jdbc.drivers' => 'org.apache.derby.jdbc.ClientDriver',
-            'ANTLR_USE_DIRECT_CLASS_LOADING' => 'true',
-            'com.sun.enterprise.config.config_environment_factory_class' => 'com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory',
-            'jdk.tls.rejectClientInitiatedRenegotiation' => 'true',
-            'org.jboss.weld.serialization.beanIdentifierIndexOptimization' => 'false'
-          }
-        else
-          raise "Unable to derive default defines for version #{c.inspect}"
-        end
       end
 
       def current_options
