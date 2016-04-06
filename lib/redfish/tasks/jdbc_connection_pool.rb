@@ -118,7 +118,9 @@ module Redfish
       end
 
       def properties_to_record_in_create
-        {'object-type' => 'user', 'name' => self.name, 'deployment-order' => '100'}
+        # statement-cache-type does not seem to be configurable during create, may need to call set on property
+        # as a later step. For now just set the default value
+        {'object-type' => 'user', 'name' => self.name, 'deployment-order' => '100', 'statement-cache-type' => ''}
       end
 
       def properties_to_set_in_create
