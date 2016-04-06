@@ -185,6 +185,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         FileUtils.chmod 0700, cmd
         FileUtils.chown context.system_user, context.system_group, cmd if context.system_user || context.system_group
 
+        # Remove all the unnecessary files that come with the template
         FileUtils.rm_f "#{context.domain_directory}/docroot/index.html"
       end
 
