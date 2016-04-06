@@ -31,6 +31,8 @@ module Redfish
       attribute :enabled, :type => :boolean, :default => true
       # Optional attribute name/value pairs for configuring the IIOP listener.
       attribute :properties, :kind_of => Hash, :default => {}
+      # Flag indicating wheter jms service should be lazily initialized.
+      attribute :lazy_init, :type => :boolean, :default => true
 
       action :create do
         create(resource_property_prefix)
@@ -41,7 +43,7 @@ module Redfish
       end
 
       def properties_to_record_in_create
-        {}
+        {'id' => self.name, 'lazy-init' => 'false'}
       end
 
       def properties_to_set_in_create
@@ -53,6 +55,7 @@ module Redfish
         property_map['enabled'] = self.enabled.to_s
         property_map['port'] = self.port.to_s
         property_map['security-enabled'] = self.securityenabled.to_s
+        property_map['lazy-init'] = self.lazy_init.to_s
 
         property_map
       end
@@ -68,6 +71,13 @@ module Redfish
         args << self.name.to_s
 
         context.exec('create-iiop-listener', args)
+      end
+
+      def post_create_hook
+        t = run_context.task('property', 'name' => "#{resource_property_prefix}lazy-init", 'value' => self.lazy_init.to_s)
+        t.action(:set)
+        run_context.converge_task(t)
+        updated_by_last_action if t.task.updated_by_last_action?
       end
 
       def do_destroy

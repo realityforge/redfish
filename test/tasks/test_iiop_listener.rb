@@ -28,8 +28,13 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
                                  equals(%w(--listeneraddress 127.0.0.1 --iiopport 1072 --securityenabled false --enabled true myThing)),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}lazy-init=true"]),
+                                 equals(:terse => true, :echo => false)).
+        returns('')
 
-    perform_interpret(context, data, true, :create)
+    perform_interpret(context, data, true, :create, :additional_task_count => 1)
   end
 
   def test_interpret_create_when_exists
@@ -58,13 +63,20 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
 
     t.options = resource_parameters
 
-    executor.expects(:exec).with(equals(t.context), equals('list-iiop-listeners'), equals(%w()), equals(:terse => true, :echo => false)).
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-iiop-listeners'), equals(%w()),
+                                 equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-iiop-listener'),
-                                 equals(['--listeneraddress', '127.0.0.1', '--iiopport', '1072', '--securityenabled', 'false', '--enabled', 'true', 'myThing']),
+                                 equals(%w(--listeneraddress 127.0.0.1 --iiopport 1072 --securityenabled false --enabled true myThing)),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(%w(configs.config.server-config.iiop-service.iiop-listener.myThing.lazy-init)),
+                                 equals(:terse => true, :echo => false)).
+      returns('configs.config.server-config.iiop-service.iiop-listener.myThing.lazy-init=true')
 
     t.perform_action(:create)
 
@@ -152,9 +164,14 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-iiop-listener'),
-                                 equals(['--listeneraddress', '127.0.0.1', '--iiopport', '1072', '--securityenabled', 'false', '--enabled', 'true', 'myThing']),
+                                 equals(%w(--listeneraddress 127.0.0.1 --iiopport 1072 --securityenabled false --enabled true myThing)),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}lazy-init=true"]),
+                                 equals(:terse => true, :echo => false)).
+        returns('')
 
     t.perform_action(:create)
 
@@ -285,6 +302,11 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
                                  equals(%w(--listeneraddress 127.0.0.1 --iiopport 1072 --securityenabled false --enabled true myThing)),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}lazy-init=true"]),
+                                 equals(:terse => true, :echo => false)).
+        returns('')
 
     existing.each do |element|
       executor.expects(:exec).with(equals(context),
@@ -294,7 +316,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
         returns('')
     end
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size)
+    perform_interpret(context, data, true, :create, :additional_task_count => 2 + existing.size)
   end
 
   def test_cleaner_deletes_unexpected_element
@@ -343,6 +365,7 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
       'address' => '127.0.0.1',
       'port' => '1072',
       'enabled' => 'true',
+      'lazy-init' => 'true',
       'security-enabled' => 'false'
     }
   end
@@ -354,7 +377,8 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
       'address' => '127.0.0.1',
       'port' => 1072,
       'enabled' => 'true',
-      'securityenabled' => 'false'
+      'securityenabled' => 'false',
+      'lazy_init' => 'true'
     }
   end
 end
