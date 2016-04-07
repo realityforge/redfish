@@ -135,7 +135,7 @@ module Redfish
         }
       end
 
-      def default_realm_confs
+      def default_realm_types
         {
           'fileRealm' => 'com.sun.enterprise.security.auth.login.FileLoginModule',
           'ldapRealm' => 'com.sun.enterprise.security.auth.login.LDAPLoginModule',
