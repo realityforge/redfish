@@ -29,6 +29,11 @@ class Redfish::Tasks::TestWebEnvEntry < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
     executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApp.module.*']),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+    executor.expects(:exec).with(equals(context),
                                  equals('set-web-env-entry'),
                                  equals(['--name', 'MyEntry', '--type', 'java.lang.String', '--description', 'My Entry Desc', '--value', 'Blah', '--ignoreDescriptorItem=false', 'MyApp']),
                                  equals({})).
