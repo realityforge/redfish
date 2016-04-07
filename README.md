@@ -20,8 +20,6 @@ replace setup.sh infrastructure, (D) for docker integration.
   Add all sorts of short cuts as per our current chef infrastructure. Also new short cuts such as if the
   "secure" flag is set then define an admin realm. (D), (L)
 
-* Add tasks to manage realm_types, ensure causes restart on change (C), (D), (L)
-
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.
 

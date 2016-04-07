@@ -191,6 +191,9 @@ module Redfish #nodoc
       end
       restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
 
+      interpret_realm_types(run_context, data['realm_types'] || {})
+      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
+
       thread_pools = psort(data['thread_pools'])
       thread_pools.each_pair do |key, config|
         interpret_thread_pool(run_context, key, config)
@@ -386,6 +389,16 @@ module Redfish #nodoc
 
     def interpret_log_attributes(run_context, default_attributes, config)
       run_context.task('log_attributes', 'default_attributes' => default_attributes, 'attributes' => psort(config)).action(:set)
+    end
+
+    def interpret_realm_types(run_context, realm_types)
+      if managed?(realm_types)
+        include_defaults = realm_types['default_realm_types'].nil? ? true : !!realm_types['default_realm_types']
+        run_context.task('realm_types',
+                         'realm_types' => realm_types['modules'] || {},
+                         'default_realm_types' => include_defaults).
+          action(:set)
+      end
     end
 
     def interpret_library(run_context, config)

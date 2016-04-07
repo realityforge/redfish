@@ -14,7 +14,7 @@
 
 class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
-  DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS = 2
+  DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS = 3
   DOMAIN_RESTART_IF_REQUIRED_ACTIONS = 7 + DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS
 
   DEFAULT_VERSION=Redfish::Versions::Payara154.new
@@ -119,7 +119,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
     if add_excludes_unless_defined
       %w(
-        libraries thread_pools iiop_listeners context_services managed_thread_factories
+        libraries realm_types thread_pools iiop_listeners context_services managed_thread_factories
         managed_executor_services managed_scheduled_executor_services auth_realms jms_hosts
         jdbc_connection_pools resource_adapters jms_resources custom_resources javamail_resources
         applications
@@ -172,10 +172,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       end
     end
 
-    include_domain_create = !options[:exclude_domain_create].nil? && options[:exclude_domain_create]
+    exclude_domain_create = options[:exclude_domain_create].nil? ? false : !!options[:exclude_domain_create]
 
     executor = context.instance_variable_get('@executor')
-    unless include_domain_create
+    unless exclude_domain_create
       executor.expects(:exec).
         with(equals(context),
              equals('create-domain'),
@@ -218,8 +218,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     updated_records = to_updated_resource_records(run_context)
     unchanged_records = to_unchanged_resource_records(run_context)
 
-    domain_create_count = include_domain_create ? 0 : 3
-    domain_restart_check = include_domain_create ? 0 : DOMAIN_RESTART_IF_REQUIRED_ACTIONS
+    domain_create_count = exclude_domain_create ? 0 : 3
+    domain_restart_check = exclude_domain_create ? 0 : DOMAIN_RESTART_IF_REQUIRED_ACTIONS
 
     additional_task_count = options[:additional_task_count].nil? ? 0 : options[:additional_task_count]
     additional_unchanged_task_count = options[:additional_unchanged_task_count].nil? ? 0 : options[:additional_unchanged_task_count]
@@ -234,9 +234,11 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
     assert_property_cache_records(updated_records)
 
-    unless include_domain_create
-      assert_domain_create_records(updated_records)
-      assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, DOMAIN_RESTART_IF_REQUIRED_ACTIONS
+    unless exclude_domain_create
+      assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :create }.size, 1, 'updated domain.create actions'
+      assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :start }.size, 1, 'updated domain.start actions'
+      assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :ensure_active }.size, 1, 'updated domain.ensure_active actions'
+      assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, DOMAIN_RESTART_IF_REQUIRED_ACTIONS, 'unchanged domain.restart_if_required actions'
     end
 
     record_under_test = get_record_under_test(task_ran ? updated_records : unchanged_records, expected_task_action)
@@ -278,12 +280,6 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       expects(:exec).
       with(equals(context), equals('get'), equals(%w(*)), equals(:terse => true, :echo => false)).
       returns(results)
-  end
-
-  def assert_domain_create_records(records)
-    assert_equal records.select { |r| r.task.class.registered_name == 'domain' && r.action == :create }.size, 1
-    assert_equal records.select { |r| r.task.class.registered_name == 'domain' && r.action == :start }.size, 1
-    assert_equal records.select { |r| r.task.class.registered_name == 'domain' && r.action == :ensure_active }.size, 1
   end
 
   def assert_property_cache_records(records)
