@@ -296,6 +296,30 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
     ensure_properties_not_present(t)
   end
 
+  def test_delete_element_where_cache_present_and_element_present_and_element_deletion_is_restricted
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties(expected_properties.merge!("#{property_prefix}object-type" => 'system-all-req'))
+    t.options = {'name' => 'MyJmsResource'}
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(['resources.admin-object-resource.MyJmsResource.object-type=system-all']),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-jms-resource'),
+                                 equals(['MyJmsResource']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:destroy)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_properties_not_present(t)
+  end
+
   protected
 
   def property_prefix

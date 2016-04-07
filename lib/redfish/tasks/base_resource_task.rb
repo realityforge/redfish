@@ -112,6 +112,8 @@ module Redfish
         if may_need_delete
           if cache_present || present?
 
+            ensure_resource_deleteable(property_prefix)
+
             do_destroy
 
             updated_by_last_action
@@ -126,6 +128,14 @@ module Redfish
 
       def remove_reference
         context.property_cache.delete_all_with_prefix!("servers.server.server.resource-ref.#{resource_name}.")
+      end
+
+      def ensure_resource_deleteable(property_prefix)
+        if context.property_cache? && context.property_cache["#{property_prefix}object-type"] == 'system-all-req'
+          t = run_context.task('property', 'name' => "#{property_prefix}object-type", 'value' => 'system-all')
+          t.action(:set)
+          run_context.converge_task(t)
+        end
       end
 
       def immutable_local_properties
