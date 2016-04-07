@@ -17,7 +17,7 @@ require File.expand_path('../../helper', __FILE__)
 class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
   def setup
     super
-    @location = @deployment_plan = nil
+    @location = @war_location = @deployment_plan = nil
   end
 
   def test_interpret_create
