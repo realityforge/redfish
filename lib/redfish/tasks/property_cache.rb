@@ -17,6 +17,8 @@ module Redfish
     class PropertyCache < AsadminTask
       private
 
+      attribute :banner, :kind_of => String
+
       action :create do
         do_create
       end
@@ -25,11 +27,47 @@ module Redfish
         do_create unless context.property_cache?
       end
 
+      action :diff do
+        if context.property_cache?
+          properties = load_properties('*')
+
+          lines = []
+
+          context.property_cache.properties.keys.sort.each do |key|
+            value1 = context.property_cache.properties[key]
+            value2 = properties.delete(key)
+            if value1 != value2
+              lines << "- #{key}=#{value1}"
+              lines << "+ #{key}=#{value2}"
+            end
+          end
+          properties.each_pair do |key, value|
+            lines << "+ #{key}=#{value}"
+          end
+
+          if lines.size > 0
+            output("#{self.banner}\n-------------------\n") if self.banner
+
+            lines.each do |line|
+              output(line)
+            end
+
+            output("\n-------------------\n") if self.banner
+
+            updated_by_last_action
+          end
+        end
+      end
+
       action :destroy do
         if context.property_cache?
           context.remove_property_cache
           updated_by_last_action
         end
+      end
+
+      def output(message)
+        puts message
       end
 
       def do_create

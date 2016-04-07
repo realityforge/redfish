@@ -15,6 +15,43 @@
 require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
+  def test_diff
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('a' => '1', 'b' => '2', 'c.d.e' => '345')
+
+    executor.
+      expects(:exec).
+      with(equals(t.context),equals('get'),equals(%w(*)),equals(:terse => true, :echo => false)).
+      returns('')
+
+    t.expects(:output).with(equals('- a=1'))
+    t.expects(:output).with(equals('+ a='))
+    t.expects(:output).with(equals('- b=2'))
+    t.expects(:output).with(equals('+ b='))
+    t.expects(:output).with(equals('- c.d.e=345'))
+    t.expects(:output).with(equals('+ c.d.e='))
+
+    t.perform_action(:diff)
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_diff_with_no_difference
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('a' => '1', 'b' => '2', 'c.d.e' => '345')
+
+    executor.
+      expects(:exec).
+      with(equals(t.context),equals('get'),equals(%w(*)),equals(:terse => true, :echo => false)).
+      returns("a=1\nb=2\nc.d.e=345")
+
+    t.perform_action(:diff)
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

@@ -167,6 +167,8 @@ module Redfish #nodoc
     end
 
     def interpret(run_context, data)
+      interpret_options = data['config'] || {}
+
       domain_options = domain_options(data['domain'] || {})
 
       run_context.task('domain', domain_options).action(:create)
@@ -332,6 +334,7 @@ module Redfish #nodoc
 
       restart_domain_if_required(run_context, domain_options)
 
+      run_context.task('property_cache', 'banner' => 'End of Converge Property Diff').action(:diff) unless interpret_options['diff_on_completion'].to_s == 'false'
       run_context.task('property_cache').action(:destroy)
     end
 

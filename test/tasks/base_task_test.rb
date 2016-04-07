@@ -113,6 +113,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   def perform_interpret(context, data, task_ran, expected_task_action, options = {})
     add_excludes_unless_defined = options[:add_excludes_unless_defined].nil? ? true : options[:add_excludes_unless_defined]
     data = data.dup
+
+    data['config'] = {}
+    data['config']['diff_on_completion'] = false
+
     if add_excludes_unless_defined
       %w(
         libraries thread_pools iiop_listeners context_services managed_thread_factories
