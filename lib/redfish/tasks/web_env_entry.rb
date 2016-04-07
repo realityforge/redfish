@@ -86,6 +86,10 @@ module Redfish
         context.exec('unset-web-env-entry', ['--name', self.name, application_spec])
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def present?
         (context.exec('list-web-env-entry', [application_spec], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)} (#{Regexp.escape('(java.lang.')}|#{Regexp.escape('(null)')})/)
       end

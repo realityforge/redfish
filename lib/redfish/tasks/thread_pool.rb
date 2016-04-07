@@ -72,6 +72,10 @@ module Redfish
         context.exec('delete-threadpool', [self.name])
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def present?
         (context.exec('list-threadpools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end

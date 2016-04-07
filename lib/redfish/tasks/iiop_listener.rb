@@ -88,6 +88,10 @@ module Redfish
         (context.exec('list-iiop-listeners', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def resource_property_prefix
         "#{PROPERTY_PREFIX}#{self.name}."
       end

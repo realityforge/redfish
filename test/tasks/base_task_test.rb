@@ -38,14 +38,30 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     assert_equal task.context.property_cache.any_property_start_with?(prefix), false, "Properties with prefix #{prefix} are present when not expected"
   end
 
-  def ensure_expected_cache_values(t)
-    expected_properties.each_pair do |key, value|
-      assert_equal t.context.property_cache[key], value, "Expected #{key}=#{value}"
+  def ensure_expected_cache_values(t, options = {})
+    expected_properties.merge(options).each_pair do |key, value|
+      assert_cached_property(t, key, value)
     end
+  end
+
+  def assert_cached_property(t, key, value)
+    assert_equal t.context.property_cache[key], value, "Expected #{key}=#{value}"
   end
 
   def property_prefix
     raise 'property_prefix not overridden'
+  end
+
+  def reference_properties
+    name = self.resource_name
+    {
+      "servers.server.server.resource-ref.#{name}.enabled" => 'true',
+      "servers.server.server.resource-ref.#{name}.ref" => name
+    }
+  end
+
+  def resource_name
+    resource_parameters['name']
   end
 
   def expected_properties
@@ -54,6 +70,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     expected_local_properties.each_pair do |k, v|
       cache_values["#{property_prefix}#{k}"] = "#{v}"
     end
+    cache_values.merge!(reference_properties)
     cache_values
   end
 

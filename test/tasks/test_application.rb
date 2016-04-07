@@ -475,4 +475,15 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
       'deployment_order' => 100
     }
   end
+
+  def reference_properties
+    name = self.resource_name
+    {
+      "servers.server.server.application-ref.#{name}.enabled" => 'true',
+      "servers.server.server.application-ref.#{name}.lb-enabled" => 'true',
+      "servers.server.server.application-ref.#{name}.virtual-servers" => 'server',
+      "servers.server.server.application-ref.#{name}.disable-timeout-in-minutes" => '30',
+      "servers.server.server.application-ref.#{name}.ref" => name
+    }
+  end
 end

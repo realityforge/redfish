@@ -364,4 +364,8 @@ class Redfish::Tasks::TestAuthRealm < Redfish::Tasks::BaseTaskTest
       }
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

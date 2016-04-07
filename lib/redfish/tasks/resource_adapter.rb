@@ -63,6 +63,10 @@ module Redfish
         context.exec('delete-resource-adapter-config', [self.name])
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def present?
         (context.exec('list-resource-adapter-configs', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end

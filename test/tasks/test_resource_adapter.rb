@@ -345,4 +345,8 @@ class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
       'properties' => {'SomeKey' => 'SomeValue'}
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

@@ -370,4 +370,8 @@ class Redfish::Tasks::TestWebEnvEntry < Redfish::Tasks::BaseTaskTest
       'description' => 'My Entry Desc'
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

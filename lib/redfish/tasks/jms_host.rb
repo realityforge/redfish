@@ -81,6 +81,10 @@ module Redfish
         context.exec('delete-jms-host', [self.name])
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def present?
         (context.exec('list-jms-hosts', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end

@@ -338,4 +338,8 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
       'maxqueuesize' => 4000
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

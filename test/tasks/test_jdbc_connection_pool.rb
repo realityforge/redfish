@@ -448,4 +448,8 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
         }
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

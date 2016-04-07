@@ -67,6 +67,10 @@ module Redfish
         context.exec('delete-auth-realm', [self.name])
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def present?
         (context.exec('list-auth-realms', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end

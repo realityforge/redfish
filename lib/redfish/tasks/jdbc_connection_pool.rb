@@ -157,6 +157,10 @@ module Redfish
         context.exec('delete-jdbc-connection-pool', args)
       end
 
+      def add_resource_ref?
+        false
+      end
+
       def present?
         (context.exec('list-jdbc-connection-pools', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
       end

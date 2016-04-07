@@ -131,6 +131,21 @@ module Redfish
         context.exec('undeploy', ["--cascade=#{self.type == 'rar'}", self.name])
       end
 
+      def record_reference
+        prefix = "servers.server.server.application-ref.#{resource_name}."
+        servers = self.virtual_servers.empty? ? 'server' : self.virtual_servers.join(',')
+        record_properties_in_cache('',
+                                   "#{prefix}enabled" => self.enabled,
+                                   "#{prefix}lb-enabled" => self.lb_enabled,
+                                   "#{prefix}virtual-servers" => servers,
+                                   "#{prefix}disable-timeout-in-minutes" => '30',
+                                   "#{prefix}ref" => resource_name)
+      end
+
+      def remove_reference
+        context.property_cache.delete_all_with_prefix!("servers.server.server.application-ref.#{resource_name}.")
+      end
+
       def present?
         (context.exec('list-applications', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)} +\</)
       end

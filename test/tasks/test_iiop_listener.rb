@@ -381,4 +381,8 @@ class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
       'lazy_init' => 'true'
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

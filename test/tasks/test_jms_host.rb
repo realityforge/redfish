@@ -362,4 +362,8 @@ class Redfish::Tasks::TestJmsHost < Redfish::Tasks::BaseTaskTest
       'lazy_init' => false
     }
   end
+
+  def reference_properties
+    {}
+  end
 end

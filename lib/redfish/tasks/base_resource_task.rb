@@ -36,6 +36,7 @@ module Redfish
             if cache_present
               record_properties_in_cache(property_prefix, properties_to_set_in_create)
               record_properties_in_cache(property_prefix, properties_to_record_in_create)
+              record_reference if add_resource_ref?
             end
           end
         end
@@ -49,6 +50,20 @@ module Redfish
         if create_occurred
           post_create_hook
         end
+      end
+
+      def record_reference
+        record_properties_in_cache('',
+                                   "servers.server.server.resource-ref.#{resource_name}.enabled" => true,
+                                   "servers.server.server.resource-ref.#{resource_name}.ref" => resource_name)
+      end
+
+      def resource_name
+        self.name
+      end
+
+      def add_resource_ref?
+        true
       end
 
       def post_create_hook
@@ -103,9 +118,14 @@ module Redfish
 
             if cache_present
               context.property_cache.delete_all_with_prefix!(property_prefix)
+              remove_reference if add_resource_ref?
             end
           end
         end
+      end
+
+      def remove_reference
+        context.property_cache.delete_all_with_prefix!("servers.server.server.resource-ref.#{resource_name}.")
       end
 
       def immutable_local_properties
