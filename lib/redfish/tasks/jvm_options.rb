@@ -29,6 +29,8 @@ module Redfish
           context.exec('delete-jvm-options', [encode_options(existing)])
           context.exec('create-jvm-options', [encode_options(expected)])
 
+          reload_property('configs.config.server-config.java-config.jvm-options') if context.property_cache?
+
           updated_by_last_action
         end
       end
