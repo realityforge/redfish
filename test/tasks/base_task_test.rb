@@ -20,6 +20,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   DEFAULT_VERSION=Redfish::Versions::Payara154.new
 
   JVM_OPTIONS_HASH = DEFAULT_VERSION.default_jvm_defines
+  JVM_OPTIONS_OUTPUT = JVM_OPTIONS_HASH.collect { |k, v| "-D#{k}=#{v}" }.join("\n")
   JVM_OPTIONS = JVM_OPTIONS_HASH.collect { |k, v| "-D#{k}=#{v}" }.join(';')
   DOMAIN_VERSION = '270'
 
@@ -179,6 +180,16 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
              equals({:terse => true, :echo => false})).
         returns("false\n").
         at_least(DOMAIN_RESTART_IF_REQUIRED_ACTIONS - DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS)
+    end
+
+    include_jvm_options = options[:exclude_jvm_options].nil?
+    if include_jvm_options
+      executor.expects(:exec).
+        with(equals(context),
+             equals('list-jvm-options'),
+             equals([]),
+             equals({:terse => true, :echo => false})).
+        returns(JVM_OPTIONS_OUTPUT)
     end
 
     run_context = interpret(context, data)
