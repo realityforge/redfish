@@ -17,6 +17,12 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS = 2
   DOMAIN_RESTART_IF_REQUIRED_ACTIONS = 7 + DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS
 
+  DEFAULT_VERSION=Redfish::Versions::Payara154.new
+
+  JVM_OPTIONS_HASH = DEFAULT_VERSION.default_jvm_defines
+  JVM_OPTIONS = JVM_OPTIONS_HASH.collect { |k, v| "-D#{k}=#{v}" }.join(';')
+  DOMAIN_VERSION = '270'
+
   protected
 
   def ensure_task_updated_by_last_action(task)
@@ -232,7 +238,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   def setup_interpreter_expects(executor, context, property_results)
     mock_property_get(executor,
                       context,
-                      "domain.version=270\nconfigs.config.server-config.java-config.jvm-options=-DANTLR_USE_DIRECT_CLASS_LOADING=true,-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory,-Dcom.sun.enterprise.security.httpsOutboundKeyAlias=s1as,-Djava.awt.headless=true,-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed,-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext,-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf,-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy,-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks,-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks,-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver,-Djdk.corba.allowOutputStreamSubclass=true,-Djdk.tls.rejectClientInitiatedRenegotiation=true,-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false\n#{property_results}")
+                      "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=#{JVM_OPTIONS}\n#{property_results}")
   end
 
   def mock_property_get(executor, context, results)
