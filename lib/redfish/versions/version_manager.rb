@@ -79,6 +79,10 @@ module Redfish
       def default_jvm_defines
         raise 'default_jvm_defines not implemented'
       end
+
+      def default_realm_confs
+        raise 'default_realm_confs not implemented'
+      end
     end
   end
 end
