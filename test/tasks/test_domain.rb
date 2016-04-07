@@ -25,7 +25,6 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
   def test_create_when_not_present
     executor = Redfish::Executor.new
     t = new_task_with_context(create_simple_context(executor,
-                                                    :domains_directory => test_domains_dir,
                                                     :system_user => 'bob',
                                                     :system_group => 'bobgrp'))
 
@@ -85,7 +84,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_create_with_most_common_options
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
@@ -100,7 +99,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_create_with_mismatched_aadmin_port
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     t.properties = {'domain.adminPort' => t.context.domain_admin_port + 1}
     begin
@@ -115,7 +114,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_create_with_unknown_property
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     t.properties = {'x' => 'y'}
     begin
@@ -130,7 +129,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_create_when_present
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     FileUtils.mkdir_p(t.context.domain_directory)
 
@@ -141,7 +140,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_destroy_when_not_present
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     t.perform_action(:destroy)
 
@@ -150,7 +149,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_destroy_when_present
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-domain'),
@@ -167,7 +166,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_start_when_not_running
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-domains'),
@@ -187,7 +186,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_start_when_running
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-domains'),
@@ -202,7 +201,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_start_when_running_but_requires_restart
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-domains'),
@@ -217,7 +216,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_stop_when_running
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-domains'),
@@ -237,7 +236,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_stop_when_not_running
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('list-domains'),
@@ -252,7 +251,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_restart
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('restart-domain'),
@@ -270,7 +269,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_restart_if_required
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('_get-restart-required'),
@@ -295,7 +294,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_restart_if_required_using_context
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('restart-domain'),
@@ -317,7 +316,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_restart_if_required_using_context_only
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('restart-domain'),
@@ -341,7 +340,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_restart_if_required_using_context_only_not_required
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     t.context_only = true
 
@@ -352,7 +351,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
   def test_restart_if_required_when_not_required
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor, :domains_directory => test_domains_dir))
+    t = new_task_with_context(create_simple_context(executor))
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('_get-restart-required'),
