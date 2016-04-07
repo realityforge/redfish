@@ -19,6 +19,24 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
     attribute :properties, :kind_of => Hash, :default => {}
   end
 
+  def test_reload_property
+    key = 'configs.config.server-config.java-config.jvm-options'
+
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties(key => 'X')
+
+    executor.
+      expects(:exec).
+      with(equals(t.context), equals('get'), equals([key]), equals(:terse => true, :echo => false)).
+      returns("#{key}=Y\n")
+
+    t.send(:reload_property, key)
+
+    assert_equal t.context.property_cache[key], 'Y'
+  end
+
   def test_reload_properties_with_prefix
     prefix = "applications.application.#{self.name}.module."
 

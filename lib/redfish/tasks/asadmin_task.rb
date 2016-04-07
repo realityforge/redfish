@@ -67,6 +67,10 @@ module Redfish
         end
       end
 
+      def reload_property(key)
+        context.property_cache[key] = load_property(key)
+      end
+
       def load_properties(pattern, options = {})
         output = context.exec('get', [pattern], {:terse => true, :echo => false}.merge(options))
         parse_properties(output)
