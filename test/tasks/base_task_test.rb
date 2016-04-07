@@ -146,8 +146,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
     include_domain_create = !options[:exclude_domain_create].nil? && options[:exclude_domain_create]
 
+    executor = context.instance_variable_get('@executor')
     unless include_domain_create
-      executor = context.instance_variable_get('@executor')
       executor.expects(:exec).
         with(equals(context),
              equals('create-domain'),
