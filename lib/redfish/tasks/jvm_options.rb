@@ -25,7 +25,7 @@ module Redfish
         existing = current_options
         expected = expected_options
 
-        if existing != expected
+        if existing.sort != expected.sort
           context.exec('delete-jvm-options', [encode_options(existing)])
           context.exec('create-jvm-options', [encode_options(expected)])
 
