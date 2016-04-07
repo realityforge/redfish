@@ -58,6 +58,15 @@ module Redfish
         end
       end
 
+      def reload_properties_with_prefix(prefix)
+        context.property_cache.delete_all_with_prefix!(prefix)
+
+        properties = load_properties("#{prefix}*")
+        properties.each do |k, v|
+          context.property_cache[k] = v
+        end
+      end
+
       def load_properties(pattern, options = {})
         output = context.exec('get', [pattern], {:terse => true, :echo => false}.merge(options))
         parse_properties(output)

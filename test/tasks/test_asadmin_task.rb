@@ -19,6 +19,28 @@ class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
     attribute :properties, :kind_of => Hash, :default => {}
   end
 
+  def test_reload_properties_with_prefix
+    prefix = "applications.application.#{self.name}.module."
+
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('outside' => 'blah', "#{prefix}x" => "ZZZ", "#{prefix}a" => "ZZZ")
+
+    executor.
+      expects(:exec).
+      with(equals(t.context), equals('get'), equals(%W(#{prefix}*)), equals(:terse => true, :echo => false)).
+      returns("#{prefix}a=1\n#{prefix}b=2\n#{prefix}c.d.e=345")
+
+    t.send(:reload_properties_with_prefix, prefix)
+
+    assert_equal t.context.property_cache['outside'], 'blah'
+    assert_equal t.context.property_cache["#{prefix}x"], ''
+    assert_equal t.context.property_cache["#{prefix}a"], '1'
+    assert_equal t.context.property_cache["#{prefix}b"], '2'
+    assert_equal t.context.property_cache["#{prefix}c.d.e"], '345'
+  end
+
   def test_load_properties
     executor = Redfish::Executor.new
     t = new_task(executor)
