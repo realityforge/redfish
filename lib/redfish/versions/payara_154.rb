@@ -116,8 +116,22 @@ module Redfish
           'jdbc.drivers' => 'org.apache.derby.jdbc.ClientDriver',
           'ANTLR_USE_DIRECT_CLASS_LOADING' => 'true',
           'com.sun.enterprise.config.config_environment_factory_class' => 'com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory',
+          'com.ctc.wstx.returnNullForDefaultNamespace' => 'true',
+          'javax.xml.accessExternalSchema' => 'all',
           'jdk.tls.rejectClientInitiatedRenegotiation' => 'true',
-          'org.jboss.weld.serialization.beanIdentifierIndexOptimization' => 'false'
+          'org.jboss.weld.serialization.beanIdentifierIndexOptimization' => 'false',
+          'javax.management.builder.initial' => 'com.sun.enterprise.v3.admin.AppServerMBeanServerBuilder',
+          'org.glassfish.additionalOSGiBundlesToStart' => 'org.apache.felix.shell,org.apache.felix.gogo.runtime,org.apache.felix.gogo.shell,org.apache.felix.gogo.command,org.apache.felix.shell.remote,org.apache.felix.fileinstall',
+          'osgi.shell.telnet.port' => '6666',
+          'osgi.shell.telnet.maxconn' => '1',
+          'osgi.shell.telnet.ip' => '127.0.0.1',
+          'gosh.args' => '--nointeractive',
+          'felix.fileinstall.dir' => '${com.sun.aas.installRoot}/modules/autostart/',
+          'felix.fileinstall.poll' => '5000',
+          'felix.fileinstall.log.level' => '2',
+          'felix.fileinstall.bundles.new.start' => 'true',
+          'felix.fileinstall.bundles.startTransient' => 'true',
+          'felix.fileinstall.disableConfigSave' => 'false'
         }
       end
     end
