@@ -52,7 +52,21 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
       props[key] = t.context.domain_admin_port if key == 'domain.adminPort'
     end
     t.properties = props
+
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/docroot/index.html"))
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/restrict.server.policy"))
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/javaee.server.policy"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/autodeploy"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/init-info"))
+
+    gitkeep_file = "#{t.context.domain_directory}/config/.gitkeep"
+    Dir.expects(:[]).with(equals("#{t.context.domain_directory}/**/.gitkeep")).returns([gitkeep_file])
+    FileUtils.expects(:rm_f).with(equals(gitkeep_file))
+
     t.perform_action(:create)
+
+    FileUtils.unstub(:rm_f)
+    FileUtils.unstub(:rm_rf)
 
     ensure_task_updated_by_last_action(t)
 

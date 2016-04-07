@@ -187,6 +187,14 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
 
         # Remove all the unnecessary files that come with the template
         FileUtils.rm_f "#{context.domain_directory}/docroot/index.html"
+        FileUtils.rm_f "#{context.domain_directory}/config/restrict.server.policy"
+        FileUtils.rm_f "#{context.domain_directory}/config/javaee.server.policy"
+        FileUtils.rm_rf "#{context.domain_directory}/autodeploy"
+        FileUtils.rm_rf "#{context.domain_directory}/init-info"
+
+        Dir["#{context.domain_directory}/**/.gitkeep"].each do |gitkeep|
+          FileUtils.rm_f gitkeep
+        end
       end
 
       def create_dir(directory, mode)
