@@ -69,7 +69,7 @@ module Redfish
         property_map['context-root'] = self.context_root.nil? ? '' : self.context_root
         property_map['location'] = is_location_a_directory? ? "file:#{resolved_location.gsub(/\/$/, '')}/" : "${com.sun.aas.instanceRootURI}/applications/#{self.name}/"
 
-        property_map['property.defaultAppName'] = File.basename(self.location)
+        property_map['property.defaultAppName'] = File.basename(self.location, File.extname(self.location))
         property_map['property.archiveType'] = derive_archive_type
         property_map['property.appLocation'] = is_location_a_directory? ? "file:#{resolved_location.gsub(/\/$/, '')}/" : "${com.sun.aas.instanceRootURI}/applications/__internal/#{self.name}/#{File.basename(self.location)}"
 

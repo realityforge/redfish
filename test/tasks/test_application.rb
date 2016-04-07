@@ -175,6 +175,30 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
     ensure_expected_cache_values(t)
   end
 
+  def test_create_element_where_cache_present_and_element_not_present_for_war
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties({})
+
+    t.options = resource_parameters.merge('location' => self.location_as_war)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('deploy'),
+                                 equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', self.location_as_war]),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:create)
+
+    ensure_task_updated_by_last_action(t)
+
+    ensure_expected_cache_values(t,
+                                 "#{property_prefix}directory-deployed" => 'false',
+                                 "#{property_prefix}location" => "${com.sun.aas.instanceRootURI}/applications/MyApplication/",
+                                 "#{property_prefix}property.appLocation" => "${com.sun.aas.instanceRootURI}/applications/__internal/MyApplication/myapp.war")
+  end
+
   def test_create_element_where_cache_present_and_element_present_but_modified
     cache_values = expected_properties
 
@@ -360,6 +384,15 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
 
   def property_prefix
     "#{raw_property_prefix}MyApplication."
+  end
+
+  def location_as_war
+    unless @war_location
+      @war_location = "#{self.temp_dir}/myapp.war"
+      FileUtils.touch "#{self.temp_dir}/file.txt"
+      `jar -cf #{@war_location} #{self.temp_dir}/file.txt`
+    end
+    @war_location
   end
 
   def location_as_dir
