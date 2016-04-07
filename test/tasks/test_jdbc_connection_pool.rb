@@ -333,7 +333,13 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
         returns('')
     end
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 1)
+    perform_interpret(context,
+                      data,
+                      true,
+                      :create,
+                      :additional_task_count => 1 + existing.size,
+                      # clean actions for each pool deleted
+                      :additional_unchanged_task_count => 1 + existing.size)
   end
 
   def test_cleaner_deletes_unexpected_element
@@ -343,11 +349,21 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
     existing = %w(Element1 Element2 Element3)
     create_fake_elements(t.context, existing)
 
+    t.context.property_cache["#{Redfish::Tasks::JdbcResource::PROPERTY_PREFIX}SubElement1.pool-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::JdbcResource::PROPERTY_PREFIX}SubElement2.pool-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::JdbcResource::PROPERTY_PREFIX}SubElement3.pool-name"] = 'Element3'
+
     t.expected = existing[1, existing.size]
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jdbc-connection-pool'),
                                  equals(%W(--cascade=true #{existing.first})),
+                                 equals({})).
+      returns('')
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-jdbc-resource'),
+                                 equals(['SubElement1']),
                                  equals({})).
       returns('')
 

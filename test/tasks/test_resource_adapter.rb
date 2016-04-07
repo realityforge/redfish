@@ -285,7 +285,13 @@ class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
         returns('')
     end
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size)
+    perform_interpret(context,
+                      data,
+                      true,
+                      :create,
+                      :additional_task_count => 1 + existing.size,
+                      # clean action for every pool and admin_object deleted
+                      :additional_unchanged_task_count => existing.size * 2)
   end
 
   def test_cleaner_deletes_unexpected_element
@@ -295,11 +301,30 @@ class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
     existing = %w(Element1 Element2 Element3)
     create_fake_elements(t.context, existing)
 
+    t.context.property_cache["#{Redfish::Tasks::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement1.resource-adapter-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement2.resource-adapter-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement3.resource-adapter-name"] = 'Element3'
+
+    t.context.property_cache["#{Redfish::Tasks::AdminObject::PROPERTY_PREFIX}SubElement4.resource-adapter-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::AdminObject::PROPERTY_PREFIX}SubElement5.resource-adapter-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::AdminObject::PROPERTY_PREFIX}SubElement6.resource-adapter-name"] = 'Element3'
+
+
     t.expected = existing[1,existing.size]
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-resource-adapter-config'),
                                  equals([existing.first]),
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-connector-connection-pool'),
+                                 equals(['--cascade=true', 'SubElement1']),
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-admin-object'),
+                                 equals(['SubElement4']),
                                  equals({})).
       returns('')
 

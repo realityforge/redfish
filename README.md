@@ -29,5 +29,3 @@ replace setup.sh infrastructure, (D) for docker integration.
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.
 
 * Add integration level tests (C)
-
-* Make sure sub-properties are cleaned up during cascade deletes of anything with child elements

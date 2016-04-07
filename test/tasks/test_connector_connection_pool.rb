@@ -360,7 +360,14 @@ class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
         returns('')
     end
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 2 + existing.size, :additional_unchanged_task_count => 1)
+    perform_interpret(context,
+                      data,
+                      true,
+                      :create,
+                      # existing results in a delete
+                      :additional_task_count => 2 + existing.size,
+                      # clean action for every pool deleted
+                      :additional_unchanged_task_count => 1 + existing.size)
   end
 
   def test_cleaner_deletes_unexpected_element
@@ -377,12 +384,23 @@ class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
     properties["#{raw_property_prefix}Element4.resource-adapter-name"] = 'MyOtherDBPool'
     t.context.cache_properties(properties)
 
+    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement1.pool-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement2.pool-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement3.pool-name"] = 'ElementX'
+    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement4.pool-name"] = 'Element3'
+    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement5.pool-name"] = 'Element4'
+
     t.resource_adapter_name = 'jmsra'
     t.expected = existing
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-connector-connection-pool'),
                                  equals(%W(--cascade=true ElementX)),
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('delete-connector-resource'),
+                                 equals(['SubElement3']),
                                  equals({})).
       returns('')
 
