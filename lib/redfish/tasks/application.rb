@@ -123,6 +123,8 @@ module Redfish
         args << resolved_location.to_s
 
         context.exec(is_location_a_directory? ? 'deploydir' : 'deploy', args)
+
+        reload_properties_with_prefix("applications.application.#{self.name}.module.") if context.property_cache?
       end
 
       def do_destroy

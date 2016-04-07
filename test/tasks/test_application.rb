@@ -33,6 +33,11 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.module.*']),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
 
     perform_interpret(context, data, true, :create, :additional_unchanged_task_count => 1)
   end
@@ -168,11 +173,22 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
       returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.module.*']),
+                                 equals(:terse => true, :echo => false)).
+      returns("applications.application.MyApplication.module.A=a\n" +
+                "applications.application.MyApplication.module.B=b\n" +
+                "applications.application.MyApplication.module.C=c\n")
 
     t.perform_action(:create)
 
     ensure_task_updated_by_last_action(t)
     ensure_expected_cache_values(t)
+    assert_equal t.context.property_cache['applications.application.MyApplication.module.A'], 'a'
+    assert_equal t.context.property_cache['applications.application.MyApplication.module.B'], 'b'
+    assert_equal t.context.property_cache['applications.application.MyApplication.module.C'], 'c'
+    assert_equal t.context.property_cache['applications.application.MyApplication.module.X'], ''
   end
 
   def test_create_element_where_cache_present_and_element_not_present_for_war
@@ -187,6 +203,11 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploy'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', self.location_as_war]),
                                  equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.module.*']),
+                                 equals(:terse => true, :echo => false)).
       returns('')
 
     t.perform_action(:create)
@@ -333,6 +354,11 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.module.*']),
+                                 equals(:terse => true, :echo => false)).
       returns('')
 
     existing.each do |element|
