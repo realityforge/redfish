@@ -47,6 +47,38 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     perform_interpret(context, data, true, :set, :exclude_jvm_options => true)
   end
 
+  def test_interpret_set_partial
+    data = {'jvm_options' => {'options' => [], 'defines' => {'A' => 'a','B' => 'b'}, 'default_defines' => false}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    mock_property_get(executor, context, "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DA=a,-DB=2\n")
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-jvm-options'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns("-DMyDefine=true\n-DA=a\n-DB=2\n")
+    executor.expects(:exec).with(equals(context),
+                                 equals('delete-jvm-options'),
+                                 equals(%w(-DMyDefine=true:-DB=2)),
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-jvm-options'),
+                                 equals(%w(-DB=b)),
+                                 equals({})).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(%w(configs.config.server-config.java-config.jvm-options)),
+                                 equals(:terse => true, :echo => false)).
+      returns('-DA=a,-DB=b')
+
+    perform_interpret(context, data, true, :set, :exclude_jvm_options => true)
+  end
+
   def test_interpret_set_when_matches
     data = {'jvm_options' => {'options' => ['-XMagic'], 'defines' => {'A' => 'B:1'}, 'default_defines' => false}}
 

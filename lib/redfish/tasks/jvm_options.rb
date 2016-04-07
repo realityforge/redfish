@@ -26,8 +26,10 @@ module Redfish
         expected = expected_options
 
         if existing.sort != expected.sort
-          context.exec('delete-jvm-options', [encode_options(existing)])
-          context.exec('create-jvm-options', [encode_options(expected)])
+          todelete = existing - expected
+          context.exec('delete-jvm-options', [encode_options(todelete)]) unless todelete.empty?
+          tocreate = expected - existing
+          context.exec('create-jvm-options', [encode_options(tocreate)]) unless tocreate.empty?
 
           reload_property('configs.config.server-config.java-config.jvm-options') if context.property_cache?
 
