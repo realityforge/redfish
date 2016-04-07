@@ -41,10 +41,14 @@ module Redfish
       end
 
       def remove_element(element)
+        cascade_clean(element)
         t = run_context.task(registered_name, additional_resource_properties.merge(resource_name_key => element))
         t.action(clean_action)
         t.converge
         t
+      end
+
+      def cascade_clean(element)
       end
 
       action :clean do
