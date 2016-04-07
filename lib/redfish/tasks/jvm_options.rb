@@ -65,7 +65,7 @@ module Redfish
       end
 
       def current_options
-        get_property('configs.config.server-config.java-config.jvm-options').split(',')
+        context.exec('list-jvm-options', [], :terse => true, :echo => false).split("\n")
       end
     end
   end

@@ -21,8 +21,18 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, 'configs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
+    mock_property_get(executor, context, "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DMyOtherDefine=true,-A=B:1\n")
 
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-jvm-options'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns("-DMyDefine=true\n-DMyOtherDefine=true\n-A=B:1\n")
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(%w(configs.config.server-config.java-config.jvm-options)),
+                                 equals(:terse => true, :echo => false)).
+      returns('-DA=B:1,-XMagic')
     executor.expects(:exec).with(equals(context),
                                  equals('delete-jvm-options'),
                                  equals(%w(-DMyDefine=true:-DMyOtherDefine=true:-A=B\:1)),
@@ -45,6 +55,12 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
 
     mock_property_get(executor, context, "configs.config.server-config.java-config.jvm-options=-DA=B:1,-XMagic\n")
 
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-jvm-options'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns("-DA=B:1\n-XMagic\n")
+
     perform_interpret(context, data, false, :set, :exclude_jvm_options => true)
   end
 
@@ -64,7 +80,16 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     t = new_task(executor)
 
     t.context.cache_properties('configs.config.server-config.java-config.jvm-options' => '-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
-
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-jvm-options'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns("-DMyDefine=true\n-DMyOtherDefine=true\n-A=B:1\n")
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(%w(configs.config.server-config.java-config.jvm-options)),
+                                 equals(:terse => true, :echo => false)).
+      returns('-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jvm-options'),
                                  equals(%w(-DMyDefine=true:-DMyOtherDefine=true:-A=B\:1)),
@@ -75,7 +100,6 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
                                  equals(%w(-DA=B\\:1:-XMagic)),
                                  equals({})).
       returns('')
-
 
     t.jvm_options = ['-XMagic']
     t.defines = {'A' => 'B:1'}
@@ -90,6 +114,11 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     t = new_task(executor)
 
     t.context.cache_properties('configs.config.server-config.java-config.jvm-options' => '-DA=B:1,-XMagic')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-jvm-options'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns("-DA=B:1\n-XMagic\n")
 
     t.jvm_options = ['-XMagic']
     t.defines = {'A' => 'B:1'}
@@ -106,6 +135,16 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     t.context.cache_properties('domain.version' => '270',
                                'configs.config.server-config.java-config.jvm-options' => '-DMyDefine=true,-DMyOtherDefine=true,-A=B:1')
 
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-jvm-options'),
+                                 equals([]),
+                                 equals(:terse => true, :echo => false)).
+      returns("-DMyDefine=true\n-DMyOtherDefine=true\n-A=B:1\n")
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(%w(configs.config.server-config.java-config.jvm-options)),
+                                 equals(:terse => true, :echo => false)).
+      returns('-DA=B:1,-XMagic')
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jvm-options'),
                                  equals(%w(-DMyDefine=true:-DMyOtherDefine=true:-A=B\:1)),
