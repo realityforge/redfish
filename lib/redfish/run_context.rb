@@ -54,8 +54,8 @@ module Redfish #nodoc
 
     private
 
-    def add_execution_record(action_record)
-      @execution_records << action_record
+    def add_execution_record(execution_record)
+      @execution_records << execution_record
     end
   end
 end
