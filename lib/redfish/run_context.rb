@@ -18,7 +18,10 @@ module Redfish #nodoc
     def initialize(app_context)
       @app_context = app_context
       @execution_records = []
+      @listeners = []
     end
+
+    attr_reader :listeners
 
     attr_reader :app_context
 
@@ -41,18 +44,27 @@ module Redfish #nodoc
 
     def converge_task(execution_record)
       execution_record.action_started_at = Time.now
+      notify(:on_task_start, execution_record)
       begin
         execution_record.task.perform_action(execution_record.action)
         execution_record.action_performed_update! if execution_record.task.updated_by_last_action?
+        execution_record.action_finished_at = Time.now
+        notify(:on_task_complete, execution_record)
       rescue Exception => e
         execution_record.action_error = e
-        raise e
-      ensure
         execution_record.action_finished_at = Time.now
+        notify(:on_task_error, execution_record)
+        raise e
       end
     end
 
     private
+
+    def notify(stage, execution_record)
+      self.listeners.each do |listener|
+        listener.send(stage, execution_record) if listener.respond_to?(stage)
+      end
+    end
 
     def add_execution_record(execution_record)
       @execution_records << execution_record
