@@ -29,6 +29,8 @@ require 'redfish/task_execution_record'
 require 'redfish/run_context'
 require 'redfish/interpreter'
 
+require 'redfish/buildr_integration'
+
 require 'redfish/versions/version_manager'
 require 'redfish/versions/payara_154'
 
