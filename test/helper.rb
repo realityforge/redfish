@@ -26,6 +26,8 @@ class Redfish::TestCase < Minitest::Test
 
   def setup
     @temp_dir = nil
+    Redfish::Config.default_glassfish_home = nil
+    Redfish::Config.default_domains_directory = nil
   end
 
   def teardown
