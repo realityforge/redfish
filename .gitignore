@@ -8,3 +8,4 @@ rdoc
 /Gemfile.lock
 /.rakeTasks
 /tmp
+/patch.*
