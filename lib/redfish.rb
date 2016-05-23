@@ -28,6 +28,7 @@ require 'redfish/task'
 require 'redfish/task_execution_record'
 require 'redfish/run_context'
 require 'redfish/interpreter'
+require 'redfish/definition'
 
 require 'redfish/buildr_integration'
 
