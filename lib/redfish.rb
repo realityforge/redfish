@@ -30,6 +30,7 @@ require 'redfish/run_context'
 require 'redfish/interpreter'
 require 'redfish/model'
 require 'redfish/definition'
+require 'redfish/driver'
 
 require 'redfish/buildr_integration'
 
