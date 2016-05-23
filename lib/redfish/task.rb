@@ -43,7 +43,7 @@ module Redfish
           define_method("#{key}=") do |value|
             kind_of = ([options[:kind_of]] || []).compact.flatten
             if !kind_of.empty? && !kind_of.any? { |k| value.is_a?(k) }
-              raise "Invalid value passed to attribute '#{key}' expected to be one of #{kind_of.inspect} but is of type #{value.class.name}"
+              raise "Invalid value passed to attribute '#{key}' on #{self.class.registered_name} expected to be one of #{kind_of.inspect} but is of type #{value.class.name} Value = #{value.inspect}"
             end
             equal_to = options[:equal_to] || []
             if !equal_to.empty? && !equal_to.any? { |v| value == v }
