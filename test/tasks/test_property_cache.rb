@@ -52,6 +52,21 @@ class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
     ensure_task_not_updated_by_last_action(t)
   end
 
+  def test_diff_with_missing_property_matching_nil
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('b' => nil, 'c.d.e' => '345')
+
+    executor.
+      expects(:exec).
+      with(equals(t.context),equals('get'),equals(%w(*)),equals(:terse => true, :echo => false)).
+      returns("b=\nc.d.e=345")
+
+    t.perform_action(:diff)
+    ensure_task_not_updated_by_last_action(t)
+  end
+
   def test_to_s
     executor = Redfish::Executor.new
     t = new_task(executor)

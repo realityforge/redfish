@@ -36,7 +36,7 @@ module Redfish
           context.property_cache.properties.keys.sort.each do |key|
             value1 = context.property_cache.properties[key]
             value2 = properties.delete(key)
-            if value1 != value2
+            if value1.to_s != value2.to_s
               lines << "- #{key}=#{value1}"
               lines << "+ #{key}=#{value2}"
             end
