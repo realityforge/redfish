@@ -23,9 +23,10 @@ module Redfish
     end
 
     def to_h
+      basic_types = [Fixnum, Float, TrueClass, FalseClass]
       result = {}
       each_pair do |key, value|
-        result[key] = value.is_a?(Mash) ? value.to_h : value.is_a?(Fixnum) ? value : value.dup
+        result[key] = value.is_a?(Mash) ? value.to_h : basic_types.include?(value.class) ? value : value.dup
       end
       result
     end

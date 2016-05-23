@@ -25,4 +25,40 @@ class Redfish::TestMash < Redfish::TestCase
     assert_equal m['hello'].keys.size, 1
     assert_equal m['hello']['bar'], 1
   end
+
+  def test_to_h
+    m = Redfish::Mash.new
+    m['a'] = 1
+    m['b'] = 's'
+    m['c'] = true
+    m['d'] = false
+    m['e'] = 4.3
+    m['f']['a'] = 1
+    m['f']['b'] = 's'
+    m['f']['c'] = true
+    m['f']['d'] = false
+    m['f']['e'] = 4.3
+    m['f']['f']['a'] = 1
+    m['f']['f']['b'] = 's'
+    m['f']['f']['c'] = true
+    m['f']['f']['d'] = false
+    m['f']['f']['e'] = 4.3
+    h = m.to_h
+    assert_equal h['g'], nil
+    assert_equal h['a'], 1
+    assert_equal h['b'], 's'
+    assert_equal h['c'], true
+    assert_equal h['d'], false
+    assert_equal h['e'], 4.3
+    assert_equal h['f']['a'], 1
+    assert_equal h['f']['b'], 's'
+    assert_equal h['f']['c'], true
+    assert_equal h['f']['d'], false
+    assert_equal h['f']['e'], 4.3
+    assert_equal h['f']['f']['a'], 1
+    assert_equal h['f']['f']['b'], 's'
+    assert_equal h['f']['f']['c'], true
+    assert_equal h['f']['f']['d'], false
+    assert_equal h['f']['f']['e'], 4.3
+  end
 end
