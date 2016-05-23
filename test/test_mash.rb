@@ -26,6 +26,15 @@ class Redfish::TestMash < Redfish::TestCase
     assert_equal m['hello']['bar'], 1
   end
 
+  def test_from
+    m = Redfish::Mash.from('a' => {'b' => 1}, 'c' => true)
+    assert_equal m.keys.size, 2
+    assert m['a'].is_a?(Redfish::Mash)
+    assert_equal m['a'].keys.size, 1
+    assert_equal m['a']['b'], 1
+    assert_equal m['c'], true
+  end
+
   def test_to_h
     m = Redfish::Mash.new
     m['a'] = 1

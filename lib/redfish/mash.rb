@@ -30,5 +30,13 @@ module Redfish
       end
       result
     end
+
+    def self.from(hash)
+      result = Mash.new
+      hash.each_pair do |k, v|
+        result[k] = v.is_a?(Hash) ? Mash.from(v) : v
+      end
+      result
+    end
   end
 end
