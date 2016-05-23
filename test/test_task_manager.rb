@@ -19,6 +19,8 @@ class Redfish::TestTaskManager < Redfish::TestCase
   def test_tasks_registered_correctly
     assert Redfish::TaskManager.registered_task_names.include?('property')
     assert Redfish::TaskManager.registered_task_names.include?('property_cache')
+    assert Redfish::TaskManager.tasks.include?(Redfish::Tasks::Property)
+    assert Redfish::TaskManager.tasks.include?(Redfish::Tasks::PropertyCache)
   end
 
   def test_duplicate_registration_fails

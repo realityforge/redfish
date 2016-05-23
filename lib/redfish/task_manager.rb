@@ -18,6 +18,10 @@ module Redfish
       @@task_map = {}
       @@abstract_types = []
 
+      def tasks
+        @@task_map.values
+      end
+
       def register_task(type)
         name = type.registered_name
         raise "Task already registered with name '#{name}' when attempting to register #{type}" if @@task_map[name]
