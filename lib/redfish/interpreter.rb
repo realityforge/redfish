@@ -166,7 +166,13 @@ module Redfish #nodoc
       end
     end
 
-    def interpret(run_context, data)
+    def interpret(run_context, input)
+      mash = Mash.from(input)
+
+      mirror_jms_resources(mash)
+
+      data = mash.to_h
+
       interpret_options = data['config'] || {}
 
       domain_options = domain_options(data['domain'] || {})
@@ -346,6 +352,32 @@ module Redfish #nodoc
     end
 
     private
+
+    def mirror_jms_resources(data)
+      data['jms_resources'].each_pair do |key, jms_config|
+        next if key == 'managed'
+
+        if %w(javax.jms.ConnectionFactory javax.jms.TopicConnectionFactory javax.jms.QueueConnectionFactory).include?(jms_config['restype'])
+          pool = data['resource_adapters']['jmsra']['connection_pools']["#{key}-Connection-Pool"]
+          pool['connection_definition_name'] = jms_config['restype']
+          resource = pool['resources'][key]
+          jms_config['properties'].each_pair do |property_key, property_value|
+            if %w(AddressList ReconnectEnabled ReconnectAttempts ReconnectInterval AddressListBehavior AddressListIterations)
+              pool['properties'][property_key] = property_value
+            else
+              resource['properties'][property_key] = property_value
+            end
+          end
+        else
+          admin_object = data['resource_adapters']['jmsra']['admin_objects'][key]
+          admin_object['restype'] = jms_config['restype']
+          admin_object['description'] = jms_config['description']
+          jms_config['properties'].each_pair do |property_key, property_value|
+            admin_object['properties'][property_key] = property_value
+          end
+        end
+      end
+    end
 
     def managed?(data)
       (data.nil? || data['managed'].nil?) ? true : !!data['managed']

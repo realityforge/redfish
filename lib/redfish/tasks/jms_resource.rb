@@ -34,7 +34,8 @@ module Redfish
       end
 
       action :destroy do
-        destroy(resource_property_prefix)
+        destroy(destination_resource_prefix)
+        destroy(connection_factory_prefix)
       end
 
       def valid_properties
@@ -46,6 +47,18 @@ module Redfish
       end
 
       def resource_property_prefix
+        if %w(javax.jms.Topic javax.jms.Queue).include?(self.restype)
+          destination_resource_prefix
+        else
+          connection_factory_prefix
+        end
+      end
+
+      def connection_factory_prefix
+        "resources.connector-resource.#{self.name}."
+      end
+
+      def destination_resource_prefix
         "resources.admin-object-resource.#{self.name}."
       end
 
@@ -60,8 +73,16 @@ module Redfish
 
         property_map['description'] = self.description
         property_map['enabled'] = self.enabled
-        property_map['res-type'] = self.restype
-        property_map['res-adapter'] = 'jmsra'
+
+        if %w(javax.jms.Topic javax.jms.Queue).include?(self.restype)
+          property_map['res-type'] = self.restype
+          property_map['res-adapter'] = 'jmsra'
+          if self.restype == 'javax.jms.Queue'
+            property_map['class-name'] = 'com.sun.messaging.Queue'
+          else
+            property_map['class-name'] = 'com.sun.messaging.Topic'
+          end
+        end
 
         property_map
       end

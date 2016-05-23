@@ -241,6 +241,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, DOMAIN_RESTART_IF_REQUIRED_ACTIONS, 'unchanged domain.restart_if_required actions'
     end
 
+    return nil if options[:exclude_record_under_test]
+
     record_under_test = get_record_under_test(task_ran ? updated_records : unchanged_records, expected_task_action)
     ensure_task_record(record_under_test, task_ran, false)
     record_under_test

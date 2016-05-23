@@ -24,12 +24,24 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
     setup_interpreter_expects(executor, context, '')
 
     executor.expects(:exec).with(equals(context),
-                                 equals('create-jms-resource'),
-                                 equals(['--enabled', 'true', '--restype', 'javax.jms.Queue', '--property', 'Name=MyPhysicalJmsResource', '--description', 'Blah blee', 'MyJmsResource']),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create, :additional_unchanged_task_count => 1)
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-admin-object'),
+                                 equals(['--enabled', 'true', '--raname', 'jmsra', '--restype', 'javax.jms.Queue', '--property', 'Name=MyPhysicalJmsResource', '--description', 'Blah blee', '--classname', 'com.sun.messaging.Queue', 'MyJmsResource']),
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context,
+                      data,
+                      true,
+                      :create,
+                      :additional_task_count => 1,
+                      :additional_unchanged_task_count => 11,
+                      :exclude_record_under_test => true)
   end
 
   def test_interpret_create_when_exists
@@ -40,7 +52,18 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
 
     setup_interpreter_expects(executor, context, to_properties_content)
 
-    perform_interpret(context, data, false, :create, :additional_unchanged_task_count => expected_local_properties.size)
+    executor.expects(:exec).with(equals(context),
+                                 equals('create-resource-adapter-config'),
+                                 anything,
+                                 equals({})).
+      returns('')
+
+    perform_interpret(context,
+                      data,
+                      false,
+                      :create,
+                      :additional_unchanged_task_count => 10 + expected_local_properties.size,
+                      :additional_task_count => 1)
   end
 
   def test_to_s
@@ -170,6 +193,36 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
     ensure_expected_cache_values(t)
   end
 
+  def test_create_connection_factory_element_where_cache_present_and_element_not_present
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties({})
+
+    t.options = {'name' => 'MyConnectionFactory',
+                 'restype' => 'javax.jms.ConnectionFactory',
+                 'properties' => {'UserName' => 'bob'},
+                 'description' => 'Blah blee'}
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-jms-resource'),
+                                 equals(['--enabled', 'true', '--restype', 'javax.jms.ConnectionFactory', '--property', 'UserName=bob', '--description', 'Blah blee', 'MyConnectionFactory']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:create)
+
+    ensure_task_updated_by_last_action(t)
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.description', 'Blah blee')
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.enabled', 'true')
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.property.UserName', 'bob')
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.deployment-order', '100')
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.object-type', 'user')
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.jndi-name', 'MyConnectionFactory')
+    assert_cached_property(t, 'servers.server.server.resource-ref.MyConnectionFactory.ref', 'MyConnectionFactory')
+    assert_cached_property(t, 'servers.server.server.resource-ref.MyConnectionFactory.enabled', 'true')
+  end
+
   def test_create_element_where_cache_present_and_element_present_but_modified
     cache_values = expected_properties
 
@@ -235,7 +288,8 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
                                  equals('list-jms-resources'),
                                  equals([]),
                                  equals({:terse => true, :echo => false})).
-      returns('')
+      returns('').
+      at_least(2)
 
     t.perform_action(:destroy)
 
@@ -253,6 +307,12 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
                                  equals([]),
                                  equals({:terse => true, :echo => false})).
       returns("MyJmsResource\n")
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-jms-resources'),
+                                 equals([]),
+                                 equals({:terse => true, :echo => false})).
+      returns('')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('delete-jms-resource'),
@@ -334,7 +394,8 @@ class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
       'res-type' => 'javax.jms.Queue',
       'res-adapter' => 'jmsra',
       'property.Name' => 'MyPhysicalJmsResource',
-      'deployment-order' => '100'
+      'deployment-order' => '100',
+      'class-name' => 'com.sun.messaging.Queue'
     }
   end
 
