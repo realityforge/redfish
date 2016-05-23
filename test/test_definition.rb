@@ -42,5 +42,13 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.admin_password, 'secret'
     assert_equal definition.glassfish_home, '/usr/local/glassfish'
     assert_equal definition.domains_directory, '/srv/glassfish/appserver'
+
+    context = definition.to_task_context
+
+    assert_equal context.domain_name, 'appserver'
+    assert_equal context.domain_admin_port, 8080
+    assert_equal context.domain_secure, false
+    assert_equal context.domain_username, 'bob'
+    assert_equal context.domain_password, 'secret'
   end
 end

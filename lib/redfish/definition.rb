@@ -64,5 +64,16 @@ module Redfish
     end
 
     attr_writer :domains_directory
+
+    def to_task_context(executor = Redfish::Executor.new)
+      Redfish::Context.new(executor,
+                           self.glassfish_home,
+                           self.name,
+                           self.port,
+                           self.secure?,
+                           self.admin_username,
+                           self.admin_password,
+                           {:domains_directory => self.domains_directory})
+    end
   end
 end
