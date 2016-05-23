@@ -63,7 +63,7 @@ class Redfish::TestTask < Redfish::TestCase
     begin
       new_task.a = 1
     rescue => e
-      assert_equal e.to_s, "Invalid value passed to attribute 'a' expected to be one of [String] but is of type Fixnum"
+      assert_equal e.to_s, "Invalid value passed to attribute 'a' on my_test_task expected to be one of [String] but is of type Fixnum. Value = 1"
       return
     end
 
@@ -85,7 +85,7 @@ class Redfish::TestTask < Redfish::TestCase
     begin
       new_task.b = 1
     rescue => e
-      assert_equal e.to_s, "Invalid value passed to attribute 'b' expected to be one of [TrueClass, FalseClass] but is of type Fixnum"
+      assert_equal e.to_s, "Invalid value passed to attribute 'b' on my_test_task expected to be one of [TrueClass, FalseClass] but is of type Fixnum. Value = 1"
       return
     end
 
