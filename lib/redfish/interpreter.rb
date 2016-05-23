@@ -470,7 +470,8 @@ module Redfish #nodoc
     end
 
     def interpret_property(run_context, key, config)
-      run_context.task('property', 'name' => key, 'value' => config).action(:set)
+      options = config.is_a?(Hash) ? config : {'value' => config}
+      run_context.task('property', {'name' => key}.merge(options)).action(:set)
     end
 
     def interpret_auth_realm(run_context, key, config)
