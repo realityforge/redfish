@@ -144,7 +144,7 @@ class Redfish::TestRunContext < Redfish::TestCase
     assert listener.on_task_complete_execution_record.nil?
     assert listener.on_task_error_execution_record.nil?
 
-    assert_raise { run_context.converge }
+    assert_raise(RuntimeError) { run_context.converge }
 
     assert !execution_record.task.action1_ran
     assert !execution_record.task.action2_ran
