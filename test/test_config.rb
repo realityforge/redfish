@@ -17,7 +17,7 @@ require File.expand_path('../helper', __FILE__)
 class Redfish::TestConfig < Redfish::TestCase
 
   def test_default_glassfish_home
-    assert_raise(RuntimeError, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Context.default_glassfish_home = '/path/to/glassfish'") { Redfish::Config.default_glassfish_home }
+    assert_raise(RuntimeError, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'") { Redfish::Config.default_glassfish_home }
 
     ENV['GLASSFISH_HOME'] = 'X'
     begin

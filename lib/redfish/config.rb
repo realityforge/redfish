@@ -20,7 +20,7 @@ module Redfish
       def default_glassfish_home
         @default_glassfish_home ||
           ENV['GLASSFISH_HOME'] ||
-          (Redfish.error("Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Context.default_glassfish_home = '/path/to/glassfish'"))
+          (Redfish.error("Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'"))
       end
 
       attr_writer :default_domains_directory
