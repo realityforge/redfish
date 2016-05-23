@@ -18,13 +18,14 @@ module Redfish
       private
 
       attribute :name, :kind_of => String, :required => true, :identity_field => true
-      attribute :restype, :equal_to => %w(javax.jms.Topic javax.jms.Queue javax.jms.ConnectionFactory javax.jms.TopicConnectionFactory javax.jms.QueueConnectionFactory), :required => true
+      attribute :restype, :equal_to => %w(javax.jms.Topic javax.jms.Queue javax.jms.ConnectionFactory javax.jms.TopicConnectionFactory javax.jms.QueueConnectionFactory)
       attribute :enabled, :type => :boolean, :default => true
       attribute :description, :kind_of => String, :default => ''
       attribute :properties, :kind_of => Hash, :default => {}
       attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
       action :create do
+        raise 'The property restype must be set for jms resource' if self.restype.nil?
         self.properties.keys.each do |k|
           raise "The property '#{k}' is not valid for the resource type '#{restype}'. Valid properties include: #{valid_properties.inspect}" unless valid_properties.include?(k)
         end
