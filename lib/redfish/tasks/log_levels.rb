@@ -22,7 +22,7 @@ module Redfish
 
       def validate_levels(levels)
         levels.each_pair do |key, value|
-          unless %w(SEVERE WARNING INFO CONFIG FINE FINER FINSEST ALL).include?(value)
+          unless %w(SEVERE WARNING INFO CONFIG FINE FINER FINEST ALL OFF).include?(value)
             raise "Log level '#{key}' has an unknown level #{value}"
           end
         end
