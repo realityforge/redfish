@@ -34,6 +34,9 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config/redfish.password")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_stop")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_start")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_restart")).returns('')
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
@@ -79,6 +82,22 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 #!/bin/sh
 
 /opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 "$@"
+    CMD
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
     CMD
   end
 

@@ -174,16 +174,25 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         end
         FileUtils.chmod 0400, pass_file
         FileUtils.chown context.system_user, context.system_group, pass_file if context.system_user || context.system_group
-        cmd = "#{context.domain_directory}/bin/asadmin"
-        File.open(cmd, 'wb') do |f|
-          f.write <<-SH
+        prefix = ''
+        prefix = "--domaindir #{context.domains_directory}" if context.domains_directory
+        {
+          'asadmin' => '"$@"',
+          'asadmin_stop' => "stop-domain #{prefix} \"$@\" #{context.domain_name}",
+          'asadmin_start' => "start-domain #{prefix} \"$@\" #{context.domain_name}",
+          'asadmin_restart' => "restart-domain #{prefix} \"$@\" #{context.domain_name}",
+        }.each do |key, script|
+          cmd = "#{context.domain_directory}/bin/#{key}"
+          File.open(cmd, 'wb') do |f|
+            f.write <<-SH
 #!/bin/sh
 
-#{context.build_command('"$@"', [], :remote_command => true, :terse => false, :echo => true, :sudo => false).join(' ')}
-          SH
+#{context.build_command(script, [], :remote_command => true, :terse => false, :echo => true, :sudo => false).join(' ')}
+            SH
+          end
+          FileUtils.chmod 0700, cmd
+          FileUtils.chown context.system_user, context.system_group, cmd if context.system_user || context.system_group
         end
-        FileUtils.chmod 0700, cmd
-        FileUtils.chown context.system_user, context.system_group, cmd if context.system_user || context.system_group
 
         # Remove all the unnecessary files that come with the template
         FileUtils.rm_f "#{context.domain_directory}/docroot/index.html"
