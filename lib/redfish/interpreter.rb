@@ -371,7 +371,7 @@ module Redfish #nodoc
         else
           admin_object = data['resource_adapters']['jmsra']['admin_objects'][key]
           admin_object['restype'] = jms_config['restype']
-          admin_object['description'] = jms_config['description']
+          admin_object['description'] = jms_config['description'] if jms_config.key?('description')
           jms_config['properties'].each_pair do |property_key, property_value|
             admin_object['properties'][property_key] = property_value
           end
