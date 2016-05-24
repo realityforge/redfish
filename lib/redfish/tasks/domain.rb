@@ -125,18 +125,24 @@ module Redfish
         args = []
         args << '--checkports=false'
         args << '--savelogin=false'
-        args << '--savemasterpassword=false'
-        temp_file = nil
+
+        # If we are not running in secure mode then we assume it is safe to save the password
+        # to the file system as that is what IDEs and other tools will use
+        args << (context.domain_secure ? '--savemasterpassword=false' : '--savemasterpassword=true')
+
+        temp_file = Tempfile.new("#{context.domain_name}create")
+        temp_file.write("AS_ADMIN_MASTERPASSWORD=#{context.domain_master_password}\n")
+        temp_file.write("AS_ADMIN_PASSWORD=#{context.domain_password}\n")
         if context.domain_password
-
-          temp_file = Tempfile.new("#{context.domain_name}create")
-          temp_file.write("AS_ADMIN_MASTERPASSWORD=#{context.domain_password}\nAS_ADMIN_PASSWORD=#{context.domain_password}\n")
-          temp_file.close
-
-          options[:domain_password_file] = temp_file.path
           args << '--nopassword=false'
-          args << '--usemasterpassword=true'
+        else
+          args << '--nopassword=true'
         end
+        temp_file.close
+
+        options[:domain_password_file] = temp_file.path
+
+        args << '--usemasterpassword=true'
         args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
         args << '--template' << self.template.to_s if self.template
         args << '--keytooloptions' << "CN=#{self.common_name}" if self.common_name
@@ -167,7 +173,7 @@ module Redfish
         pass_file = context.domain_password_file_location
         File.open(pass_file, 'wb') do |f|
           f.write <<-PASS
-AS_ADMIN_MASTERPASSWORD=#{context.domain_password}
+AS_ADMIN_MASTERPASSWORD=#{context.domain_master_password}
 AS_ADMIN_PASSWORD=#{context.domain_password}
           PASS
         end

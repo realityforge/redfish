@@ -40,8 +40,108 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
-                                 equals(%W(--checkports=false --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} --template payara --keytooloptions CN=MyHost.example.com --domainproperties domain.adminPort=4848:domain.instancePort=1:domain.jmxPort=1:http.ssl.port=1:java.debugger.port=1:jms.port=1:orb.listener.port=1:orb.mutualauth.port=1:orb.ssl.port=1:osgi.shell.telnet.port=1 domain1)),
-                                 equals({})).
+                                 equals(%W(--checkports=false --savelogin=false --savemasterpassword=true --nopassword=true --usemasterpassword=true --domaindir #{test_domains_dir} --template payara --keytooloptions CN=MyHost.example.com --domainproperties domain.adminPort=4848:domain.instancePort=1:domain.jmxPort=1:http.ssl.port=1:java.debugger.port=1:jms.port=1:orb.listener.port=1:orb.mutualauth.port=1:orb.ssl.port=1:osgi.shell.telnet.port=1 domain1)),
+                                 has_key(:domain_password_file)).
+      returns('')
+
+    t.template = 'payara'
+    t.common_name = 'MyHost.example.com'
+
+    props = {}
+
+    %w(domain.adminPort domain.instancePort domain.jmxPort http.ssl.port java.debugger.port jms.port orb.listener.port orb.mutualauth.port orb.ssl.port osgi.shell.telnet.port).each do |key|
+      props[key] = 1
+      props[key] = t.context.domain_admin_port if key == 'domain.adminPort'
+    end
+    t.properties = props
+
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/docroot/index.html"))
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/restrict.server.policy"))
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/javaee.server.policy"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/autodeploy"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/init-info"))
+
+    gitkeep_file = "#{t.context.domain_directory}/config/.gitkeep"
+    Dir.expects(:[]).with(equals("#{t.context.domain_directory}/**/.gitkeep")).returns([gitkeep_file])
+    FileUtils.expects(:rm_f).with(equals(gitkeep_file))
+
+    t.perform_action(:create)
+
+    FileUtils.unstub(:rm_f)
+    FileUtils.unstub(:rm_rf)
+
+    ensure_task_updated_by_last_action(t)
+
+    assert File.directory?("#{test_domains_dir}/domain1/bin")
+    assert File.directory?("#{test_domains_dir}/domain1/lib")
+    assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
+    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
+    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_stop")
+    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_start")
+    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_restart")
+
+    # Master password synthesized
+    assert IO.read(t.context.domain_password_file_location) =~ /^AS_ADMIN_MASTERPASSWORD\=.+\nAS_ADMIN_PASSWORD=\n$/
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 "$@"
+    CMD
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+  end
+
+  def test_create_with_most_common_options
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-domain'),
+                                 equals(%W(--checkports=false --savelogin=false --savemasterpassword=true --nopassword=true --usemasterpassword=true --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
+                                 has_key(:domain_password_file)).
+      returns('')
+
+    t.perform_action(:create)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_create_when_not_present_and_no_admin_password
+    executor = Redfish::Executor.new
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   false,
+                                   'admin',
+                                   nil,
+                                   {
+                                     :domains_directory => test_domains_dir,
+                                     :domain_master_password => 'secret'
+                                   }
+    )
+
+    t = new_task_with_context(context)
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-domain'),
+                                 equals(%W(--checkports=false --savelogin=false --savemasterpassword=true --nopassword=true --usemasterpassword=true --domaindir #{test_domains_dir} --template payara --keytooloptions CN=MyHost.example.com --domainproperties domain.adminPort=4848:domain.instancePort=1:domain.jmxPort=1:http.ssl.port=1:java.debugger.port=1:jms.port=1:orb.listener.port=1:orb.mutualauth.port=1:orb.ssl.port=1:osgi.shell.telnet.port=1 domain1)),
+                                 has_key(:domain_password_file)).
       returns('')
 
     t.template = 'payara'
@@ -77,8 +177,12 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
     assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
 
-    cmd_script = IO.read("#{test_domains_dir}/domain1/bin/asadmin")
-    assert_equal cmd_script, <<-CMD
+    assert_equal IO.read(context.domain_password_file_location), <<-CMD
+AS_ADMIN_MASTERPASSWORD=secret
+AS_ADMIN_PASSWORD=
+    CMD
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
 #!/bin/sh
 
 /opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 "$@"
@@ -101,19 +205,88 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     CMD
   end
 
-  def test_create_with_most_common_options
+  def test_create_when_not_present_and_admin_password
     executor = Redfish::Executor.new
-    t = new_task_with_context(create_simple_context(executor))
+    context = Redfish::Context.new(executor,
+                                   '/opt/payara-4.1.151/',
+                                   'domain1',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   'secret1',
+                                   {
+                                     :domains_directory => test_domains_dir,
+                                     :domain_master_password => 'secret'
+                                   }
+    )
+
+    t = new_task_with_context(context)
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-domain'),
-                                 equals(%W(--checkports=false --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
-                                 equals({})).
+                                 equals(%W(--checkports=false --savelogin=false --savemasterpassword=false --nopassword=false --usemasterpassword=true --domaindir #{test_domains_dir} --template payara --keytooloptions CN=MyHost.example.com --domainproperties domain.adminPort=4848:domain.instancePort=1:domain.jmxPort=1:http.ssl.port=1:java.debugger.port=1:jms.port=1:orb.listener.port=1:orb.mutualauth.port=1:orb.ssl.port=1:osgi.shell.telnet.port=1 domain1)),
+                                 has_key(:domain_password_file)).
       returns('')
+
+    t.template = 'payara'
+    t.common_name = 'MyHost.example.com'
+
+    props = {}
+
+    %w(domain.adminPort domain.instancePort domain.jmxPort http.ssl.port java.debugger.port jms.port orb.listener.port orb.mutualauth.port orb.ssl.port osgi.shell.telnet.port).each do |key|
+      props[key] = 1
+      props[key] = t.context.domain_admin_port if key == 'domain.adminPort'
+    end
+    t.properties = props
+
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/docroot/index.html"))
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/restrict.server.policy"))
+    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/javaee.server.policy"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/autodeploy"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/init-info"))
+
+    gitkeep_file = "#{t.context.domain_directory}/config/.gitkeep"
+    Dir.expects(:[]).with(equals("#{t.context.domain_directory}/**/.gitkeep")).returns([gitkeep_file])
+    FileUtils.expects(:rm_f).with(equals(gitkeep_file))
 
     t.perform_action(:create)
 
+    FileUtils.unstub(:rm_f)
+    FileUtils.unstub(:rm_rf)
+
     ensure_task_updated_by_last_action(t)
+
+    assert File.directory?("#{test_domains_dir}/domain1/bin")
+    assert File.directory?("#{test_domains_dir}/domain1/lib")
+    assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
+    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
+
+    assert_equal IO.read(context.domain_password_file_location), <<-CMD
+AS_ADMIN_MASTERPASSWORD=secret
+AS_ADMIN_PASSWORD=secret1
+    CMD
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 "$@"
+    CMD
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
   end
 
   def test_create_with_mismatched_aadmin_port

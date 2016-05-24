@@ -179,8 +179,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       executor.expects(:exec).
         with(equals(context),
              equals('create-domain'),
-             equals(%W(--checkports=false --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
-             equals({})).
+             equals(%W(--checkports=false --savelogin=false --savemasterpassword=true --nopassword=true --usemasterpassword=true --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
+             has_key(:domain_password_file)).
         returns('')
       executor.expects(:exec).
         with(equals(context),
