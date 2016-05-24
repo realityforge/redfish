@@ -128,7 +128,6 @@ module Redfish
         args << '--savemasterpassword=false'
         temp_file = nil
         if context.domain_password
-          require 'tempfile'
 
           temp_file = Tempfile.new("#{context.domain_name}create")
           temp_file.write("AS_ADMIN_MASTERPASSWORD=#{context.domain_password}\nAS_ADMIN_PASSWORD=#{context.domain_password}\n")
