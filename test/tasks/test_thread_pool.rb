@@ -321,6 +321,7 @@ class Redfish::Tasks::TestThreadPool < Redfish::Tasks::BaseTaskTest
   # Properties in GlassFish properties directory
   def expected_local_properties
     {
+      'classname' => 'org.glassfish.grizzly.threadpool.GrizzlyExecutorService',
       'idle-thread-timeout-seconds' => '850',
       'max-thread-pool-size' => '100',
       'min-thread-pool-size' => '10',

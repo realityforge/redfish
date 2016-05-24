@@ -42,7 +42,7 @@ module Redfish
       end
 
       def properties_to_record_in_create
-        {}
+        {'name' => self.name}
       end
 
       def properties_to_set_in_create
@@ -52,6 +52,7 @@ module Redfish
         property_map['max-thread-pool-size'] = self.maxthreadpoolsize
         property_map['min-thread-pool-size'] = self.minthreadpoolsize
         property_map['max-queue-size'] = self.maxqueuesize
+        property_map['classname'] = 'org.glassfish.grizzly.threadpool.GrizzlyExecutorService'
 
         property_map
       end
