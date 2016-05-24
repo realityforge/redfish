@@ -391,10 +391,12 @@ module Redfish #nodoc
     def domain_options(domain_data)
       options = {}
 
-      options['template'] = domain_data['template']
-      options['max_mx_wait_time'] = domain_data['max_mx_wait_time']
-      options['common_name'] = domain_data['common_name']
-      options['properties'] = (domain_data['properties'] || {}).dup
+      options['template'] = domain_data['template'] if domain_data['template']
+      options['max_mx_wait_time'] = domain_data['max_mx_wait_time'] if domain_data['max_mx_wait_time']
+      options['common_name'] = domain_data['common_name'] if domain_data['common_name']
+      options['properties'] = domain_data['properties'].dup if domain_data['properties']
+
+      options
     end
 
     def interpret_jvm_options(run_context, config)
