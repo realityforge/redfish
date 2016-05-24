@@ -43,6 +43,7 @@ class Redfish::TestContext < Redfish::TestCase
     assert_equal context.domain_secure, domain_secure
     assert_equal context.domain_username, domain_username
     assert_equal context.domain_password, domain_password
+    assert_equal context.domain_master_password, domain_password
 
     assert_equal context.terse?, true
     assert_equal context.echo?, true
@@ -50,6 +51,32 @@ class Redfish::TestContext < Redfish::TestCase
     assert_equal context.system_group, system_group
 
     assert !context.property_cache?
+  end
+
+  def test_domain_master_password_can_be_set
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   '/opt/glassfish',
+                                   'appserver',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   'mypassword',
+                                   :domain_master_password => 'X')
+
+    assert_equal context.domain_master_password, 'X'
+  end
+
+  def test_domain_master_password_has_reasonable_default_when_password_null
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   '/opt/glassfish',
+                                   'appserver',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   nil)
+
+    assert !context.domain_master_password.nil?
+    assert_equal context.domain_master_password.size, 10
   end
 
   def test_dirs_cleaned_of_trailing_slash

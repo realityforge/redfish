@@ -27,6 +27,8 @@ module Redfish
     attr_reader :domain_username
     # The password to use when communicating with the domain.
     attr_reader :domain_password
+    # The password to use when accessing keystore.
+    attr_reader :domain_master_password
 
     # Use terse output from the underlying asadmin.
     def terse?
@@ -64,6 +66,7 @@ module Redfish
       @authbind_executable = options[:authbind_executable]
       @property_cache = nil
       @restart_required = false
+      @domain_master_password = options[:domain_master_password] || @domain_password || Redfish::Util.generate_password
     end
 
     # Directory of specific domain context is referencing

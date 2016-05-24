@@ -18,9 +18,9 @@ module Redfish
       @name = name
       @data = Redfish::Mash.new
       @secure = true
-      @port = nil
-      @admin_username = nil
-      @admin_password = nil
+      @admin_port = 4848
+      @admin_username = 'admin'
+      @admin_password = Redfish::Util.generate_password
       @glassfish_home = nil
       @domains_directory = nil
       super(options, &block)
@@ -29,29 +29,19 @@ module Redfish
     attr_reader :name
     attr_reader :data
 
+    # If true use SSL when communicating with the domain for administration. Assumes the domain is in secure mode.
     def secure?
       !!@secure
     end
 
     attr_writer :secure
-
-    def port
-      @port || 4848
-    end
-
-    attr_writer :port
-
-    def admin_username
-      @admin_username || 'admin'
-    end
-
-    attr_writer :admin_username
-
-    def admin_password
-      @admin_password ||= 10.times.map { [*('0'..'9'), *('A'..'Z'), *('a'..'z')].sample }.join
-    end
-
-    attr_writer :admin_password
+    attr_accessor :admin_port
+    # The username to use when communicating with the domain.
+    attr_accessor :admin_username
+    # The password to use when communicating with the domain.
+    attr_accessor :admin_password
+    # The password to use when accessing keystore.
+    attr_accessor :master_password
 
     def glassfish_home
       @glassfish_home || Redfish::Config.default_glassfish_home
@@ -59,21 +49,50 @@ module Redfish
 
     attr_writer :glassfish_home
 
+    # The directory that contains the domains. If nil then assumes the default directory.
     def domains_directory
       @domains_directory || Redfish::Config.default_domains_directory
     end
 
     attr_writer :domains_directory
+    # The path to the authbind executable, if glassfish must run as a subprocess of authbind.
+    attr_accessor :authbind_executable
+    # The user that the asadmin command executes as.
+    attr_accessor :system_user
+    # The group that the asadmin command executes as.
+    attr_accessor :system_group
+
+    # Use terse output from the underlying asadmin.
+    def terse?
+      !!@terse
+    end
+
+    attr_writer :terse
+
+    #If true, echo commands supplied to asadmin.
+    def echo?
+      !!@echo
+    end
+
+    attr_writer :echo
 
     def to_task_context(executor = Redfish::Executor.new)
       Redfish::Context.new(executor,
                            self.glassfish_home,
                            self.name,
-                           self.port,
+                           self.admin_port,
                            self.secure?,
                            self.admin_username,
                            self.admin_password,
-                           {:domains_directory => self.domains_directory})
+                           {
+                             :terse => self.terse?,
+                             :echo => self.echo?,
+                             :domain_master_password => self.master_password,
+                             :system_user => self.system_user,
+                             :system_group => self.system_group,
+                             :authbind_executable => self.authbind_executable,
+                             :domains_directory => self.domains_directory
+                           })
     end
   end
 end
