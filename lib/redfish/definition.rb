@@ -18,6 +18,8 @@ module Redfish
       @name = name
       @data = Redfish::Mash.new
       @secure = true
+      @echo = false
+      @terse = false
       @admin_port = 4848
       @admin_username = 'admin'
       @admin_password = Redfish::Util.generate_password
