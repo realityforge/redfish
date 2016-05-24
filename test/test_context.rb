@@ -103,6 +103,14 @@ class Redfish::TestContext < Redfish::TestCase
     assert_equal context.restart_required?, false
   end
 
+  def test_domain_started
+    context = create_simple_context
+
+    assert_equal context.domain_started?, false
+    context.domain_started!
+    assert_equal context.domain_started?, true
+  end
+
   def test_domain_dir_when_domains_directory_specified
     context = Redfish::Context.new(Redfish::Executor.new,
                                    '/opt/glassfish/',

@@ -66,6 +66,7 @@ module Redfish
       @authbind_executable = options[:authbind_executable]
       @property_cache = nil
       @restart_required = false
+      @domain_started = false
       @domain_master_password = options[:domain_master_password] || @domain_password || Redfish::Util.generate_password
     end
 
@@ -83,6 +84,14 @@ module Redfish
 
     def domain_password_file_location
       "#{domain_directory}/config/redfish.password"
+    end
+
+    def domain_started!
+      @domain_started = true
+    end
+
+    def domain_started?
+      @domain_started
     end
 
     def restart_required?
