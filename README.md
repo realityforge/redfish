@@ -10,7 +10,6 @@ Note: Items marked with (C) are required to convert chef infrastructure over, (L
 replace setup.sh infrastructure, (D) for docker integration.
 
 * Enhance Json DSL
-    * Enhance domain configuration so can be shutdown if "created" (L), (D)
     * Add tests for domain interpretation - create phase as well as restart_if_required (C), (D), (L)
     * Enable removal of un defined jms_resource/admin_object elements. (C)
     * Raise an exception if any unprocessed data unless attribute starts with \_

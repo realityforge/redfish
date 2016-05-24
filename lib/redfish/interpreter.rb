@@ -287,6 +287,8 @@ module Redfish #nodoc
 
       run_context.task('property_cache', 'banner' => 'End of Converge Property Diff').action(:diff) unless interpret_options['diff_on_completion'].to_s == 'false'
       run_context.task('property_cache').action(:destroy)
+
+      run_context.task('domain', domain_options).action(:complete)
     end
 
     def restart_domain_if_required(run_context, domain_options)
@@ -393,6 +395,7 @@ module Redfish #nodoc
 
       options['template'] = domain_data['template'] if domain_data['template']
       options['max_mx_wait_time'] = domain_data['max_mx_wait_time'] if domain_data['max_mx_wait_time']
+      options['shutdown_on_complete'] = domain_data['shutdown_on_complete'] if domain_data['shutdown_on_complete']
       options['common_name'] = domain_data['common_name'] if domain_data['common_name']
       options['properties'] = domain_data['properties'].dup if domain_data['properties']
 

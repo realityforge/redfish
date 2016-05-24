@@ -24,6 +24,8 @@ module Redfish
       attribute :properties, :kind_of => Hash, :default => {}
       # Maximum time to wait for the management interface to become active
       attribute :max_mx_wait_time, :type => :integer, :default => 120
+      # If redfish started the domain, then shut it down during complete
+      attribute :shutdown_on_complete, :type => :boolean, :default => false
 
       # When checking whether the domain needs a restart, only check the context and don't run asadmin command
       attribute :context_only, :type => :boolean, :default => false
@@ -53,6 +55,14 @@ module Redfish
       action :stop do
         if running?
           do_stop
+
+          updated_by_last_action
+        end
+      end
+
+      action :complete do
+        if self.shutdown_on_complete && context.domain_started? && running?
+          do_complete
 
           updated_by_last_action
         end
@@ -224,6 +234,8 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         args << context.domain_name.to_s
 
         context.exec('start-domain', args)
+
+        context.domain_started!
       end
 
       def do_stop
@@ -235,6 +247,25 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         args << context.domain_name.to_s
 
         context.exec('stop-domain', args)
+      end
+
+      def do_complete
+        do_stop
+
+        FileUtils.rm_f "#{context.domain_directory}/config/.consolestate"
+        FileUtils.rm_f "#{context.domain_directory}/config/.instancestate"
+        FileUtils.rm_f "#{context.domain_directory}/config/pid.prev"
+        FileUtils.rm_f "#{context.domain_directory}/config/derby.log"
+        FileUtils.rm_f "#{context.domain_directory}/config/domain.xml.bak"
+        FileUtils.rm_rf "#{context.domain_directory}/autodeploy"
+        FileUtils.rm_rf "#{context.domain_directory}/config/init.conf"
+        FileUtils.rm_rf "#{context.domain_directory}/logs/server.log"
+
+        # GlassFish/Payara will recreate it if required
+        FileUtils.rm_rf "#{context.domain_directory}/imq"
+
+        # GlassFish/Payara will recreate it if required
+        FileUtils.rm_rf "#{context.domain_directory}/lib/databases/embedded_default"
       end
 
       def do_restart(options = {})

@@ -371,7 +371,11 @@ AS_ADMIN_PASSWORD=secret1
                                  equals({})).
       returns('')
 
+    assert !t.context.domain_started?
+
     t.perform_action(:start)
+
+    assert t.context.domain_started?
 
     ensure_task_updated_by_last_action(t)
   end
@@ -437,6 +441,88 @@ AS_ADMIN_PASSWORD=secret1
       returns('domain1 not running')
 
     t.perform_action(:stop)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
+  def test_complete
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domains_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 running')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('stop-domain'),
+                                 equals(%W(--force=true --kill=false --domaindir #{test_domains_dir} domain1)),
+                                 equals({})).
+      returns('')
+
+    t.shutdown_on_complete = true
+    t.context.domain_started!
+
+    %W{ #{t.context.domain_directory}/config/.consolestate
+        #{t.context.domain_directory}/config/.instancestate
+        #{t.context.domain_directory}/config/pid.prev
+        #{t.context.domain_directory}/config/derby.log
+        #{t.context.domain_directory}/config/domain.xml.bak }.each do |file|
+      FileUtils.expects(:rm_f).with(equals(file))
+    end
+    %W{ #{t.context.domain_directory}/autodeploy
+        #{t.context.domain_directory}/config/init.conf
+        #{t.context.domain_directory}/logs/server.log
+        #{t.context.domain_directory}/imq
+        #{t.context.domain_directory}/lib/databases/embedded_default }.each do |file|
+      FileUtils.expects(:rm_rf).with(equals(file))
+    end
+
+    t.perform_action(:complete)
+
+    FileUtils.unstub(:rm_f)
+    FileUtils.unstub(:rm_rf)
+
+    ensure_task_updated_by_last_action(t)
+  end
+
+  def test_complete_not_started_by_redfish
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor))
+
+    t.shutdown_on_complete = true
+
+    t.perform_action(:complete)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
+  def test_complete_not_shutdown_on_complete
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor))
+
+    t.shutdown_on_complete = false
+    t.context.domain_started!
+
+    t.perform_action(:complete)
+
+    ensure_task_not_updated_by_last_action(t)
+  end
+
+  def test_complete_not_running
+    executor = Redfish::Executor.new
+    t = new_task_with_context(create_simple_context(executor))
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('list-domains'),
+                                 equals(%W(--domaindir #{test_domains_dir})),
+                                 equals({:terse => true, :echo => false})).
+      returns('domain1 not running')
+
+    t.shutdown_on_complete = true
+    t.context.domain_started!
+
+    t.perform_action(:complete)
 
     ensure_task_not_updated_by_last_action(t)
   end
