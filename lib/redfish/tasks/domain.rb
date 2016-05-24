@@ -302,7 +302,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
       def running?
         args = []
         args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
-        (context.exec('list-domains', args, :terse => true, :echo => false) =~ /^#{Regexp.escape(context.domain_name)} running(, restart required to apply configuration changes)?$/)
+        !!(context.exec('list-domains', args, :terse => true, :echo => false) =~ /^#{Regexp.escape(context.domain_name)} running(, restart required to apply configuration changes)?$/)
       end
 
       def is_url_responding_with_ok?(url, username, password)
