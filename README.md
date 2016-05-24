@@ -19,7 +19,7 @@ replace setup.sh infrastructure, (D) for docker integration.
   "secure" flag is set then define an admin realm. (D), (L)
 
 * Enable reload of applications under conditions such as;
-  - underlying resources updated that are used by application. Do this by extra listeners that use additional rules.
+  - underlying resources updated that are used by application. Do this by extra listeners that use additional rules. (C)
 
 * Add integration level tests (C)
 
