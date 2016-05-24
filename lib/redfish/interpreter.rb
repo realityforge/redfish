@@ -191,25 +191,7 @@ module Redfish #nodoc
         restart_domain_if_required(run_context, domain_options)
       end
 
-      libraries = psort(data['libraries'])
-      libraries.values.each do |config|
-        interpret_library(run_context, config)
-      end
-      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
-
-      interpret_realm_types(run_context, data['realm_types'] || {})
-      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
-
-      thread_pools = psort(data['thread_pools'])
-      thread_pools.each_pair do |key, config|
-        interpret_thread_pool(run_context, key, config)
-      end
-      restart_domain_if_required(run_context, domain_options)
-
-      iiop_listeners = psort(data['iiop_listeners'])
-      iiop_listeners.each_pair do |key, config|
-        interpret_iiop_listener(run_context, key, config)
-      end
+      interpret_system_facilities(run_context, data, domain_options)
 
       context_services = psort(data['context_services'])
       context_services.each_pair do |key, config|
@@ -230,23 +212,6 @@ module Redfish #nodoc
       managed_scheduled_executor_services.each_pair do |key, config|
         interpret_managed_scheduled_executor_service(config, key, run_context)
       end
-
-      psort(data['properties']).each_pair do |key, config|
-        interpret_property(run_context, key, config)
-      end
-      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
-
-      auth_realms = psort(data['auth_realms'])
-      auth_realms.each_pair do |key, config|
-        interpret_auth_realm(run_context, key, config)
-      end
-      restart_domain_if_required(run_context, domain_options)
-
-      jms_hosts = psort(data['jms_hosts'])
-      jms_hosts.each_pair do |key, config|
-        interpret_jms_hosts(run_context, key, config)
-      end
-      restart_domain_if_required(run_context, domain_options)
 
       jdbc_connection_pools = psort(data['jdbc_connection_pools'])
       jdbc_connection_pools.each_pair do |key, config|
@@ -298,14 +263,6 @@ module Redfish #nodoc
         run_context.task('jdbc_connection_pool_cleaner', 'expected' => jdbc_connection_pools.keys).action(:clean)
       end
 
-      if managed?(data['auth_realms'])
-        run_context.task('auth_realm_cleaner', 'expected' => auth_realms.keys).action(:clean)
-      end
-
-      if managed?(data['jms_hosts'])
-        run_context.task('jms_host_cleaner', 'expected' => jms_hosts.keys).action(:clean)
-      end
-
       if managed?(data['managed_scheduled_executor_services'])
         run_context.task('managed_scheduled_executor_service_cleaner',
                          'expected' => managed_scheduled_executor_services.keys).
@@ -326,6 +283,58 @@ module Redfish #nodoc
         run_context.task('context_service_cleaner', 'expected' => context_services.keys).action(:clean)
       end
 
+      restart_domain_if_required(run_context, domain_options)
+
+      run_context.task('property_cache', 'banner' => 'End of Converge Property Diff').action(:diff) unless interpret_options['diff_on_completion'].to_s == 'false'
+      run_context.task('property_cache').action(:destroy)
+    end
+
+    def restart_domain_if_required(run_context, domain_options)
+      run_context.task('domain', domain_options).action(:restart_if_required)
+    end
+
+    private
+
+    def interpret_system_facilities(run_context, data, domain_options)
+      libraries = psort(data['libraries'])
+      libraries.values.each do |config|
+        interpret_library(run_context, config)
+      end
+      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
+
+      interpret_realm_types(run_context, data['realm_types'] || {})
+      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
+
+      thread_pools = psort(data['thread_pools'])
+      thread_pools.each_pair do |key, config|
+        interpret_thread_pool(run_context, key, config)
+      end
+      restart_domain_if_required(run_context, domain_options)
+
+      iiop_listeners = psort(data['iiop_listeners'])
+      iiop_listeners.each_pair do |key, config|
+        interpret_iiop_listener(run_context, key, config)
+      end
+
+      auth_realms = psort(data['auth_realms'])
+      auth_realms.each_pair do |key, config|
+        interpret_auth_realm(run_context, key, config)
+      end
+      restart_domain_if_required(run_context, domain_options)
+
+      jms_hosts = psort(data['jms_hosts'])
+      jms_hosts.each_pair do |key, config|
+        interpret_jms_hosts(run_context, key, config)
+      end
+
+      if managed?(data['auth_realms'])
+        run_context.task('auth_realm_cleaner', 'expected' => auth_realms.keys).action(:clean)
+      end
+
+      if managed?(data['jms_hosts'])
+        run_context.task('jms_host_cleaner', 'expected' => jms_hosts.keys).action(:clean)
+      end
+
       if managed?(data['iiop_listeners'])
         run_context.task('iiop_listener_cleaner', 'expected' => iiop_listeners.keys).action(:clean)
       end
@@ -343,15 +352,11 @@ module Redfish #nodoc
 
       restart_domain_if_required(run_context, domain_options)
 
-      run_context.task('property_cache', 'banner' => 'End of Converge Property Diff').action(:diff) unless interpret_options['diff_on_completion'].to_s == 'false'
-      run_context.task('property_cache').action(:destroy)
+      psort(data['properties']).each_pair do |key, config|
+        interpret_property(run_context, key, config)
+      end
+      restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
     end
-
-    def restart_domain_if_required(run_context, domain_options)
-      run_context.task('domain', domain_options).action(:restart_if_required)
-    end
-
-    private
 
     def mirror_jms_resources(data)
       data['jms_resources'].each_pair do |key, jms_config|
