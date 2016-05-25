@@ -183,14 +183,6 @@ module Redfish #nodoc
       run_context.task('domain', domain_options).action(:ensure_active)
       run_context.task('property_cache').action(:create)
 
-      interpret_jvm_options(run_context, data['jvm_options'] || {})
-      restart_domain_if_required(run_context, domain_options)
-
-      if managed?(data['logging'])
-        interpret_logging(run_context, data['logging'] || {})
-        restart_domain_if_required(run_context, domain_options)
-      end
-
       interpret_system_facilities(run_context, data, domain_options)
 
       context_services = psort(data['context_services'])
@@ -298,6 +290,14 @@ module Redfish #nodoc
     private
 
     def interpret_system_facilities(run_context, data, domain_options)
+      interpret_jvm_options(run_context, data['jvm_options'] || {})
+      restart_domain_if_required(run_context, domain_options)
+
+      if managed?(data['logging'])
+        interpret_logging(run_context, data['logging'] || {})
+        restart_domain_if_required(run_context, domain_options)
+      end
+
       libraries = psort(data['libraries'])
       libraries.values.each do |config|
         interpret_library(run_context, config)
