@@ -38,6 +38,14 @@ class Redfish::TestConfig < Redfish::TestCase
     end
   end
 
+  def test_task_prefix
+    assert_equal Redfish::Config.task_prefix, 'redfish'
+    Redfish::Config.task_prefix = 'Y'
+    assert_equal Redfish::Config.task_prefix, 'Y'
+    Redfish::Config.task_prefix = nil
+    assert_equal Redfish::Config.task_prefix, 'redfish'
+  end
+
   def test_default_domains_directory
     Redfish::Config.default_glassfish_home = 'Y'
     assert_equal Redfish::Config.default_domains_directory, 'Y/glassfish/domains'

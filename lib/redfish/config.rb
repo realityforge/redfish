@@ -15,6 +15,12 @@
 module Redfish
   class Config
     class << self
+      attr_writer :task_prefix
+
+      def task_prefix
+        @task_prefix || 'redfish'
+      end
+
       attr_writer :default_glassfish_home
 
       def default_glassfish_home
