@@ -14,10 +14,6 @@ replace setup.sh infrastructure, (D) for docker integration.
     * Raise an exception if any unprocessed data unless attribute starts with \_
     * Allow global ordering of items across elements. Make priority a string with two numbers? "10:10" (C), (D), (L)
 
-* Enhance this project or another addon lib (buildr_plus?) to pragmatically generate the json definition.
-  Add all sorts of short cuts as per our current chef infrastructure. Also new short cuts such as if the
-  "secure" flag is set then define an admin realm. (D), (L)
-
 * Enable reload of applications under conditions such as;
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules. (C)
 
