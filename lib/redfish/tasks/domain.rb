@@ -328,7 +328,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
       end
 
       def instance_key
-        "name=#{context.domain_name} dir=#{context.domain_directory}"
+        "name=#{context.domain_name}"
       end
 
       def running?
