@@ -63,4 +63,12 @@ class Redfish::TestConfig < Redfish::TestCase
     assert_equal Redfish::Config.default_domains?('myapp'), true
     assert_equal Redfish::Config.default_domains?(:myapp), true
   end
+
+  def test_base_directory
+    assert_equal Redfish::Config.base_directory, '.'
+    Redfish::Config.base_directory = 'X'
+    assert_equal Redfish::Config.base_directory, 'X'
+    Redfish::Config.base_directory = nil
+    assert_equal Redfish::Config.base_directory, '.'
+  end
 end

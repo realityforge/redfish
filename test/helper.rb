@@ -30,6 +30,7 @@ class Redfish::TestCase < Minitest::Test
     Redfish::Config.default_domains_directory = nil
     Redfish::Config.task_prefix = nil
     Redfish::Config.default_domain_name = nil
+    Redfish::Config.base_directory = nil
   end
 
   def teardown
