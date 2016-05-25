@@ -29,6 +29,7 @@ class Redfish::TestCase < Minitest::Test
     Redfish::Config.default_glassfish_home = nil
     Redfish::Config.default_domains_directory = nil
     Redfish::Config.task_prefix = nil
+    Redfish::Config.default_domain_name = nil
   end
 
   def teardown

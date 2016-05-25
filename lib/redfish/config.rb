@@ -35,6 +35,17 @@ module Redfish
         @default_domains_directory ||
           "#{self.default_glassfish_home}/glassfish/domains"
       end
+
+      attr_writer :default_domain_name
+
+      def default_domain_name
+        @default_domain_name || Redfish.error("Unable to determine default_domain_name. Please specify using Redfish::Config.default_domain_name = 'myapp'")
+      end
+
+      def default_domain?(domain_name)
+        return false if @default_domain_name.nil?
+        self.default_domain_name.to_s == domain_name.to_s
+      end
     end
   end
 end
