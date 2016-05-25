@@ -13,28 +13,30 @@
 #
 
 module Redfish
-  class BuildrListener
-    def on_task_start(execution_record)
-      trace("Redfish Task #{execution_record} starting")
-    end
-
-    def on_task_complete(execution_record)
-      if execution_record.action_performed_update? && is_task_interesting?(execution_record)
-        info("Redfish Task #{execution_record} performed action")
-      else
-        trace("Redfish Task #{execution_record} completed")
+  class Buildr
+    class Listener
+      def on_task_start(execution_record)
+        trace("Redfish Task #{execution_record} starting")
       end
-    end
 
-    def on_task_error(execution_record)
-      info("Redfish Task #{execution_record} resulted in error")
-    end
+      def on_task_complete(execution_record)
+        if execution_record.action_performed_update? && is_task_interesting?(execution_record)
+          info("Redfish Task #{execution_record} performed action")
+        else
+          trace("Redfish Task #{execution_record} completed")
+        end
+      end
 
-    def is_task_interesting?(execution_record)
-      return false if execution_record.action == :ensure_active && execution_record.task.class.registered_name == 'domain'
-      return false if execution_record.action == :create && execution_record.task.class.registered_name == 'property_cache'
-      return false if execution_record.action == :destroy && execution_record.task.class.registered_name == 'property_cache'
-      true
+      def on_task_error(execution_record)
+        info("Redfish Task #{execution_record} resulted in error")
+      end
+
+      def is_task_interesting?(execution_record)
+        return false if execution_record.action == :ensure_active && execution_record.task.class.registered_name == 'domain'
+        return false if execution_record.action == :create && execution_record.task.class.registered_name == 'property_cache'
+        return false if execution_record.action == :destroy && execution_record.task.class.registered_name == 'property_cache'
+        true
+      end
     end
   end
 end
