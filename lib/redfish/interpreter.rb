@@ -298,6 +298,10 @@ module Redfish #nodoc
         restart_domain_if_required(run_context, domain_options)
       end
 
+      if managed?(data['system_properties'])
+        interpret_system_properties(run_context, data['system_properties'] || {})
+      end
+
       libraries = psort(data['libraries'])
       libraries.values.each do |config|
         interpret_library(run_context, config)
@@ -431,6 +435,10 @@ module Redfish #nodoc
 
     def interpret_log_attributes(run_context, default_attributes, config)
       run_context.task('log_attributes', 'default_attributes' => default_attributes, 'attributes' => psort(config)).action(:set)
+    end
+
+    def interpret_system_properties(run_context, config)
+      run_context.task('system_properties', 'properties' => psort(config)).action(:set)
     end
 
     def interpret_realm_types(run_context, realm_types)
