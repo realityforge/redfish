@@ -31,6 +31,29 @@ module Redfish
       result
     end
 
+    def merge(other)
+      result = Mash.new
+      result.merge!(self)
+      result.merge!(other)
+      result
+    end
+
+    def merge!(other)
+      other.each_pair do |k, v|
+        if v.is_a?(Hash)
+          self[k].merge!(v)
+        elsif v.is_a?(Array)
+          if self.key?(k) && self[k].is_a?(Array)
+            self[k] = self[k].concat(v)
+          else
+            self[k] = v.dup
+          end
+        else
+          self[k] = v
+        end
+      end
+    end
+
     def self.from(hash)
       result = Mash.new
       hash.each_pair do |k, v|

@@ -70,4 +70,54 @@ class Redfish::TestMash < Redfish::TestCase
     assert_equal h['f']['f']['d'], false
     assert_equal h['f']['f']['e'], 4.3
   end
+
+  def test_merge
+    m = Redfish::Mash.new
+    m['a'] = 1
+    m['b'] = 's'
+    m['c'] = true
+    m['d'] = false
+    m['e'] = 4.3
+    m['f']['a'] = 1
+    m['f']['b']['p'] = 1
+    m['g'] = [1]
+
+    m2 = Redfish::Mash.new
+    m2['e'] = 4.2
+    m2['f']['c'] = 1
+    m2['f']['b']['q'] = 1
+    m2['g'] = [3, 4]
+
+    result = m.merge(m2)
+
+    # Make sure m has not changed
+    h = m.to_h
+    assert_equal h['g'], [1]
+    assert_equal h['a'], 1
+    assert_equal h['b'], 's'
+    assert_equal h['c'], true
+    assert_equal h['d'], false
+    assert_equal h['e'], 4.3
+    assert_equal h['f']['a'], 1
+    assert_equal h['f']['b']['p'], 1
+
+    # Make sure m2 has not changed
+    h = m2.to_h
+    assert_equal h['e'], 4.2
+    assert_equal h['f']['c'], 1
+    assert_equal h['f']['b']['q'], 1
+    assert_equal h['g'], [3, 4]
+
+    h = result.to_h
+    assert_equal h['g'], [1, 3, 4]
+    assert_equal h['a'], 1
+    assert_equal h['b'], 's'
+    assert_equal h['c'], true
+    assert_equal h['d'], false
+    assert_equal h['e'], 4.2
+    assert_equal h['f']['a'], 1
+    assert_equal h['f']['b']['p'], 1
+    assert_equal h['f']['b']['q'], 1
+    assert_equal h['f']['c'], 1
+  end
 end
