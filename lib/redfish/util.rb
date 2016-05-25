@@ -19,6 +19,16 @@ module Redfish
       def generate_password(size = 10)
         size.times.map { [*('0'..'9'), *('A'..'Z'), *('a'..'z')].sample }.join
       end
+
+      def is_buildr_present?
+        return true if defined?(::Buildr)
+        begin
+          require 'buildr'
+        rescue Exception
+          # ignored
+        end
+        defined?(::Buildr)
+      end
     end
   end
 end
