@@ -15,6 +15,15 @@
 module Redfish
   module Tasks
     class ApplicationCleaner < BaseCleanerTask
+      protected
+
+      def existing_elements
+        # Need this rather than relying on default exiting_elements as application names can
+        # have . in them such as mercury-formats-2.5 .0.war
+        context.property_cache.get_keys_starting_with(property_prefix).
+          select{ |k| k =~ /^.*\.object-type$/}.
+          collect { |k| k[property_prefix.size, k.size].gsub(/^(.+)\.object-type$/, '\1') }
+      end
     end
   end
 end

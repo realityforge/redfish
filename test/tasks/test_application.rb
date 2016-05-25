@@ -347,8 +347,8 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    existing = %w(Element1 Element2)
-    setup_interpreter_expects_with_fake_elements(executor, context, existing)
+    existing = %w(Element1 Element2-2.5.1)
+    setup_interpreter_expects_with_fake_elements(executor, context, existing, raw_property_prefix, %w(object-type))
 
     executor.expects(:exec).with(equals(context),
                                  equals('deploydir'),
@@ -376,8 +376,8 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_cleaner_task(executor)
 
-    existing = %w(Element1 Element2 Element3)
-    create_fake_elements(t.context, existing)
+    existing = %w(Element1 Element2.3-4.23 Element3)
+    create_fake_elements(t.context, existing, raw_property_prefix, %w(object-type))
 
     t.expected = existing[1, existing.size]
 

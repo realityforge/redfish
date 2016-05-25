@@ -122,7 +122,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
         libraries realm_types thread_pools iiop_listeners context_services managed_thread_factories
         managed_executor_services managed_scheduled_executor_services auth_realms jms_hosts
         jdbc_connection_pools resource_adapters jms_resources custom_resources javamail_resources
-        applications
+        applications system_properties
       ).each do |key|
         unless data.has_key?(key) && data[key].has_key?('managed')
           data[key] = {} unless data.has_key?(key)
@@ -270,8 +270,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     properties
   end
 
-  def setup_interpreter_expects_with_fake_elements(executor, context, names, property_prefix = raw_property_prefix)
-    setup_interpreter_expects(executor, context, create_fake_element_properties(names, property_prefix).collect { |k, v| "#{k}=#{v}" }.join("\n"))
+  def setup_interpreter_expects_with_fake_elements(executor, context, names, property_prefix = raw_property_prefix, attributes = %w(p q r s t u v))
+    setup_interpreter_expects(executor, context, create_fake_element_properties(names, property_prefix, attributes).collect { |k, v| "#{k}=#{v}" }.join("\n"))
   end
 
   def setup_interpreter_expects(executor, context, property_results)
