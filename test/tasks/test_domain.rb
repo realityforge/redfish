@@ -467,6 +467,7 @@ AS_ADMIN_PASSWORD=secret1
         #{t.context.domain_directory}/config/.instancestate
         #{t.context.domain_directory}/config/pid.prev
         #{t.context.domain_directory}/config/derby.log
+        #{t.context.domain_directory}/config/lockfile
         #{t.context.domain_directory}/config/domain.xml.bak }.each do |file|
       FileUtils.expects(:rm_f).with(equals(file))
     end

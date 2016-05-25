@@ -257,6 +257,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         FileUtils.rm_f "#{context.domain_directory}/config/pid.prev"
         FileUtils.rm_f "#{context.domain_directory}/config/derby.log"
         FileUtils.rm_f "#{context.domain_directory}/config/domain.xml.bak"
+        FileUtils.rm_f "#{context.domain_directory}/config/lockfile"
         FileUtils.rm_rf "#{context.domain_directory}/autodeploy"
         FileUtils.rm_rf "#{context.domain_directory}/config/init.conf"
         FileUtils.rm_rf "#{context.domain_directory}/logs/server.log"
