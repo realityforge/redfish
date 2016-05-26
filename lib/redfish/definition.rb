@@ -27,6 +27,8 @@ module Redfish
       @admin_password = Redfish::Util.generate_password
       @glassfish_home = nil
       @domains_directory = nil
+      @pre_artifacts = []
+      @post_artifacts = []
       super(options, &block)
     end
 
@@ -95,6 +97,21 @@ module Redfish
     def task_prefix
       raise 'task_prefix invoked' unless enable_rake_integration? || packaged?
       "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain?(self.name) ? '' : ":#{self.name}"}"
+    end
+
+    attr_reader :pre_artifacts
+    attr_reader :post_artifacts
+
+    def resolved_data
+      data = Redfish::Mash.new
+      self.pre_artifacts.each do |filename|
+        data.merge!(JSON.load(File.new(filename)))
+      end
+      data.merge!(self.data)
+      self.post_artifacts.each do |filename|
+        data.merge!(JSON.load(File.new(filename)))
+      end
+      data.sort
     end
 
     def to_task_context(executor = Redfish::Executor.new)

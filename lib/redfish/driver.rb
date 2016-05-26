@@ -23,7 +23,7 @@ module Redfish
           run_context.listeners << listener
         end
 
-        Redfish::Interpreter.interpret(run_context, definition.data.to_h)
+        Redfish::Interpreter.interpret(run_context, definition.resolved_data.to_h)
 
         run_context.converge
 

@@ -112,4 +112,22 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition.task_prefix, 'redfish:domain'
   end
+
+  def test_pre_post_artifacts
+    pre_filename = "#{temp_dir}/pre_data.json"
+    post_filename = "#{temp_dir}/post_data.json"
+
+    File.open(pre_filename, 'wb') { |f| f.write '{"a": 1, "b": 2}' }
+    File.open(post_filename, 'wb') { |f| f.write '{"d": 3, "e": 4}' }
+
+    definition = Redfish::DomainDefinition.new('appserver')
+    definition.pre_artifacts << pre_filename
+    definition.post_artifacts << post_filename
+
+    definition.data['b'] = 'p'
+    definition.data['d'] = 'q'
+    definition.data['f'] = 'r'
+
+    assert_equal definition.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
+  end
 end
