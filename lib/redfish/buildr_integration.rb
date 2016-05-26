@@ -13,6 +13,22 @@
 #
 
 module Redfish
+  class DomainDefinition
+    def add_pre_artifacts(*artifacts)
+      ::Buildr.artifacts(artifacts).each do |a|
+        self.pre_artifacts << a.to_s
+        task "#{self.task_prefix}:pre_build" => [a]
+      end
+    end
+
+    def add_post_artifacts(*artifacts)
+      ::Buildr.artifacts(artifacts).each do |a|
+        self.post_artifacts << a.to_s
+        task "#{self.task_prefix}:pre_build" => [a]
+      end
+    end
+  end
+
   class Buildr
     class Listener
       def on_task_start(execution_record)
@@ -37,6 +53,71 @@ module Redfish
         return false if execution_record.action == :destroy && execution_record.task.class.registered_name == 'property_cache'
         true
       end
+    end
+
+    def self.define_tasks_for_domains
+      Redfish.domains.each do |domain|
+        next unless domain.enable_rake_integration?
+        define_tasks_for_domain(domain)
+      end
+    end
+
+    def self.define_tasks_for_domain(domain)
+      raise "Attempted to define rake tasks for #{domain.name} which has disabled rake integration" unless domain.enable_rake_integration?
+
+      task "#{domain.task_prefix}:pre_build"
+
+      desc "Configure a local GlassFish instance based on #{domain.name} domain definition"
+      task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
+        Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
+      end
+
+      desc "Export GlassFish configation based on #{domain.name} domain definition"
+      task "#{domain.task_prefix}:export" => ["#{domain.task_prefix}:pre_build"] do
+        filename = "#{Redfish::Config.base_directory}/generated/redfish/#{domain.name}.json"
+        info("Exporting '#{domain.name}' domain to #{filename}")
+        domain.export_to_file(filename)
+      end
+    end
+
+    def self.define_domain_packages(options = {})
+      buildr_project = get_buildr_project("generating domain packages", options)
+
+      Redfish.domains.each do |domain|
+        buildr_project.instance_eval do
+          project.define(domain.name) do
+            define_domain_package(domain.name)
+          end
+        end
+      end
+    end
+
+    def self.define_domain_package(domain_name, options = {})
+      buildr_project = get_buildr_project("generating #{domain_name} domain package", options)
+      domain = Redfish.domain_by_name(domain_name)
+
+      buildr_project.package(:json).enhance(["#{domain.task_prefix}:pre_build"]) do |t|
+        domain.export_to_file(t.to_s)
+      end
+    end
+
+    protected
+
+    def self.get_buildr_project(reason, options)
+      buildr_project = options[:buildr_project]
+      if buildr_project.nil? && ::Buildr.application.current_scope.size > 0
+        buildr_project = ::Buildr.project(::Buildr.application.current_scope.join(':')) rescue nil
+      end
+      raise "Unable to determine Buildr project when #{reason}" unless buildr_project
+      buildr_project
+    end
+  end
+end
+
+if Redfish::Util.is_buildr_present?
+  class Buildr::Project
+    def package_as_json(file_name)
+      file(file_name)
     end
   end
 end
