@@ -92,6 +92,11 @@ module Redfish
       @packaged.nil? ? false : @packaged
     end
 
+    def task_prefix
+      raise 'task_prefix invoked' unless enable_rake_integration? || packaged?
+      "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain?(self.name) ? '' : ":#{self.name}"}"
+    end
+
     def to_task_context(executor = Redfish::Executor.new)
       Redfish::Context.new(executor,
                            self.glassfish_home,

@@ -102,4 +102,14 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal data2, {'1' => false, '2' => 1.0, '3' => 'sdsada', '4' => nil, 'a' => true, 'b' => {'c' => 1}}
     assert_equal data2.keys, %w(1 2 3 4 a b)
   end
+
+  def test_task_prefix
+    definition = Redfish::DomainDefinition.new('appserver')
+
+    assert_equal definition.task_prefix, 'redfish:domain:appserver'
+
+    Redfish::Config.default_domain_name = 'appserver'
+
+    assert_equal definition.task_prefix, 'redfish:domain'
+  end
 end
