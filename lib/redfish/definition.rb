@@ -78,6 +78,18 @@ module Redfish
 
     attr_writer :echo
 
+    attr_writer :rake_integration
+
+    def enable_rake_integration?
+      @rake_integration.nil? ? true  : @rake_integration
+    end
+
+    attr_writer :packaged
+
+    def packaged?
+      @packaged.nil? ? false : @packaged
+    end
+
     def to_task_context(executor = Redfish::Executor.new)
       Redfish::Context.new(executor,
                            self.glassfish_home,

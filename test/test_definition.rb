@@ -34,6 +34,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.system_group, nil
     assert_equal definition.terse?, false
     assert_equal definition.echo?, false
+    assert_equal definition.enable_rake_integration?, true
+    assert_equal definition.packaged?, false
 
     definition.secure = false
     definition.admin_port = 8080
@@ -46,6 +48,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.system_group = 'glassfish-group'
     definition.terse = true
     definition.echo = true
+    definition.rake_integration = false
+    definition.packaged = true
 
     assert_equal definition.secure?, false
     assert_equal definition.admin_port, 8080
@@ -58,6 +62,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.system_group, 'glassfish-group'
     assert_equal definition.terse?, true
     assert_equal definition.echo?, true
+    assert_equal definition.enable_rake_integration?, false
+    assert_equal definition.packaged?, true
 
     context = definition.to_task_context
 
