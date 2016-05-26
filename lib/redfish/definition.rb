@@ -20,6 +20,8 @@ module Redfish
       @secure = true
       @echo = false
       @terse = false
+      @packaged = false
+      @rake_integration = true
       @admin_port = 4848
       @admin_username = 'admin'
       @admin_password = Redfish::Util.generate_password
