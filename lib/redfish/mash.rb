@@ -54,6 +54,15 @@ module Redfish
       end
     end
 
+    def sort
+      result = Mash.new
+      self.keys.sort.each do |key|
+        value = self[key]
+        result[key] = value.is_a?(Mash) ? value.sort : value
+      end
+      result
+    end
+
     def self.from(hash)
       result = Mash.new
       hash.each_pair do |k, v|

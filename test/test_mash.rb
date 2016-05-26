@@ -120,4 +120,46 @@ class Redfish::TestMash < Redfish::TestCase
     assert_equal h['f']['b']['q'], 1
     assert_equal h['f']['c'], 1
   end
+
+  def test_sort
+    m = Redfish::Mash.new
+    m['3'] = 1
+    m['2'] = 's'
+    m['1'] = true
+    m['0'] = false
+    m['a'] = 4.3
+    m['c']['a'] = 1
+    m['c']['b']['p'] = 2
+    m['c']['b']['a'] = 3
+    m['d'] = [1]
+
+    m2 = m.sort
+
+    # Make sure m has not changed
+    h = m.to_h
+    assert_equal h['3'], 1
+    assert_equal h['2'], 's'
+    assert_equal h['1'], true
+    assert_equal h['0'], false
+    assert_equal h['a'], 4.3
+    assert_equal h['c']['a'], 1
+    assert_equal h['c']['b']['p'], 2
+    assert_equal h['c']['b']['a'], 3
+    assert_equal h['d'], [1]
+
+    assert_equal h.keys, %w(3 2 1 0 a c d)
+
+    h = m2.to_h
+    assert_equal h['3'], 1
+    assert_equal h['2'], 's'
+    assert_equal h['1'], true
+    assert_equal h['0'], false
+    assert_equal h['a'], 4.3
+    assert_equal h['c']['a'], 1
+    assert_equal h['c']['b']['p'], 2
+    assert_equal h['c']['b']['a'], 3
+    assert_equal h['d'], [1]
+
+    assert_equal h.keys, %w(0 1 2 3 a c d)
+  end
 end
