@@ -52,6 +52,7 @@ class Redfish::TestMash < Redfish::TestCase
     m['f']['f']['c'] = true
     m['f']['f']['d'] = false
     m['f']['f']['e'] = 4.3
+    m['g'] = nil
     h = m.to_h
     assert_equal h['g'], nil
     assert_equal h['a'], 1
@@ -69,6 +70,7 @@ class Redfish::TestMash < Redfish::TestCase
     assert_equal h['f']['f']['c'], true
     assert_equal h['f']['f']['d'], false
     assert_equal h['f']['f']['e'], 4.3
+    assert_equal h['g'], nil
   end
 
   def test_merge
