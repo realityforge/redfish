@@ -96,5 +96,13 @@ module Redfish
                              :domains_directory => self.domains_directory
                            })
     end
+
+    def export_to_file(filename)
+      dir = File.dirname(filename)
+      FileUtils.mkdir_p dir
+      File.open(filename, 'wb') do |f|
+        f.write JSON.pretty_generate(self.resolved_data)
+      end
+    end
   end
 end

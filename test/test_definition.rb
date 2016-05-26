@@ -73,4 +73,27 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal context.terse?, true
     assert_equal context.echo?, true
   end
+
+  def test_export_to_file
+    definition = Redfish::DomainDefinition.new('appserver')
+
+    filename2 = "#{temp_dir}/export1.json"
+    definition.export_to_file(filename2)
+    assert File.exist?(filename2)
+    assert_equal JSON.load(File.new(filename2)).to_h, {}
+
+    definition.data['b']['c'] = 1
+    definition.data['a'] = true
+    definition.data['2'] = 1.0
+    definition.data['1'] = false
+    definition.data['4'] = nil
+    definition.data['3'] = 'sdsada'
+
+    filename2 = "#{temp_dir}/export2.json"
+    definition.export_to_file(filename2)
+    assert File.exist?(filename2)
+    data2 = JSON.load(File.new(filename2)).to_h
+    assert_equal data2, {'1' => false, '2' => 1.0, '3' => 'sdsada', '4' => nil, 'a' => true, 'b' => {'c' => 1}}
+    assert_equal data2.keys, %w(1 2 3 4 a b)
+  end
 end
