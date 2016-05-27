@@ -108,7 +108,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition.task_prefix, 'redfish:domain:appserver'
 
-    Redfish::Config.default_domain_name = 'appserver'
+    Redfish::Config.default_domain_key = 'appserver'
 
     assert_equal definition.task_prefix, 'redfish:domain'
   end

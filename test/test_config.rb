@@ -55,13 +55,13 @@ class Redfish::TestConfig < Redfish::TestCase
     assert_equal Redfish::Config.default_domains_directory, 'X/domains'
   end
 
-  def test_default_domain_name
-    assert_raise(RuntimeError, "Unable to determine default_domain_name. Please specify using Redfish::Config.default_domain_name = 'myapp'") { Redfish::Config.default_domain_name }
-    assert_equal Redfish::Config.default_domain?('myapp'), false
+  def test_default_domain_key
+    assert_raise(RuntimeError, "Unable to determine default_domain_key. Please specify using Redfish::Config.default_domain_key = 'myapp'") { Redfish::Config.default_domain_key }
+    assert_equal Redfish::Config.default_domain_key?('myapp'), false
 
-    Redfish::Config.default_domain_name = 'myapp'
-    assert_equal Redfish::Config.default_domain?('myapp'), true
-    assert_equal Redfish::Config.default_domain?(:myapp), true
+    Redfish::Config.default_domain_key = 'myapp'
+    assert_equal Redfish::Config.default_domain_key?('myapp'), true
+    assert_equal Redfish::Config.default_domain_key?(:myapp), true
   end
 
   def test_base_directory

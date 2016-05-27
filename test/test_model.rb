@@ -17,16 +17,16 @@ require File.expand_path('../helper', __FILE__)
 class Redfish::TestModel < Redfish::TestCase
   def test_basic_interaction
     assert_equal Redfish.domains.size, 0
-    assert_equal Redfish.domain_by_name?('appserver'), false
+    assert_equal Redfish.domain_by_key?('appserver'), false
 
-    assert_raises(RuntimeError) {Redfish.domain_by_name('appserver')}
+    assert_raises(RuntimeError) {Redfish.domain_by_key('appserver')}
 
     Redfish.domain('appserver') do |domain|
       domain.admin_port = 8080
     end
 
     assert_equal Redfish.domains.size, 1
-    assert_equal Redfish.domain_by_name?('appserver'), true
+    assert_equal Redfish.domain_by_key?('appserver'), true
 
     assert_equal Redfish.domain_by_key('appserver').admin_port, 8080
   end

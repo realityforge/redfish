@@ -14,8 +14,9 @@
 
 module Redfish
   class DomainDefinition < BaseElement
-    def initialize(name, options = {}, &block)
-      @name = name
+    def initialize(key, options = {}, &block)
+      @key = key
+      @name = key
       @data = Redfish::Mash.new
       @secure = true
       @echo = false
@@ -32,6 +33,7 @@ module Redfish
       super(options, &block)
     end
 
+    attr_reader :key
     attr_reader :name
     attr_reader :data
 
@@ -96,7 +98,7 @@ module Redfish
 
     def task_prefix
       raise 'task_prefix invoked' unless enable_rake_integration? || packaged?
-      "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain?(self.name) ? '' : ":#{self.name}"}"
+      "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain_key?(self.key) ? '' : ":#{self.key}"}"
     end
 
     attr_reader :pre_artifacts

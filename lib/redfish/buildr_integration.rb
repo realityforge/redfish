@@ -94,7 +94,7 @@ module Redfish
 
     def self.define_domain_package(domain_name, options = {})
       buildr_project = get_buildr_project("generating #{domain_name} domain package", options)
-      domain = Redfish.domain_by_name(domain_name)
+      domain = Redfish.domain_by_key(domain_name)
 
       buildr_project.package(:json).enhance(["#{domain.task_prefix}:pre_build"]) do |t|
         domain.export_to_file(t.to_s)

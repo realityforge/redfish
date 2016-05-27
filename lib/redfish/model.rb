@@ -18,18 +18,18 @@ module Redfish
       domain_map.values
     end
 
-    def domain_by_name?(name)
-      !!domain_map[name.to_s]
+    def domain_by_key?(key)
+      !!domain_map[key.to_s]
     end
 
-    def domain_by_name(name)
-      domain_map[name.to_s] || (raise "Domain named #{name} not defined")
+    def domain_by_key(key)
+      domain_map[key.to_s] || (raise "Domain with key #{key} not defined")
     end
 
-    def domain(name)
-      raise "Domain named #{name} already defined" if domain_by_name?(name)
-      domain = DomainDefinition.new(name)
-      domain_map[name.to_s] = domain
+    def domain(key, options = {})
+      raise "Domain with key #{key} already defined" if domain_by_key?(key)
+      domain = DomainDefinition.new(key, options)
+      domain_map[key.to_s] = domain
       yield domain if block_given?
       domain
     end
