@@ -87,7 +87,7 @@ module Redfish
     attr_writer :rake_integration
 
     def enable_rake_integration?
-      @rake_integration.nil? ? true  : @rake_integration
+      @rake_integration.nil? ? true : @rake_integration
     end
 
     attr_writer :packaged
