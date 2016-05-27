@@ -14,7 +14,7 @@
 
 require File.expand_path('../helper', __FILE__)
 
-class Redfish::TestRunContext < Redfish::TestCase
+class Redfish::TestModel < Redfish::TestCase
   def test_basic_interaction
     assert_equal Redfish.domains.size, 0
     assert_equal Redfish.domain_by_name?('appserver'), false
