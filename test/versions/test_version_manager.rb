@@ -16,7 +16,7 @@ require File.expand_path('../../helper', __FILE__)
 
 class Redfish::Versions::TestVersionManager < Redfish::TestCase
   def test_basic_operation
-    assert_equal Redfish::VersionManager.versions.size, 1
+    initial_count = Redfish::VersionManager.versions.size
     assert_equal Redfish::VersionManager.version_by_version_key?('bob'), false
     error = false
     begin
@@ -28,7 +28,7 @@ class Redfish::Versions::TestVersionManager < Redfish::TestCase
 
     Redfish::VersionManager.register_version(Redfish::Versions::BaseVersion.new('bob', :payara, '4.1.1.bob'))
 
-    assert_equal Redfish::VersionManager.versions.size, 2
+    assert_equal Redfish::VersionManager.versions.size, initial_count + 1
     assert_equal Redfish::VersionManager.version_by_version_key?('bob'), true
     version = Redfish::VersionManager.version_by_version_key('bob')
     assert_not_nil version
