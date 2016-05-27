@@ -86,7 +86,7 @@ module Redfish
       Redfish.domains.each do |domain|
         buildr_project.instance_eval do
           project.define(domain.name) do
-            define_domain_package(domain.name)
+            Redfish::Buildr.define_domain_package(domain.name, options)
           end
         end
       end
