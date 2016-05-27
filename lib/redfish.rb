@@ -39,6 +39,7 @@ require 'redfish/buildr_integration'
 
 require 'redfish/versions/version_manager'
 require 'redfish/versions/payara_154'
+require 'redfish/versions/payara_162'
 
 require 'redfish/tasks/asadmin_task'
 require 'redfish/tasks/base_cleaner_task'
