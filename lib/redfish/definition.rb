@@ -22,6 +22,7 @@ module Redfish
       @echo = false
       @terse = false
       @packaged = false
+      @package = true
       @complete = true
       @rake_integration = true
       @admin_port = 4848
@@ -37,6 +38,12 @@ module Redfish
     attr_reader :key
     attr_reader :name
     attr_reader :data
+
+    def package?
+      !!@package
+    end
+
+    attr_writer :package
 
     # If true then this domain definition is not complete and can not be converged or converted into a docker image.
     def complete?

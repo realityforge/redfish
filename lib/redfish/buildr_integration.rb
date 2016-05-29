@@ -86,6 +86,7 @@ module Redfish
       buildr_project = get_buildr_project("generating domain packages", options)
 
       Redfish.domains.each do |domain|
+        next unless domain.package?
         buildr_project.instance_eval do
           project.define(domain.name) do
             Redfish::Buildr.define_domain_package(domain.name, options)
@@ -96,6 +97,7 @@ module Redfish
 
     def self.define_domain_package(domain_name, options = {})
       domain = Redfish.domain_by_key(domain_name)
+      raise "Unable to define package for domain '#{domain.key}' as package = false" unless domain.package?
 
       buildr_project = get_buildr_project("generating #{domain_name} domain package", options)
       buildr_project.package(:json).enhance(["#{domain.task_prefix}:pre_build"]) do |t|

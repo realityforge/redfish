@@ -24,6 +24,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert definition.data.is_a?(Redfish::Mash)
     assert_equal definition.secure?, true
     assert_equal definition.complete?, true
+    assert_equal definition.package?, true
     assert_equal definition.admin_port, 4848
     assert_equal definition.admin_username, 'admin'
     assert_equal definition.master_password, nil
@@ -40,6 +41,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     definition.secure = false
     definition.complete = false
+    definition.package = false
     definition.admin_port = 8080
     definition.admin_username = 'bob'
     definition.admin_password = 'secret'
@@ -55,6 +57,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition.secure?, false
     assert_equal definition.complete?, false
+    assert_equal definition.package?, false
     assert_equal definition.admin_port, 8080
     assert_equal definition.admin_username, 'bob'
     assert_equal definition.admin_password, 'secret'
