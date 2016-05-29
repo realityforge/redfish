@@ -32,6 +32,9 @@ module Redfish
       @domains_directory = nil
       @pre_artifacts = []
       @post_artifacts = []
+      @authbind_executable = nil
+      @system_user = nil
+      @system_group = nil
       super(options, &block)
     end
 
