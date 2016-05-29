@@ -61,6 +61,6 @@ class Redfish::TestDriver < Redfish::TestCase
   def test_configure_when_incomplete
     definition = Redfish::DomainDefinition.new('appserver')
     definition.complete = false
-    assert_raise { Redfish::Driver.configure_domain(definition) }
+    assert_raise(RuntimeError, "Attempting to configure domain 'appserver' using and incomplete domain definition 'appserver'") { Redfish::Driver.configure_domain(definition) }
   end
 end
