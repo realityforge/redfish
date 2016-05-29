@@ -57,4 +57,10 @@ class Redfish::TestDriver < Redfish::TestCase
       assert record.action_finished?
     end
   end
+
+  def test_configure_when_incomplete
+    definition = Redfish::DomainDefinition.new('appserver')
+    definition.complete = false
+    assert_raise { Redfish::Driver.configure_domain(definition) }
+  end
 end

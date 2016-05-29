@@ -22,6 +22,7 @@ module Redfish
       @echo = false
       @terse = false
       @packaged = false
+      @complete = true
       @rake_integration = true
       @admin_port = 4848
       @admin_username = 'admin'
@@ -36,6 +37,13 @@ module Redfish
     attr_reader :key
     attr_reader :name
     attr_reader :data
+
+    # If true then this domain definition is not complete and can not be converged or converted into a docker image.
+    def complete?
+      !!@complete
+    end
+
+    attr_writer :complete
 
     # If true use SSL when communicating with the domain for administration. Assumes the domain is in secure mode.
     def secure?

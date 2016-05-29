@@ -17,6 +17,7 @@ module Redfish
     class << self
       # Given definition and options, setup a run context and converge domain
       def configure_domain(definition, options = {})
+        raise "Attempting to configure domain '#{definition.name}' using and incomplete domain definition '#{definition.key}'" unless definition.complete?
         run_context = Redfish::RunContext.new(definition.to_task_context)
 
         (options[:listeners] || []).each do |listener|

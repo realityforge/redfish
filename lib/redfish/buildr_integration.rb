@@ -67,9 +67,11 @@ module Redfish
 
       task "#{domain.task_prefix}:pre_build"
 
-      desc "Configure a local GlassFish instance based on #{domain.name} domain definition"
-      task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
-        Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
+      if domain.complete?
+        desc "Configure a local GlassFish instance based on #{domain.name} domain definition"
+        task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
+          Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
+        end
       end
 
       desc "Export GlassFish configation based on #{domain.name} domain definition"
