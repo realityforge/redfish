@@ -34,6 +34,7 @@ require 'redfish/interpreter'
 require 'redfish/model'
 require 'redfish/definition'
 require 'redfish/driver'
+require 'redfish/listener'
 
 require 'redfish/buildr_integration'
 
