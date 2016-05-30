@@ -53,6 +53,18 @@ class Redfish::TestConfig < Redfish::TestCase
     Redfish::Config.default_domains_directory = 'X/domains'
 
     assert_equal Redfish::Config.default_domains_directory, 'X/domains'
+
+    Redfish::Config.default_domains_directory = nil
+
+    assert_equal Redfish::Config.default_domains_directory, 'Y/glassfish/domains'
+
+    original = ENV['GLASSFISH_DOMAINS_DIR']
+    begin
+      ENV['GLASSFISH_DOMAINS_DIR'] = '/srv/domains'
+      assert_equal Redfish::Config.default_domains_directory, '/srv/domains'
+    ensure
+      ENV['GLASSFISH_DOMAINS_DIR'] = original
+    end
   end
 
   def test_default_domain_key

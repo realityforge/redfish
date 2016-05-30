@@ -45,6 +45,7 @@ module Redfish
 
       def default_domains_directory
         @default_domains_directory ||
+          ENV['GLASSFISH_DOMAINS_DIR'] ||
           "#{self.default_glassfish_home}/glassfish/domains"
       end
 
