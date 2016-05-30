@@ -21,11 +21,20 @@ require 'fileutils'
 require 'redfish'
 require File.expand_path('../_include2', __FILE__)
 
+module Redfish
+  class << self
+    def clear_domain_map
+      domain_map.clear
+    end
+  end
+end
+
 class Redfish::TestCase < Minitest::Test
   include Test::Unit::Assertions
 
   def setup
     @temp_dir = nil
+    Redfish.clear_domain_map
     Redfish::Config.default_glassfish_home = nil
     Redfish::Config.default_domains_directory = nil
     Redfish::Config.task_prefix = nil
