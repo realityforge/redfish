@@ -38,6 +38,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.echo?, false
     assert_equal definition.enable_rake_integration?, true
     assert_equal definition.packaged?, false
+    assert_equal definition.extends, nil
 
     definition.secure = false
     definition.complete = false
@@ -84,6 +85,109 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal context.system_group, 'glassfish-group'
     assert_equal context.terse?, true
     assert_equal context.echo?, true
+  end
+
+  def test_extends
+    Redfish::Config.default_glassfish_home = 'Y'
+
+    definition = Redfish.domain('appserver')
+
+    # Set a collection of variables, some of which are inherited and some of which are not
+
+    definition.admin_username = 'myadmin'
+    definition.master_password = 'mypassword'
+    definition.admin_port = 8081
+    definition.secure = false
+    definition.authbind_executable = '/usr/bin/authbind'
+    definition.system_user = 'glassfish'
+    definition.system_group = 'glassfish-group'
+
+    # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
+    definition.complete = false
+    definition.rake_integration = false
+    definition.packaged = true
+    definition.package = false
+
+    pre_filename = "#{temp_dir}/pre_data.json"
+    post_filename = "#{temp_dir}/post_data.json"
+
+    File.open(pre_filename, 'wb') { |f| f.write '{"a": 1, "b": 2}' }
+    File.open(post_filename, 'wb') { |f| f.write '{"d": 3, "e": 4}' }
+
+    definition.pre_artifacts << pre_filename
+    definition.post_artifacts << post_filename
+
+    # Data accessed as resolved data
+    definition.data['b'] = 'p'
+    definition.data['d'] = 'q'
+    definition.data['f'] = 'r'
+
+    assert_equal definition.key, 'appserver'
+    assert_equal definition.name, 'appserver'
+    assert definition.data.is_a?(Redfish::Mash)
+    assert_equal definition.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
+    assert_equal definition.pre_artifacts.size, 1
+    assert_equal definition.post_artifacts.size, 1
+    assert_equal definition.secure?, false
+    assert_equal definition.complete?, false
+    assert_equal definition.package?, false
+    assert_equal definition.admin_port, 8081
+    assert_equal definition.admin_username, 'myadmin'
+    assert_equal definition.master_password, 'mypassword'
+    assert_equal definition.admin_password.size, 10
+    assert_equal definition.glassfish_home, 'Y'
+    assert_equal definition.domains_directory, 'Y/glassfish/domains'
+    assert_equal definition.authbind_executable, '/usr/bin/authbind'
+    assert_equal definition.system_user, 'glassfish'
+    assert_equal definition.system_group, 'glassfish-group'
+    assert_equal definition.terse?, false
+    assert_equal definition.echo?, false
+    assert_equal definition.enable_rake_integration?, false
+    assert_equal definition.packaged?, true
+    assert_equal definition.extends, nil
+
+    definition2 = Redfish.domain('appserver2', :extends => 'appserver')
+
+    assert_equal definition2.key, 'appserver2'
+    assert_equal definition2.name, 'appserver'
+    assert definition2.data.is_a?(Redfish::Mash)
+    assert_equal definition2.secure?, definition.secure?
+    assert_equal definition2.complete?, true
+    assert_equal definition2.package?, true
+    assert_equal definition2.admin_port, definition.admin_port
+    assert_equal definition2.admin_username, definition.admin_username
+    assert_equal definition2.master_password, definition.master_password
+    assert_equal definition2.admin_password, definition.admin_password
+    assert_equal definition2.glassfish_home, definition.glassfish_home
+    assert_equal definition2.domains_directory, definition.domains_directory
+    assert_equal definition2.authbind_executable, definition.authbind_executable
+    assert_equal definition2.system_user, definition.system_user
+    assert_equal definition2.system_group, definition.system_group
+    assert_equal definition2.terse?, definition.terse?
+    assert_equal definition2.echo?, definition.echo?
+    assert_equal definition2.enable_rake_integration?, true
+    assert_equal definition2.packaged?, false
+    assert_equal definition2.extends, 'appserver'
+
+    assert_equal definition2.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
+    assert_equal definition2.pre_artifacts.size, 0
+    assert_equal definition2.post_artifacts.size, 0
+
+    pre_filename2 = "#{temp_dir}/pre_data2.json"
+    post_filename2 = "#{temp_dir}/post_data2.json"
+
+    File.open(pre_filename2, 'wb') { |f| f.write '{"a": 4}' }
+    File.open(post_filename2, 'wb') { |f| f.write '{"e": 5}' }
+
+    definition2.pre_artifacts << pre_filename2
+    definition2.post_artifacts << post_filename2
+
+    assert_equal definition2.resolved_data, {'a' => 4, 'b' => 'p', 'd' => 3, 'e' => 5, 'f' => 'r'}
+
+    definition2.data['d'] = 'X'
+    definition2.data['q'] = 'Y'
+
+    assert_equal definition2.resolved_data, {'a' => 4, 'b' => 'p', 'd' => 'X', 'e' => 5, 'f' => 'r', 'q' => 'Y'}
   end
 
   def test_export_to_file

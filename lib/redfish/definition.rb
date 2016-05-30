@@ -35,11 +35,32 @@ module Redfish
       @authbind_executable = nil
       @system_user = nil
       @system_group = nil
+
+      options = options.dup
+      @extends = options.delete(:extends)
+      if @extends
+        parent = Redfish.domain_by_key(@extends)
+        @name = parent.name
+        @secure = parent.secure?
+        @echo = parent.echo?
+        @terse = parent.terse?
+        @admin_port = parent.admin_port
+        @admin_username = parent.admin_username
+        @admin_password = parent.admin_password
+        @master_password = parent.master_password
+        @glassfish_home = parent.glassfish_home
+        @domains_directory = parent.domains_directory
+        @authbind_executable = parent.authbind_executable
+        @system_user = parent.system_user
+        @system_group = parent.system_group
+        # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
+      end
       super(options, &block)
     end
 
     attr_reader :key
     attr_reader :name
+    attr_reader :extends
     attr_reader :data
 
     def package?
@@ -124,6 +145,7 @@ module Redfish
 
     def resolved_data
       data = Redfish::Mash.new
+      data.merge!(Redfish.domain_by_key(self.extends).resolved_data) if self.extends
       self.pre_artifacts.each do |filename|
         data.merge!(JSON.load(File.new(filename)))
       end
