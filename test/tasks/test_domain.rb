@@ -31,6 +31,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/lib/ext")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/docroot")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/config/redfish.password")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
@@ -55,7 +56,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     end
     t.properties = props
 
-    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/docroot/index.html"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/docroot"))
     FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/restrict.server.policy"))
     FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/javaee.server.policy"))
     FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/autodeploy"))
@@ -75,6 +76,8 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     assert File.directory?("#{test_domains_dir}/domain1/bin")
     assert File.directory?("#{test_domains_dir}/domain1/lib")
     assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
+    assert File.directory?("#{test_domains_dir}/domain1/docroot")
+    assert_equal sprintf("%o", File::Stat.new("#{test_domains_dir}/domain1/docroot").mode)[-3,3], '755'
     assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
     assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_stop")
     assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_start")
@@ -155,7 +158,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     end
     t.properties = props
 
-    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/docroot/index.html"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/docroot"))
     FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/restrict.server.policy"))
     FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/javaee.server.policy"))
     FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/autodeploy"))
@@ -239,7 +242,7 @@ AS_ADMIN_PASSWORD=
     end
     t.properties = props
 
-    FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/docroot/index.html"))
+    FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/docroot"))
     FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/restrict.server.policy"))
     FileUtils.expects(:rm_f).with(equals("#{t.context.domain_directory}/config/javaee.server.policy"))
     FileUtils.expects(:rm_rf).with(equals("#{t.context.domain_directory}/autodeploy"))

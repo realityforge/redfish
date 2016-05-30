@@ -210,11 +210,14 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         end
 
         # Remove all the unnecessary files that come with the template
-        FileUtils.rm_f "#{context.domain_directory}/docroot/index.html"
         FileUtils.rm_f "#{context.domain_directory}/config/restrict.server.policy"
         FileUtils.rm_f "#{context.domain_directory}/config/javaee.server.policy"
         FileUtils.rm_rf "#{context.domain_directory}/autodeploy"
         FileUtils.rm_rf "#{context.domain_directory}/init-info"
+
+        # Delete the entire docroot and recreate as different glassfish installations have different content in docroot
+        FileUtils.rm_rf "#{context.domain_directory}/docroot"
+        create_dir("#{context.domain_directory}/docroot", 0755)
 
         Dir["#{context.domain_directory}/**/.gitkeep"].each do |gitkeep|
           FileUtils.rm_f gitkeep
