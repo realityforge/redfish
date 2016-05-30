@@ -34,7 +34,11 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :set)
+    setup_logging_file(context)
+
+    perform_interpret(context, data, true, :set, :domain_dir_exists => true)
+
+    check_default_logging_file(context)
   end
 
   def test_interpret_set_when_matches
@@ -80,10 +84,14 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    setup_logging_file(t.context)
+
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
     t.perform_action(:set)
 
     ensure_task_updated_by_last_action(t)
+
+    check_default_logging_file(t.context)
   end
 
   def test_set_when_levels_no_match
@@ -103,11 +111,15 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    setup_logging_file(t.context)
+
     t.default_levels = false
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO'}
     t.perform_action(:set)
 
     ensure_task_updated_by_last_action(t)
+
+    check_default_logging_file(t.context)
   end
 
   def test_set_when_levels_partially_match
@@ -127,11 +139,15 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
+    setup_logging_file(t.context)
+
     t.default_levels = false
     t.levels = {'iris' => 'WARNING', 'iris.planner' => 'INFO', 'iris.acal' => 'WARNING'}
     t.perform_action(:set)
 
     ensure_task_updated_by_last_action(t)
+
+    check_default_logging_file(t.context)
   end
 
   def test_set_when_levels_match
@@ -151,5 +167,19 @@ class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
     t.perform_action(:set)
 
     ensure_task_not_updated_by_last_action(t)
+  end
+
+  def check_default_logging_file(context)
+    default_logging_file = "#{context.domain_directory}/config/default-logging.properties"
+    assert_equal IO.read(default_logging_file), 'Blah'
+    assert_equal sprintf("%o", File::Stat.new(default_logging_file).mode)[-3, 3], '600'
+  end
+
+  def setup_logging_file(context)
+    config_dir = "#{context.domain_directory}/config"
+    FileUtils.mkdir_p config_dir
+    File.open("#{config_dir}/logging.properties", 'wb') do |f|
+      f.write 'Blah'
+    end
   end
 end

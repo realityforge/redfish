@@ -173,15 +173,18 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     end
 
     exclude_domain_create = options[:exclude_domain_create].nil? ? false : !!options[:exclude_domain_create]
+    domain_dir_exists = options[:domain_dir_exists].nil? ? false : !!options[:domain_dir_exists]
 
     executor = context.instance_variable_get('@executor')
     unless exclude_domain_create
-      executor.expects(:exec).
-        with(equals(context),
-             equals('create-domain'),
-             equals(%W(--checkports=false --savelogin=false --savemasterpassword=true --nopassword=true --usemasterpassword=true --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
-             has_key(:domain_password_file)).
-        returns('')
+      unless domain_dir_exists
+        executor.expects(:exec).
+          with(equals(context),
+               equals('create-domain'),
+               equals(%W(--checkports=false --savelogin=false --savemasterpassword=true --nopassword=true --usemasterpassword=true --domaindir #{test_domains_dir} --domainproperties domain.adminPort=4848 domain1)),
+               has_key(:domain_password_file)).
+          returns('')
+      end
       executor.expects(:exec).
         with(equals(context),
              equals('list-domains'),
@@ -218,7 +221,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     updated_records = to_updated_resource_records(run_context)
     unchanged_records = to_unchanged_resource_records(run_context)
 
-    domain_create_count = exclude_domain_create ? 0 : 3
+    domain_create_count = exclude_domain_create ? 0 : (domain_dir_exists ? 2 : 3)
     domain_restart_check = exclude_domain_create ? 0 : DOMAIN_RESTART_IF_REQUIRED_ACTIONS
 
     additional_task_count = options[:additional_task_count].nil? ? 0 : options[:additional_task_count]
@@ -231,13 +234,13 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     expected_updated = domain_create_count + (task_ran ? 1 : 0) + 2 + additional_task_count
     assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
 
-    expected_unchanged = (task_ran ? 0 : 1) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
+    expected_unchanged = (task_ran ? 0 : 1) + (domain_dir_exists ? 1 : 0) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records)
 
     unless exclude_domain_create
-      assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :create }.size, 1, 'updated domain.create actions'
+      assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :create }.size, 1, 'updated domain.create actions' unless domain_dir_exists
       assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :start }.size, 1, 'updated domain.start actions'
       assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :ensure_active }.size, 1, 'updated domain.ensure_active actions'
       assert_equal unchanged_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :restart_if_required }.size, DOMAIN_RESTART_IF_REQUIRED_ACTIONS, 'unchanged domain.restart_if_required actions'

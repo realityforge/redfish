@@ -42,6 +42,11 @@ module Redfish
 
           context.exec('set-log-levels', args)
 
+          default_logging = "#{context.domain_directory}/config/default-logging.properties"
+          FileUtils.cp "#{context.domain_directory}/config/logging.properties", default_logging
+          FileUtils.chmod 0600, default_logging
+          FileUtils.chown context.system_user, context.system_group, default_logging if context.system_user || context.system_group
+
           updated_by_last_action
         end
       end
