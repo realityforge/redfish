@@ -136,7 +136,7 @@ class Redfish::TestTask < Redfish::TestCase
     begin
       mt.perform_action(:B)
     rescue => e
-      assert_equal e.to_s, "No such action B"
+      assert_equal e.to_s, 'No such action B'
       return
     end
 
