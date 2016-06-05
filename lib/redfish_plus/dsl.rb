@@ -21,11 +21,11 @@ module RedfishPlus
     def setup_for_local_development(domain, options = {})
       features = options[:features] || []
       domain.package = false
-
       setup_standard_jvm_options(domain)
-      standard_domain_setup(domain)
-      setup_http_thread_pool(domain)
 
+      standard_domain_setup(domain)
+
+      setup_http_thread_pool(domain)
 
       set_log_level(domain, 'javax.enterprise.system.container.web.com.sun.web.security.level', 'OFF')
       disable_noisy_database_logging(domain)
