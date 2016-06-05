@@ -24,15 +24,19 @@ module RedfishPlus
 
       setup_standard_jvm_options(domain)
       standard_domain_setup(domain)
+      setup_http_thread_pool(domain)
 
-      add_thread_pool(domain, 'http-thread-pool', 5, 200)
-      set(domain, 'configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.xpowered-by', 'false')
 
       set_log_level(domain, 'javax.enterprise.system.container.web.com.sun.web.security.level', 'OFF')
       disable_noisy_database_logging(domain)
 
       base_setup_for_local_development(domain)
       setup_jms_for_local_development(domain) if features.include?(:jms)
+    end
+
+    def setup_http_thread_pool(domain)
+      add_thread_pool(domain, 'http-thread-pool', 5, 200)
+      set(domain, 'configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.xpowered-by', 'false')
     end
 
     def base_setup_for_local_development(domain)
