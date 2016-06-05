@@ -59,6 +59,11 @@ module Redfish
         @domains_directory = domains_directory[-1] == '/' ? domains_directory[0...-1] : domains_directory
       end
 
+      @file_map = {}
+      (options[:file_map] || {}).each_pair do |key, path|
+        file(key, path)
+      end
+
       @echo = options[:echo].nil? ? false : !!options[:echo]
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]
@@ -68,6 +73,15 @@ module Redfish
       @restart_required = false
       @domain_started = false
       @domain_master_password = options[:domain_master_password] || @domain_password || Redfish::Util.generate_password
+    end
+
+    def file(key, local_path)
+      raise "File with key '#{key.to_s}' is associated with local file '#{@file_map[key.to_s]}', can not associate with '#{local_path}'" if @file_map[key.to_s]
+      @file_map[key.to_s] = local_path
+    end
+
+    def file_map
+      @file_map.dup
     end
 
     # Directory of specific domain context is referencing

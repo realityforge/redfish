@@ -25,6 +25,12 @@ class Redfish::TestContext < Redfish::TestCase
     domain_password = 'mypassword'
     system_user = 'glassfish'
     system_group = 'glassfish_group'
+    file_map =
+      {
+        'a' => '/tmp/a',
+        'b' => '/tmp/b',
+        'c' => '/tmp/c',
+      }
 
     context = Redfish::Context.new(Redfish::Executor.new,
                                    install_dir,
@@ -35,6 +41,7 @@ class Redfish::TestContext < Redfish::TestCase
                                    domain_password,
                                    :system_user => system_user,
                                    :system_group => system_group,
+                                   :file_map => file_map,
                                    :terse => true,
                                    :echo => true)
 
@@ -49,8 +56,38 @@ class Redfish::TestContext < Redfish::TestCase
     assert_equal context.echo?, true
     assert_equal context.system_user, system_user
     assert_equal context.system_group, system_group
+    assert_equal context.file_map, file_map
 
     assert !context.property_cache?
+  end
+
+  def test_file_map
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   '/opt/glassfish',
+                                   'appserver',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   nil)
+
+    assert_equal context.file_map, {}
+
+    context.file('a', '/tmp/a.txt')
+
+    assert_equal context.file_map, {'a' => '/tmp/a.txt'}
+
+    context.file('b', '/tmp/b.txt')
+
+    assert_equal context.file_map, {'a' => '/tmp/a.txt', 'b' => '/tmp/b.txt'}
+
+    # Ensure it can not be changed directly
+
+    context.file_map['c'] = '/filec.txt'
+
+    assert_equal context.file_map, {'a' => '/tmp/a.txt', 'b' => '/tmp/b.txt'}
+
+    e = assert_raises(RuntimeError) { context.file('a', '/tmp/other.txt') }
+    assert_equal e.message, "File with key 'a' is associated with local file '/tmp/a.txt', can not associate with '/tmp/other.txt'"
   end
 
   def test_domain_master_password_can_be_set
