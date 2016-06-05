@@ -33,7 +33,7 @@ module Redfish
           options = options.dup
           if options[:type] == :integer
             options[:kind_of] = [Integer, String]
-            options[:regex] = /^([0-9]+)|(\$\{[a-zA-Z.]+\})$/
+            options[:regex] = /^([+-]?[0-9]+)|(\$\{[a-zA-Z._-]+\})$/
           elsif options[:type] == :boolean
             options[:equal_to] = [true, false, 'true', 'false']
           end

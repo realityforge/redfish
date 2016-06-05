@@ -21,6 +21,8 @@ class Redfish::TestTask < Redfish::TestCase
     attribute :b, :kind_of => [TrueClass, FalseClass], :default => false
     attribute :c, :equal_to => [true, false, 'true', 'false'], :default => 'false'
     attribute :d, :kind_of => String, :regex => /^X+$/
+    attribute :e, :type => :integer, :default => '1'
+    attribute :f, :type => :boolean, :default => 'false'
 
     attr_accessor :action1_ran
     attr_accessor :action2_ran
@@ -103,18 +105,38 @@ class Redfish::TestTask < Redfish::TestCase
     fail('Expected to fail due to bad value not matching regex')
   end
 
+  def test_type_boolean
+    new_task.f = true
+    new_task.f = false
+    new_task.f = 'true'
+    new_task.f = 'false'
+    assert_raise(RuntimeError) {new_task.f = 'X'}
+  end
+
+  def test_type_integer
+    new_task.e = 1
+    new_task.e = -4343
+    new_task.e = '23'
+    new_task.e = '${SOME_VAR}'
+    assert_raise(RuntimeError) {new_task.e = 'X'}
+  end
+
   def test_set
     mt = new_task do |t|
       t.a = 'a'
       t.b = true
       t.c = 'true'
       t.d = 'XXX'
+      t.e = 33
+      t.f = true
     end
 
     assert_equal mt.a, 'a'
     assert_equal mt.b, true
     assert_equal mt.c, 'true'
     assert_equal mt.d, 'XXX'
+    assert_equal mt.e, 33
+    assert_equal mt.f, true
   end
 
   def test_defaults
@@ -126,6 +148,8 @@ class Redfish::TestTask < Redfish::TestCase
     assert_equal mt.b, false
     assert_equal mt.c, 'false'
     assert_equal mt.d, nil
+    assert_equal mt.e, '1'
+    assert_equal mt.f, 'false'
   end
 
   def test_non_existent_action
