@@ -46,7 +46,7 @@ module RedfishPlus
     def setup_jms_for_local_development(domain)
       setup_orb_to_support_jms(domain)
       jms_host(domain, 'DefaultJmsHost', '127.0.0.1', '7676', 'admin', 'admin')
-      set_default_jms_host(domain, 'DefaultJmsHost')
+      set_and_require_restart(domain, 'configs.config.server-config.jms-service.default-jms-host', 'DefaultJmsHost')
 
       # Assume at this stage that if jms_host is configured then it is for mdb container
       configure_mdb_container(domain)
@@ -235,10 +235,6 @@ module RedfishPlus
       domain.data['jms_hosts'][name]['port'] = port
       domain.data['jms_hosts'][name]['admin_username'] = admin_username
       domain.data['jms_hosts'][name]['admin_password'] = admin_password
-    end
-
-    def set_default_jms_host(domain, name)
-      set_and_require_restart(domain, 'configs.config.server-config.jms-service.default-jms-host', name)
     end
   end
 end
