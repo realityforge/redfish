@@ -21,8 +21,8 @@ module RedfishPlus
     def setup_for_local_development(domain, options = {})
       features = options[:features] || []
       domain.package = false
-      setup_standard_jvm_options(domain)
 
+      setup_standard_jvm_options(domain)
       standard_domain_setup(domain)
 
       add_thread_pool(domain, 'http-thread-pool', 5, 200)
