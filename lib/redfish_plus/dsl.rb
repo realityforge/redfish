@@ -110,6 +110,11 @@ module RedfishPlus
       domain.data['libraries'][name]['library_type'] = library_type
     end
 
+    def deploy_application(domain, name, context_root, location)
+      domain.data['applications'][name]['context_root'] = context_root
+      domain.data['applications'][name]['location'] = location
+    end
+
     def system_property(domain, key, value)
       domain.data['system_properties'][key] = value
     end
