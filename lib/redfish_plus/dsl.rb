@@ -108,6 +108,7 @@ module RedfishPlus
       disable_classloading_delegation(domain)
       disable_autodeploy(domain)
       disable_non_portable_jndi_names(domain)
+      domain.ports << 8080
     end
 
     def setup_standard_jvm_options(domain, min_memory = '2048m', max_memory = '2048m', max_perm_size = '512m', max_stack_size = '350k')
