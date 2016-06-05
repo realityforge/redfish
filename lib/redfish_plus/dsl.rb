@@ -43,6 +43,11 @@ module RedfishPlus
       mark_applications_as_not_managed(domain)
     end
 
+    def disable_jms_service(domain)
+      domain.data['jms_hosts'].clear
+      set_and_require_restart(domain, 'configs.config.server-config.jms-service.type', 'DISABLED')
+    end
+
     def setup_jms_for_local_development(domain)
       setup_orb_to_support_jms(domain)
       jms_host(domain, 'DefaultJmsHost', '127.0.0.1', '7676', 'admin', 'admin')
