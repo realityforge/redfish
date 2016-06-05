@@ -203,6 +203,11 @@ module RedfishPlus
       domain.data['jvm_options']['defines']['com.sun.enterprise.tools.admingui.NO_NETWORK'] = 'true'
     end
 
+    def environment_variable(domain, key, value = 'UNSPECIFIED', default_value = '')
+      domain.data['system_properties'][key] = value
+      domain.environment_vars[key] = default_value
+    end
+
     def disable_non_portable_jndi_names(domain)
       set(domain, 'configs.config.server-config.ejb-container.property.disable-nonportable-jndi-names', 'true')
     end
