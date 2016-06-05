@@ -92,7 +92,7 @@ module RedfishPlus
       domain.data['applications']['managed'] = false
     end
 
-    def set_system_property(domain, key, value)
+    def system_property(domain, key, value)
       domain.data['system_properties'][key] = value
     end
 
