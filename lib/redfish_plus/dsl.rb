@@ -31,7 +31,11 @@ module RedfishPlus
       disable_noisy_database_logging(domain)
 
       base_setup_for_local_development(domain)
-      setup_jms_for_local_development(domain) if features.include?(:jms)
+      if features.include?(:jms)
+        setup_jms_host(domain, 'EMBEDDED')
+      else
+        disable_jms_service(domain)
+      end
     end
 
     def setup_http_thread_pool(domain)
@@ -52,10 +56,16 @@ module RedfishPlus
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.type', 'DISABLED')
     end
 
-    def setup_jms_for_local_development(domain)
+    def setup_jms_host(domain, service_type)
+      environment_variable(domain, 'OPENMQ_HOST', '127.0.0.1')
+      environment_variable(domain, 'OPENMQ_PORT', '7676')
+      environment_variable(domain, 'OPENMQ_ADMIN_USERNAME', 'admin')
+      environment_variable(domain, 'OPENMQ_ADMIN_PASSWORD', 'admin')
+
       setup_orb_to_support_jms(domain)
-      jms_host(domain, 'DefaultJmsHost', '127.0.0.1', '7676', 'admin', 'admin')
+      jms_host(domain, 'DefaultJmsHost', '${OPENMQ_HOST}', '${OPENMQ_PORT}', '${OPENMQ_ADMIN_USERNAME}', '${OPENMQ_ADMIN_PASSWORD}')
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.default-jms-host', 'DefaultJmsHost')
+      set_and_require_restart(domain, 'configs.config.server-config.jms-service.type', service_type)
       set(domain, 'configs.config.server-config.jms-service.addresslist-behavior', 'random')
       set(domain, 'configs.config.server-config.jms-service.addresslist-iterations', '3')
       set(domain, 'configs.config.server-config.jms-service.init-timeout-in-seconds', '60')
