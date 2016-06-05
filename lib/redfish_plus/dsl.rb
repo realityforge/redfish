@@ -18,6 +18,24 @@
 module RedfishPlus
   class << self
 
+    def setup_for_docker(domain, options = {})
+      features = options[:features] || []
+      domain.package = false
+      domain.dockerize = true
+
+      setup_standard_jvm_options(domain)
+      standard_domain_setup(domain)
+      setup_http_thread_pool(domain)
+      setup_default_logging(domain)
+      shutdown_on_complete(domain)
+
+      if features.include?(:jms)
+        setup_jms_host(domain, 'REMOTE')
+      else
+        disable_jms_service(domain)
+      end
+    end
+
     def setup_default_logging(domain)
       set_log_level(domain, 'javax.enterprise.system.container.web.com.sun.web.security.level', 'OFF')
       disable_noisy_database_logging(domain)
