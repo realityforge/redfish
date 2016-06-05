@@ -47,6 +47,16 @@ module RedfishPlus
       setup_orb_to_support_jms(domain)
       jms_host(domain, 'DefaultJmsHost', '127.0.0.1', '7676', 'admin', 'admin')
       set_default_jms_host(domain, 'DefaultJmsHost')
+
+      # Assume at this stage that if jms_host is configured then it is for mdb container
+      configure_mdb_container(domain)
+    end
+
+    def configure_mdb_container(domain)
+      set(domain, 'configs.config.server-config.mdb-container.idle-timeout-in-seconds', '600')
+      set(domain, 'configs.config.server-config.mdb-container.max-pool-size', '32')
+      set(domain, 'configs.config.server-config.mdb-container.pool-resize-quantity', '8')
+      set(domain, 'configs.config.server-config.mdb-container.steady-pool-size', '0')
     end
 
     # Orb required to use MDBs due to feature/bugs of GlassFish/Payara
