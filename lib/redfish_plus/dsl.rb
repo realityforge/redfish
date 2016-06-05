@@ -92,6 +92,17 @@ module RedfishPlus
       domain.data['applications']['managed'] = false
     end
 
+    def add_library_from_path(domain, name, path, require_restart = false, library_type = 'common')
+      domain.file(name, path)
+      add_library(domain, name, "{{file:#{name}}}", require_restart, library_type)
+    end
+
+    def add_library(domain, name, file, require_restart = false, library_type = 'common')
+      domain.data['libraries'][name]['file'] = file
+      domain.data['libraries'][name]['require_restart'] = require_restart
+      domain.data['libraries'][name]['library_type'] = library_type
+    end
+
     def system_property(domain, key, value)
       domain.data['system_properties'][key] = value
     end
