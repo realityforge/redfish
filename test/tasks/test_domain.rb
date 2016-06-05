@@ -37,6 +37,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_stop")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_start")).returns('')
+    FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_run")).returns('')
     FileUtils.expects(:chown).with(equals('bob'), equals('bobgrp'), equals("#{test_domains_dir}/domain1/bin/asadmin_restart")).returns('')
 
     executor.expects(:exec).with(equals(t.context),
@@ -73,40 +74,12 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     ensure_task_updated_by_last_action(t)
 
-    assert File.directory?("#{test_domains_dir}/domain1/bin")
-    assert File.directory?("#{test_domains_dir}/domain1/lib")
-    assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
-    assert File.directory?("#{test_domains_dir}/domain1/docroot")
-    assert_equal sprintf("%o", File::Stat.new("#{test_domains_dir}/domain1/docroot").mode)[-3,3], '755'
-    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
-    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_stop")
-    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_start")
-    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin_restart")
+    assert_domain_directories
 
     # Master password synthesized
     assert IO.read(t.context.domain_password_file_location) =~ /^AS_ADMIN_MASTERPASSWORD\=.+\nAS_ADMIN_PASSWORD=\n$/
 
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 "$@"
-    CMD
-
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
+    ensure_domain_scripts_created(t)
   end
 
   def test_create_with_most_common_options
@@ -175,37 +148,14 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
 
     ensure_task_updated_by_last_action(t)
 
-    assert File.directory?("#{test_domains_dir}/domain1/bin")
-    assert File.directory?("#{test_domains_dir}/domain1/lib")
-    assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
-    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
+    assert_domain_directories
 
     assert_equal IO.read(context.domain_password_file_location), <<-CMD
 AS_ADMIN_MASTERPASSWORD=secret
 AS_ADMIN_PASSWORD=
     CMD
 
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 "$@"
-    CMD
-
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
+    ensure_domain_scripts_created(t)
   end
 
   def test_create_when_not_present_and_admin_password
@@ -259,37 +209,14 @@ AS_ADMIN_PASSWORD=
 
     ensure_task_updated_by_last_action(t)
 
-    assert File.directory?("#{test_domains_dir}/domain1/bin")
-    assert File.directory?("#{test_domains_dir}/domain1/lib")
-    assert File.directory?("#{test_domains_dir}/domain1/lib/ext")
-    assert File.file?("#{test_domains_dir}/domain1/bin/asadmin")
+    assert_domain_directories
 
     assert_equal IO.read(context.domain_password_file_location), <<-CMD
 AS_ADMIN_MASTERPASSWORD=secret
 AS_ADMIN_PASSWORD=secret1
     CMD
 
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 "$@"
-    CMD
-
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
-    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
-#!/bin/sh
-
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} --secure --port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
-    CMD
+    ensure_domain_scripts_created(t, true)
   end
 
   def test_create_with_mismatched_aadmin_port
@@ -836,5 +763,69 @@ AS_ADMIN_PASSWORD=secret1
     assert context.property_cache?
 
     ensure_task_not_updated_by_last_action(t)
+  end
+
+  def assert_domain_directories
+    assert_domain_directory('bin', '755')
+    assert_domain_directory('lib', '755')
+    assert_domain_directory('lib/ext', '755')
+    assert_domain_directory('docroot', '755')
+  end
+
+  def assert_domain_directory(filename, mode)
+    assert_directory("#{test_domains_dir}/domain1/#{filename}", mode)
+  end
+
+  def assert_directory(filename, mode)
+    assert File.directory?(filename)
+    assert_file_mode(filename, mode)
+  end
+
+  def assert_domain_file(filename, mode)
+    assert_file("#{test_domains_dir}/domain1/#{filename}", mode)
+  end
+
+  def assert_file(filename, mode)
+    assert File.file?(filename)
+    assert_file_mode(filename, mode)
+  end
+
+  def assert_file_mode(filename, mode)
+    assert_equal sprintf("%o", File::Stat.new(filename).mode)[-3, 3], mode
+  end
+
+  def ensure_domain_scripts_created(t, secure = false)
+    assert_domain_file('bin/asadmin', '700')
+    assert_domain_file('bin/asadmin_stop', '700')
+    assert_domain_file('bin/asadmin_start', '700')
+    assert_domain_file('bin/asadmin_run', '700')
+    assert_domain_file('bin/asadmin_restart', '700')
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 "$@"
+    CMD
+
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 stop-domain --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 start-domain --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_run"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 start-domain --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} --verbose=true \"$@\" #{t.context.domain_name}
+    CMD
+    assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
+#!/bin/sh
+
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 restart-domain --savelogin=false --savemasterpassword=false --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+    CMD
   end
 end
