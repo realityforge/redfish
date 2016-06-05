@@ -18,6 +18,11 @@
 module RedfishPlus
   class << self
 
+    def setup_default_logging(domain)
+      set_log_level(domain, 'javax.enterprise.system.container.web.com.sun.web.security.level', 'OFF')
+      disable_noisy_database_logging(domain)
+    end
+
     def setup_for_local_development(domain, options = {})
       features = options[:features] || []
       domain.package = false
@@ -27,8 +32,7 @@ module RedfishPlus
 
       setup_http_thread_pool(domain)
 
-      set_log_level(domain, 'javax.enterprise.system.container.web.com.sun.web.security.level', 'OFF')
-      disable_noisy_database_logging(domain)
+      setup_default_logging(domain)
 
       base_setup_for_local_development(domain)
       if features.include?(:jms)
