@@ -47,6 +47,13 @@ module RedfishPlus
       setup_orb_to_support_jms(domain)
       jms_host(domain, 'DefaultJmsHost', '127.0.0.1', '7676', 'admin', 'admin')
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.default-jms-host', 'DefaultJmsHost')
+      set(domain, 'configs.config.server-config.jms-service.addresslist-behavior', 'random')
+      set(domain, 'configs.config.server-config.jms-service.addresslist-iterations', '3')
+      set(domain, 'configs.config.server-config.jms-service.init-timeout-in-seconds', '60')
+      set(domain, 'configs.config.server-config.jms-service.reconnect-attempts', '3')
+      set(domain, 'configs.config.server-config.jms-service.reconnect-enabled', 'true')
+      set(domain, 'configs.config.server-config.jms-service.reconnect-interval-in-seconds', '5')
+      set(domain, 'configs.config.server-config.jms-service.reconnect-interval-in-seconds', '5')
 
       # Assume at this stage that if jms_host is configured then it is for mdb container
       configure_mdb_container(domain)
