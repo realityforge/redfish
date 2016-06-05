@@ -127,7 +127,7 @@ module RedfishPlus
     end
 
     def set_standard_domain_template(domain, key)
-      set_domain_template(domain, "#{Redfish::Config.default_glassfish_home}/glassfish/common/templates/gf/#{key}-domain.jar")
+      set_domain_template(domain, "{{glassfish_home}}/glassfish/common/templates/gf/#{key}-domain.jar")
     end
 
     def set_domain_template(domain, template)
