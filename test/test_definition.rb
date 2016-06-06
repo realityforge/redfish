@@ -314,6 +314,9 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     version_hash = check_version_hash(definition, true, '')
 
+    definition.data['hello'] = 'world'
+    version_hash = check_version_hash(definition, true, version_hash)
+
     definition.version = '1.354'
     version_hash = check_version_hash(definition, true, version_hash)
 
