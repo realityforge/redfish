@@ -375,7 +375,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     version_hash = check_version_hash(definition, false, version_hash)
 
     definition.terse = true
-    version_hash = check_version_hash(definition, false, version_hash)
+    check_version_hash(definition, false, version_hash)
   end
 
   def check_version_hash(definition, expect_change, last_version_hash)
