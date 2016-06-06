@@ -230,5 +230,27 @@ module Redfish
         f.write JSON.pretty_generate(self.resolved_data)
       end
     end
+
+    def version_hash
+      calculate_version_hash
+    end
+
+    private
+
+    def calculate_version_hash
+      data = self.resolved_data.to_h
+      data['definition'] = {}
+      [
+        :key, :name, :extends, :version, :pre_artifacts, :post_artifacts, :secure?,
+        :admin_port, :admin_username, :glassfish_home, :domains_directory,
+        :ports, :authbind_executable, :system_user, :system_group, :environment_vars
+      ].each do |key|
+        data['definition'][key.to_s] = self.send(key)
+      end
+      data['definition']['admin_password'] = self.admin_password unless self.admin_password_random?
+      data['definition']['file_map'] = self.file_map.keys
+
+      Digest::MD5.hexdigest(JSON.pretty_generate(data))
+    end
   end
 end

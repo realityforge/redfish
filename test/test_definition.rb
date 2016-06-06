@@ -289,4 +289,107 @@ class Redfish::TestDefinition < Redfish::TestCase
     e = assert_raises(RuntimeError) { definition.file('a', '/tmp/other.txt') }
     assert_equal e.message, "File with key 'a' is associated with local file '/tmp/a.txt', can not associate with '/tmp/other.txt'"
   end
+
+  def test_version_hash
+    pre_filename = "#{temp_dir}/pre_data.json"
+    post_filename = "#{temp_dir}/post_data.json"
+
+    File.open(pre_filename, 'wb') { |f| f.write '{"a": 1, "b": 2}' }
+    File.open(post_filename, 'wb') { |f| f.write '{"d": 3, "e": 4}' }
+
+    definition = Redfish::DomainDefinition.new('appserver')
+
+    version_hash = check_version_hash(definition, true, '')
+
+    definition.version = '1.354'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.pre_artifacts << pre_filename
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.post_artifacts << post_filename
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.ports = [8080]
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.secure = false
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.admin_port = 8085
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.admin_username = 'bob'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    # This clears the admin_password_random? flag thus forcing a hash change
+    definition.admin_password = definition.admin_password
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.domains_directory = '/tmp'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.glassfish_home = '/tmp'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.authbind_executable = '/bin/authbind'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.system_user = 'gf'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.system_group = 'gf-admins'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.environment_vars['A'] = 'P'
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.file('b', '/tmp/b.txt')
+    version_hash = check_version_hash(definition, true, version_hash)
+
+    definition.package = false
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.package = true
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.rake_integration = false
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.rake_integration = true
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.complete = false
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.complete = true
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.echo = false
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.echo = true
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.terse = false
+    version_hash = check_version_hash(definition, false, version_hash)
+
+    definition.terse = true
+    version_hash = check_version_hash(definition, false, version_hash)
+  end
+
+  def check_version_hash(definition, expect_change, last_version_hash)
+    version_hash = definition.version_hash
+    version_hash2 = definition.version_hash
+    if version_hash != version_hash2
+      fail('Version_has changed without changing any data')
+    end
+    if (last_version_hash == version_hash) && expect_change
+      fail('Expected version_hash change but was none')
+    end
+    if (last_version_hash != version_hash) && !expect_change
+      fail('Did not expect version_hash change but was one')
+    end
+    version_hash
+  end
 end
