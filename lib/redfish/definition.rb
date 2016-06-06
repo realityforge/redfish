@@ -42,8 +42,8 @@ module Redfish
       @system_user = nil
       @system_group = nil
       @file_map = {}
-      (options.delete(:file_map) || {}).each_pair do |key, path|
-        file(key, path)
+      (options.delete(:file_map) || {}).each_pair do |file_key, path|
+        file(file_key, path)
       end
 
       options = options.dup
@@ -66,8 +66,8 @@ module Redfish
         @authbind_executable = parent.authbind_executable
         @system_user = parent.system_user
         @system_group = parent.system_group
-        parent.file_map.each_pair do |key, path|
-          file(key, path)
+        parent.file_map.each_pair do |file_key, path|
+          file(file_key, path)
         end
         # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
       end
