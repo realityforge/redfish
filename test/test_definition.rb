@@ -304,6 +304,8 @@ class Redfish::TestDefinition < Redfish::TestCase
   end
 
   def test_version_hash
+    Redfish::Config.default_glassfish_home = '/path/to/glassfish'
+
     pre_filename = "#{temp_dir}/pre_data.json"
     post_filename = "#{temp_dir}/post_data.json"
 
