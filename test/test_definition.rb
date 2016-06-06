@@ -19,6 +19,8 @@ class Redfish::TestDefinition < Redfish::TestCase
   def test_basic_workflow
     definition = Redfish::DomainDefinition.new('appserver')
 
+    assert_equal definition.file_map, {}
+
     Redfish::Config.default_glassfish_home = 'Y'
     assert_equal definition.name, 'appserver'
     assert definition.data.is_a?(Redfish::Mash)
@@ -55,6 +57,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.echo = true
     definition.rake_integration = false
     definition.packaged = true
+    definition.file('a', '/tmp/a.txt')
 
     assert_equal definition.secure?, false
     assert_equal definition.complete?, false
@@ -71,6 +74,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.echo?, true
     assert_equal definition.enable_rake_integration?, false
     assert_equal definition.packaged?, true
+    assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
 
     context = definition.to_task_context
 
@@ -85,6 +89,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal context.system_group, 'glassfish-group'
     assert_equal context.terse?, true
     assert_equal context.echo?, true
+    assert_equal context.file_map, {'a' => '/tmp/a.txt'}
   end
 
   def test_extends
@@ -101,6 +106,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.authbind_executable = '/usr/bin/authbind'
     definition.system_user = 'glassfish'
     definition.system_group = 'glassfish-group'
+    definition.file('a', '/tmp/a.txt')
 
     # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
     definition.complete = false
@@ -145,6 +151,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.enable_rake_integration?, false
     assert_equal definition.packaged?, true
     assert_equal definition.extends, nil
+    assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
 
     definition2 = Redfish.domain('appserver2', :extends => 'appserver')
 
@@ -168,6 +175,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition2.enable_rake_integration?, true
     assert_equal definition2.packaged?, false
     assert_equal definition2.extends, 'appserver'
+    assert_equal definition2.file_map, {'a' => '/tmp/a.txt'}
 
     assert_equal definition2.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
     assert_equal definition2.pre_artifacts.size, 0
@@ -239,5 +247,24 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.data['f'] = 'r'
 
     assert_equal definition.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
+  end
+
+  def test_file_map
+    definition = Redfish::DomainDefinition.new('appserver', :file_map => {'a' => '/tmp/a.txt'})
+
+    assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
+
+    definition.file('b', '/tmp/b.txt')
+
+    assert_equal definition.file_map, {'a' => '/tmp/a.txt', 'b' => '/tmp/b.txt'}
+
+    # Ensure it can not be changed directly
+
+    definition.file_map['c'] = '/filec.txt'
+
+    assert_equal definition.file_map, {'a' => '/tmp/a.txt', 'b' => '/tmp/b.txt'}
+
+    e = assert_raises(RuntimeError) { definition.file('a', '/tmp/other.txt') }
+    assert_equal e.message, "File with key 'a' is associated with local file '/tmp/a.txt', can not associate with '/tmp/other.txt'"
   end
 end

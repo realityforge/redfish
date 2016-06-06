@@ -15,9 +15,11 @@
 module Redfish
   class DomainDefinition < BaseElement
     def initialize(key, options = {}, &block)
+      options = options.dup
       @key = key
       @name = key
       @data = Redfish::Mash.new
+      @file_map = {}
       @secure = true
       @echo = false
       @terse = false
@@ -35,6 +37,10 @@ module Redfish
       @authbind_executable = nil
       @system_user = nil
       @system_group = nil
+      @file_map = {}
+      (options.delete(:file_map) || {}).each_pair do |key, path|
+        file(key, path)
+      end
 
       options = options.dup
       @extends = options.delete(:extends)
@@ -53,6 +59,9 @@ module Redfish
         @authbind_executable = parent.authbind_executable
         @system_user = parent.system_user
         @system_group = parent.system_group
+        parent.file_map.each_pair do |key, path|
+          file(key, path)
+        end
         # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
       end
       super(options, &block)
@@ -143,6 +152,15 @@ module Redfish
     attr_reader :pre_artifacts
     attr_reader :post_artifacts
 
+    def file(key, local_path)
+      raise "File with key '#{key.to_s}' is associated with local file '#{@file_map[key.to_s]}', can not associate with '#{local_path}'" if @file_map[key.to_s]
+      @file_map[key.to_s] = local_path
+    end
+
+    def file_map
+      @file_map.dup
+    end
+
     def resolved_data
       data = Redfish::Mash.new
       data.merge!(Redfish.domain_by_key(self.extends).resolved_data) if self.extends
@@ -171,6 +189,7 @@ module Redfish
                              :system_user => self.system_user,
                              :system_group => self.system_group,
                              :authbind_executable => self.authbind_executable,
+                             :file_map => self.file_map,
                              :domains_directory => self.domains_directory
                            })
     end
