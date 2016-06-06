@@ -41,6 +41,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.echo?, false
     assert_equal definition.enable_rake_integration?, true
     assert_equal definition.packaged?, false
+    assert_equal definition.dockerize?, false
     assert_equal definition.extends, nil
     assert_equal definition.version, nil
     assert_equal definition.ports, []
@@ -61,6 +62,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.echo = true
     definition.rake_integration = false
     definition.packaged = true
+    definition.dockerize = true
     definition.file('a', '/tmp/a.txt')
     definition.version = '1.21'
     definition.ports << 8080
@@ -82,6 +84,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.echo?, true
     assert_equal definition.enable_rake_integration?, false
     assert_equal definition.packaged?, true
+    assert_equal definition.dockerize?, true
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
     assert_equal definition.version, '1.21'
     assert_equal definition.ports, [8080]

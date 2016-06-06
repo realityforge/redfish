@@ -167,8 +167,14 @@ module Redfish
       @packaged.nil? ? false : @packaged
     end
 
+    attr_writer :dockerize
+
+    def dockerize?
+      @dockerize.nil? ? false : @dockerize
+    end
+
     def task_prefix
-      raise 'task_prefix invoked' unless enable_rake_integration? || packaged?
+      raise 'task_prefix invoked' unless enable_rake_integration? || packaged? || dockerize?
       "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain_key?(self.key) ? '' : ":#{self.key}"}"
     end
 
