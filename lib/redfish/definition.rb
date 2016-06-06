@@ -237,9 +237,9 @@ module Redfish
 
     def labels
       {
-        'domain_name' => self.name.to_s,
-        'domain_version' => self.version.to_s,
-        'domain_hash' => self.version_hash.to_s
+        'org.realityforge.redfish.domain_name' => self.name.to_s,
+        'org.realityforge.redfish.domain_version' => self.version.to_s,
+        'org.realityforge.redfish.domain_hash' => self.version_hash.to_s
       }.merge(self.additional_labels)
     end
 

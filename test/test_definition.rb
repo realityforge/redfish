@@ -303,9 +303,9 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     labels = definition.labels
     assert_equal labels.size, 4
-    assert_equal labels['domain_name'], 'appserver'
-    assert_equal labels['domain_version'], ''
-    assert_equal labels['domain_hash'], definition.version_hash
+    assert_equal labels['org.realityforge.redfish.domain_name'], 'appserver'
+    assert_equal labels['org.realityforge.redfish.domain_version'], ''
+    assert_equal labels['org.realityforge.redfish.domain_hash'], definition.version_hash
     assert_equal labels['application'], 'ember'
   end
 
