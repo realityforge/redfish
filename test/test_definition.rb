@@ -31,6 +31,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.admin_username, 'admin'
     assert_equal definition.master_password, nil
     assert_equal definition.admin_password.size, 10
+    assert_equal definition.admin_password_random?, true
     assert_equal definition.glassfish_home, 'Y'
     assert_equal definition.domains_directory, 'Y/glassfish/domains'
     assert_equal definition.authbind_executable, nil
@@ -67,6 +68,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.admin_port, 8080
     assert_equal definition.admin_username, 'bob'
     assert_equal definition.admin_password, 'secret'
+    assert_equal definition.admin_password_random?, false
     assert_equal definition.glassfish_home, '/usr/local/glassfish'
     assert_equal definition.domains_directory, '/srv/glassfish/appserver'
     assert_equal definition.authbind_executable, '/usr/bin/authbind'
@@ -142,6 +144,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.package?, false
     assert_equal definition.admin_port, 8081
     assert_equal definition.admin_username, 'myadmin'
+    assert_equal definition.admin_password_random?, true
     assert_equal definition.master_password, 'mypassword'
     assert_equal definition.admin_password.size, 10
     assert_equal definition.glassfish_home, 'Y'
@@ -166,6 +169,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition2.package?, true
     assert_equal definition2.admin_port, definition.admin_port
     assert_equal definition2.admin_username, definition.admin_username
+    assert_equal definition2.admin_password_random?, true
     assert_equal definition2.master_password, definition.master_password
     assert_equal definition2.admin_password, definition.admin_password
     assert_equal definition2.glassfish_home, definition.glassfish_home

@@ -31,6 +31,7 @@ module Redfish
       @admin_port = 4848
       @admin_username = 'admin'
       @admin_password = Redfish::Util.generate_password
+      @admin_password_random = true
       @glassfish_home = nil
       @domains_directory = nil
       @pre_artifacts = []
@@ -54,6 +55,7 @@ module Redfish
         @admin_port = parent.admin_port
         @admin_username = parent.admin_username
         @admin_password = parent.admin_password
+        @admin_password_random = parent.admin_password_random?
         @master_password = parent.master_password
         @glassfish_home = parent.glassfish_home
         @domains_directory = parent.domains_directory
@@ -97,9 +99,18 @@ module Redfish
     # The username to use when communicating with the domain.
     attr_accessor :admin_username
     # The password to use when communicating with the domain.
-    attr_accessor :admin_password
+    attr_reader :admin_password
     # The password to use when accessing keystore.
     attr_accessor :master_password
+
+    def admin_password=(admin_password)
+      @admin_password_random = false
+      @admin_password = admin_password
+    end
+
+    def admin_password_random?
+      !!@admin_password_random
+    end
 
     def glassfish_home
       @glassfish_home || Redfish::Config.default_glassfish_home
