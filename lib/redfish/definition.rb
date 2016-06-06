@@ -19,6 +19,7 @@ module Redfish
       @key = key
       @name = key
       @data = Redfish::Mash.new
+      @version = nil
       @file_map = {}
       @secure = true
       @echo = false
@@ -71,6 +72,7 @@ module Redfish
     attr_reader :name
     attr_reader :extends
     attr_reader :data
+    attr_accessor :version
 
     def package?
       !!@package

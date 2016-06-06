@@ -41,6 +41,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.enable_rake_integration?, true
     assert_equal definition.packaged?, false
     assert_equal definition.extends, nil
+    assert_equal definition.version, nil
 
     definition.secure = false
     definition.complete = false
@@ -58,6 +59,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.rake_integration = false
     definition.packaged = true
     definition.file('a', '/tmp/a.txt')
+    definition.version = '1.21'
 
     assert_equal definition.secure?, false
     assert_equal definition.complete?, false
@@ -75,6 +77,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.enable_rake_integration?, false
     assert_equal definition.packaged?, true
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal definition.version, '1.21'
 
     context = definition.to_task_context
 
