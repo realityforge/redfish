@@ -223,6 +223,18 @@ module Redfish
                            })
     end
 
+    def additional_labels
+      @additional_labels ||= {}
+    end
+
+    def labels
+      {
+        'domain_name' => self.name.to_s,
+        'domain_version' => self.version.to_s,
+        'domain_hash' => self.version_hash.to_s
+      }.merge(self.additional_labels)
+    end
+
     def export_to_file(filename)
       dir = File.dirname(filename)
       FileUtils.mkdir_p dir

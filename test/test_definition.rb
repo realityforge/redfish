@@ -290,6 +290,19 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal e.message, "File with key 'a' is associated with local file '/tmp/a.txt', can not associate with '/tmp/other.txt'"
   end
 
+  def test_labels
+    definition = Redfish::DomainDefinition.new('appserver')
+
+    definition.additional_labels['application'] = 'ember'
+
+    labels = definition.labels
+    assert_equal labels.size, 4
+    assert_equal labels['domain_name'], 'appserver'
+    assert_equal labels['domain_version'], ''
+    assert_equal labels['domain_hash'], definition.version_hash
+    assert_equal labels['application'], 'ember'
+  end
+
   def test_version_hash
     pre_filename = "#{temp_dir}/pre_data.json"
     post_filename = "#{temp_dir}/post_data.json"
