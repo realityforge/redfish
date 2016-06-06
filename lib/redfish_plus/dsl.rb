@@ -21,6 +21,7 @@ module RedfishPlus
     def setup_for_docker(domain, options = {})
       features = options[:features] || []
       domain.package = false
+      domain.local = false
       domain.dockerize = true
 
       setup_standard_jvm_options(domain)

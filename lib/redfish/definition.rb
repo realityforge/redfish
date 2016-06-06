@@ -22,6 +22,7 @@ module Redfish
       @version = nil
       @file_map = {}
       @secure = true
+      @local = true
       @echo = false
       @terse = false
       @packaged = false
@@ -90,6 +91,12 @@ module Redfish
     # If true then this domain definition is not complete and can not be converged or converted into a docker image.
     def complete?
       !!@complete
+    end
+
+    attr_writer :local
+
+    def local?
+      @local.nil? ? true : !!@local
     end
 
     attr_writer :complete

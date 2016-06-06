@@ -26,6 +26,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert definition.data.is_a?(Redfish::Mash)
     assert_equal definition.secure?, true
     assert_equal definition.complete?, true
+    assert_equal definition.local?, true
     assert_equal definition.package?, true
     assert_equal definition.admin_port, 4848
     assert_equal definition.admin_username, 'admin'
@@ -49,6 +50,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     definition.secure = false
     definition.complete = false
+    definition.local = false
     definition.package = false
     definition.admin_port = 8080
     definition.admin_username = 'bob'
@@ -70,6 +72,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition.secure?, false
     assert_equal definition.complete?, false
+    assert_equal definition.local?, false
     assert_equal definition.package?, false
     assert_equal definition.admin_port, 8080
     assert_equal definition.admin_username, 'bob'
@@ -117,6 +120,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.master_password = 'mypassword'
     definition.admin_port = 8081
     definition.secure = false
+    definition.local = false
     definition.authbind_executable = '/usr/bin/authbind'
     definition.system_user = 'glassfish'
     definition.system_group = 'glassfish-group'
@@ -151,6 +155,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.pre_artifacts.size, 1
     assert_equal definition.post_artifacts.size, 1
     assert_equal definition.secure?, false
+    assert_equal definition.local?, false
     assert_equal definition.complete?, false
     assert_equal definition.package?, false
     assert_equal definition.admin_port, 8081
@@ -178,6 +183,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition2.name, 'appserver'
     assert definition2.data.is_a?(Redfish::Mash)
     assert_equal definition2.secure?, definition.secure?
+    assert_equal definition2.local?, true
     assert_equal definition2.complete?, true
     assert_equal definition2.package?, true
     assert_equal definition2.admin_port, definition.admin_port
