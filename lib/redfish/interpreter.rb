@@ -283,11 +283,11 @@ module Redfish #nodoc
       run_context.task('domain', domain_options).action(:complete)
     end
 
+    private
+
     def restart_domain_if_required(run_context, domain_options)
       run_context.task('domain', domain_options).action(:restart_if_required)
     end
-
-    private
 
     def interpret_system_facilities(run_context, data, domain_options)
       interpret_jvm_options(run_context, data['jvm_options'] || {})
