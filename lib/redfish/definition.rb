@@ -35,6 +35,7 @@ module Redfish
       @glassfish_home = nil
       @domains_directory = nil
       @ports = []
+      @environment_vars = {}
       @pre_artifacts = []
       @post_artifacts = []
       @authbind_executable = nil
@@ -54,6 +55,7 @@ module Redfish
         @echo = parent.echo?
         @terse = parent.terse?
         @ports = parent.ports.dup
+        @environment_vars = parent.environment_vars.dup
         @admin_port = parent.admin_port
         @admin_username = parent.admin_username
         @admin_password = parent.admin_password
@@ -135,6 +137,9 @@ module Redfish
     attr_accessor :system_user
     # The group that the asadmin command executes as.
     attr_accessor :system_group
+
+    # A map of environment variables expected to be passed into the docker instance. Maps keys to default values.
+    attr_reader :environment_vars
 
     # Use terse output from the underlying asadmin.
     def terse?
