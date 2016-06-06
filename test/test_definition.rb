@@ -410,4 +410,165 @@ class Redfish::TestDefinition < Redfish::TestCase
     end
     version_hash
   end
+
+  def test_setup_docker_dir
+    Redfish::Config.default_glassfish_home = '/opt/glassfish'
+
+    dir = "#{temp_dir}/docker"
+
+    domain = Redfish::DomainDefinition.new('appserver')
+    domain.dockerize = true
+
+    domain.setup_docker_dir(dir)
+
+    assert_docker_directory('redfish')
+    assert_docker_directory('redfish/lib')
+    assert_docker_directory('redfish/lib/redfish')
+    assert_docker_directory('redfish/lib/redfish_plus')
+    assert_docker_file('redfish/lib/redfish.rb')
+    assert_docker_file('redfish/lib/redfish_plus.rb')
+    assert_docker_file('Dockerfile', <<CONTENT)
+FROM stocksoftware/redfish:latest
+USER root
+COPY ./redfish /opt/redfish
+RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
+USER glassfish
+RUN mkdir /tmp/glassfish && \\
+    export TMPDIR=/tmp/glassfish && \\
+    java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
+    rm -rf /tmp/glassfish && \\
+    java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml
+
+USER glassfish
+EXPOSE  4848
+CMD ["/opt/redfish/run"]
+CONTENT
+
+    assert_docker_file('redfish/run', <<CONTENT)
+#!/bin/bash
+
+java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml && \\
+/srv/glassfish/domains/appserver/bin/asadmin_run
+CONTENT
+    assert_docker_file('redfish/domain.rb', <<CONTENT)
+CURRENT_DIR = File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH << File.expand_path("\#{CURRENT_DIR}/lib")
+require 'redfish_plus'
+
+domain = Redfish.domain('appserver') do |domain|
+  domain.pre_artifacts << "\#{CURRENT_DIR}/domain.json"
+end
+
+Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])
+CONTENT
+    assert_docker_file('redfish/domain.json', "{\n}")
+  end
+
+
+  def test_setup_docker_dir_with_files_and_env_vars
+    Redfish::Config.default_glassfish_home = '/opt/glassfish'
+
+    file1 = "#{temp_dir}/file1.json"
+    file2 = "#{temp_dir}/file2.json"
+
+    File.open(file1, 'wb') { |f| f.write '{"a": 1, "b": 2}' }
+    File.open(file2, 'wb') { |f| f.write '{"c": 1, "d": 2}' }
+
+    dir = "#{temp_dir}/docker"
+
+    domain = Redfish::DomainDefinition.new('appserver')
+    domain.dockerize = true
+
+    domain.data['data'] = 'some data here'
+
+    domain.environment_vars['A'] = nil
+    domain.environment_vars['B'] = nil
+    domain.environment_vars['C'] = '1'
+
+    domain.file('a', file1)
+    domain.file('b', file2)
+
+    domain.setup_docker_dir(dir)
+
+    assert_docker_directory('redfish')
+    assert_docker_directory('redfish/lib')
+    assert_docker_directory('redfish/lib/redfish')
+    assert_docker_directory('redfish/lib/redfish_plus')
+    assert_docker_file('redfish/lib/redfish.rb')
+    assert_docker_file('redfish/lib/redfish_plus.rb')
+    assert_docker_file('Dockerfile', <<CONTENT)
+FROM stocksoftware/redfish:latest
+USER root
+COPY ./redfish /opt/redfish
+RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
+USER glassfish
+RUN mkdir /tmp/glassfish && \\
+    export TMPDIR=/tmp/glassfish && \\
+    java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
+    rm -rf /tmp/glassfish && \\
+    java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@
+
+USER glassfish
+EXPOSE  4848
+CMD ["/opt/redfish/run"]
+CONTENT
+
+    assert_docker_file('redfish/run', <<CONTENT)
+#!/bin/bash
+
+if [ "${A:-}" = '' ]; then
+  echo "Failed to supply environment data for A"
+  exit 1
+fi
+if [ "${B:-}" = '' ]; then
+  echo "Failed to supply environment data for B"
+  exit 1
+fi
+if [ "${C:-1}" = '' ]; then
+  echo "Failed to supply environment data for C"
+  exit 1
+fi
+java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml -sA=${A:-} -sB=${B:-} -sC=${C:-1} && \\
+/srv/glassfish/domains/appserver/bin/asadmin_run
+CONTENT
+    assert_docker_file('redfish/domain.rb', <<CONTENT)
+CURRENT_DIR = File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH << File.expand_path("\#{CURRENT_DIR}/lib")
+require 'redfish_plus'
+
+domain = Redfish.domain('appserver') do |domain|
+  domain.pre_artifacts << "\#{CURRENT_DIR}/domain.json"
+  domain.file('a', '/opt/redfish/files/a/file1.json')
+  domain.file('b', '/opt/redfish/files/b/file2.json')
+end
+
+Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])
+CONTENT
+    assert_docker_file('redfish/domain.json', "{\n  \"data\": \"some data here\"\n}")
+  end
+
+  def assert_docker_file(filename, content = nil)
+    path = "#{temp_dir}/docker/#{filename}"
+    assert_file(path)
+    if content
+      data = IO.read(path)
+      if content.is_a?(Regexp)
+        assert_match content, data
+      else
+        assert_equal content, data
+      end
+    end
+  end
+
+  def assert_docker_directory(filename)
+    assert_directory("#{temp_dir}/docker/#{filename}")
+  end
+
+  def assert_directory(filename)
+    assert File.directory?(filename)
+  end
+
+  def assert_file(filename)
+    assert File.file?(filename)
+  end
 end

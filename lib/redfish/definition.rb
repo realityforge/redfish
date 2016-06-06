@@ -244,6 +244,15 @@ module Redfish
       end
     end
 
+    def setup_docker_dir(dir)
+      raise "Attempting to setup docker directory for domain with key #{self.key} when dockerize set to false" unless dockerize?
+      FileUtils.rm_rf dir
+      FileUtils.mkdir_p dir
+
+      setup_docker_redfish_dir(dir)
+      setup_dockerfile(dir)
+    end
+
     def version_hash
       calculate_version_hash
     end
@@ -264,6 +273,87 @@ module Redfish
       data['definition']['file_map'] = self.file_map.keys
 
       Digest::MD5.hexdigest(JSON.pretty_generate(data))
+    end
+
+    def setup_dockerfile(dir)
+      # When the Dockerfile format improves we should be able to remove redfish from the image altogether
+      File.open("#{dir}/Dockerfile", 'wb') do |f|
+        f.write <<SCRIPT
+FROM stocksoftware/redfish:latest
+USER root
+COPY ./redfish /opt/redfish
+RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
+USER glassfish
+RUN mkdir /tmp/glassfish && \\
+    export TMPDIR=/tmp/glassfish && \\
+    java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
+    rm -rf /tmp/glassfish && \\
+    java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.keys.collect { |k| "-s#{k}=@@#{k}@@" }.join(' ')}
+
+USER glassfish
+EXPOSE #{self.ports.join(' ')} #{self.admin_port}
+CMD ["/opt/redfish/run"]
+SCRIPT
+      end
+    end
+
+    def setup_docker_redfish_dir(dir)
+      FileUtils.mkdir_p "#{dir}/redfish/lib"
+      FileUtils.cp_r File.expand_path(File.dirname(__FILE__) + '/..') + '/.', "#{dir}/redfish/lib"
+      export_to_file("#{dir}/redfish/domain.json")
+      write_redfish_script(dir)
+      write_run_script(dir)
+    end
+
+    def write_run_script(dir)
+      File.open("#{dir}/redfish/run", 'wb') do |f|
+        f.write <<SCRIPT
+#!/bin/bash
+
+SCRIPT
+        self.environment_vars.each_pair do |k, v|
+          f.write <<SCRIPT
+if [ "${#{k}:-#{v}}" = '' ]; then
+  echo "Failed to supply environment data for #{k}"
+  exit 1
+fi
+SCRIPT
+        end
+        f.write <<SCRIPT
+java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.collect { |k, v| "-s#{k}=${#{k}:-#{v}}" }.join(' ')} && \\
+/srv/glassfish/domains/#{self.name}/bin/asadmin_run
+SCRIPT
+      end
+    end
+
+    def write_redfish_script(dir)
+      File.open("#{dir}/redfish/domain.rb", 'wb') do |f|
+        f.write <<SCRIPT
+CURRENT_DIR = File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH << File.expand_path("\#{CURRENT_DIR}/lib")
+require 'redfish_plus'
+
+domain = Redfish.domain('#{self.name}') do |domain|
+  domain.pre_artifacts << "\#{CURRENT_DIR}/domain.json"
+SCRIPT
+        self.file_map.each_pair do |key, path|
+          short_name = File.basename(path)
+          docker_cache_path = "#{dir}/redfish/files/#{key}"
+          FileUtils.mkdir_p docker_cache_path
+          if File.directory?(path)
+            FileUtils.cp_r path, docker_cache_path
+          else
+            FileUtils.cp path, docker_cache_path
+          end
+          FileUtils.cp_r File.expand_path(File.dirname(__FILE__) + '/..') + '/.', "#{dir}/redfish/lib"
+          f.write "  domain.file('#{key}', '/opt/redfish/files/#{key}/#{short_name}')\n"
+        end
+        f.write <<SCRIPT
+end
+
+Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])
+SCRIPT
+      end
     end
   end
 end
