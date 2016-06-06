@@ -24,6 +24,8 @@ class Redfish::TestConfig < Redfish::TestCase
 
       assert_raise(RuntimeError, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'") { Redfish::Config.default_glassfish_home }
 
+      assert_equal Redfish::CAPTURE.string, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'\n"
+
       ENV['GLASSFISH_HOME'] = 'X'
       begin
         assert_equal Redfish::Config.default_glassfish_home, 'X'
@@ -69,6 +71,7 @@ class Redfish::TestConfig < Redfish::TestCase
 
   def test_default_domain_key
     assert_raise(RuntimeError, "Unable to determine default_domain_key. Please specify using Redfish::Config.default_domain_key = 'myapp'") { Redfish::Config.default_domain_key }
+    assert_equal Redfish::CAPTURE.string, "Unable to determine default_domain_key. Please specify using Redfish::Config.default_domain_key = 'myapp'\n"
     assert_equal Redfish::Config.default_domain_key?('myapp'), false
 
     Redfish::Config.default_domain_key = 'myapp'

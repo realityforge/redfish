@@ -29,10 +29,20 @@ module Redfish
   end
 end
 
+module Redfish
+  CAPTURE = StringIO.new
+  remove_const(:Logger)
+  Logger = ::Logger.new(CAPTURE)
+  Logger.level = ::Logger::INFO
+  Logger.formatter = proc { |severity, datetime, progname, msg| "#{msg}\n"}
+end
+
+
 class Redfish::TestCase < Minitest::Test
   include Test::Unit::Assertions
 
   def setup
+    Redfish::CAPTURE.reopen('')
     @temp_dir = nil
     Redfish.clear_domain_map
     Redfish::Config.default_glassfish_home = nil
