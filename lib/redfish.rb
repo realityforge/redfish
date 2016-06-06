@@ -16,6 +16,7 @@ require 'etc'
 require 'logger'
 require 'tempfile'
 require 'json'
+require 'digest/md5'
 
 require 'redfish/version'
 require 'redfish/naming'
