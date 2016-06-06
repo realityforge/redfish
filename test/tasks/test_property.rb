@@ -32,6 +32,23 @@ class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
     perform_interpret(context, data, true, :set)
   end
 
+  def test_interpret_create_using_interpolation
+    data = {'properties' => {'some.config' => '{{domain_name}}'}}
+
+    executor = Redfish::Executor.new
+    context = create_simple_context(executor)
+
+    setup_interpreter_expects(executor, context, '')
+
+    executor.expects(:exec).with(equals(context),
+                                 equals('set'),
+                                 equals(%w(some.config=domain1)),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+
+    perform_interpret(context, data, true, :set)
+  end
+
   def test_interpret_create_when_exists
     data = {'properties' => {'configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true'}}
 

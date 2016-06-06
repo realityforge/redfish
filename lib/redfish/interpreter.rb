@@ -171,7 +171,7 @@ module Redfish #nodoc
 
       mirror_jms_resources(mash)
 
-      data = mash.to_h
+      data = interpolate(mash.to_h, build_variable_map(run_context))
 
       interpret_options = data['config'] || {}
 
@@ -284,6 +284,31 @@ module Redfish #nodoc
     end
 
     private
+
+    def interpolate(data, variable_map)
+      data.values.each do |value|
+        value.gsub!(/\{\{([^\}]+)\}\}/) do
+          variable_map[$1] || (raise "Attempting to interpolate value '#{value}'  resulted in inability to locate context data '#{$1}'")
+        end if value.respond_to?(:gsub!)
+        if value.is_a?(Hash)
+          interpolate(value, variable_map)
+        end
+      end
+      data
+    end
+
+    def build_variable_map(run_context)
+      ac = run_context.app_context
+      data = {
+        'domain_name' => ac.domain_name,
+        'glassfish_home' => ac.install_dir,
+        'domains_directory' => ac.domains_directory,
+      }
+      ac.file_map.each_pair do |key, path|
+        data["file:#{key}"] = path
+      end
+      data
+    end
 
     def restart_domain_if_required(run_context, domain_options)
       run_context.task('domain', domain_options).action(:restart_if_required)
