@@ -25,6 +25,7 @@ module Redfish
       @echo = false
       @terse = false
       @packaged = false
+      @dockerize = false
       @package = true
       @complete = true
       @rake_integration = true
