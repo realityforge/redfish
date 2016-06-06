@@ -58,6 +58,7 @@ module Redfish
     def self.define_tasks_for_domains
       Redfish.domains.each do |domain|
         next unless domain.enable_rake_integration?
+        domain.file('glassfish_domain_patcher', ::Buildr.artifact('org.realityforge.glassfish.patcher:glassfish-domain-patcher:jar:0.1').to_s)
         define_tasks_for_domain(domain)
       end
     end
@@ -71,6 +72,38 @@ module Redfish
         desc "Configure a local GlassFish instance based on #{domain.name} domain definition"
         task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
           Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
+        end
+      end
+
+      if domain.dockerize?
+        directory = "#{Redfish::Config.base_directory}/generated/redfish/docker/#{domain.key}"
+        desc "Setup a directory containing docker configuration for GlassFish instance based on #{domain.name} domain definition"
+        task "#{domain.task_prefix}:docker:setup" => ["#{domain.task_prefix}:pre_build"] do
+          info("Configuring docker directory for '#{domain.name}' domain with key '#{domain.key}' at #{directory}")
+          domain.file_map.values.each do |filename|
+            file(filename).invoke
+          end
+          domain.setup_docker_dir(directory)
+        end
+
+        desc "Build a docker image for GlassFish instance based on #{domain.name} domain definition"
+        task "#{domain.task_prefix}:docker:build" => ["#{domain.task_prefix}:docker:setup"] do
+          image_name = "#{domain.name}#{domain.version.nil? ? '' : ":#{domain.version}"}"
+          quiet_flag = ::Buildr.application.options.trace ? '' : '-q'
+          labels = domain.labels
+          if `docker images --format "{{.ID}}" #{labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
+            info("Building docker image for '#{domain.name}' domain with key '#{domain.key}' as #{image_name}")
+            sh("docker build #{quiet_flag} #{labels.collect { |k, v| "--label=#{k}=#{v}" }.join(' ')} --rm=true -t #{image_name} #{directory}")
+          end
+        end
+
+        desc "Run a container based on the docker image for GlassFish instance based on #{domain.name} domain definition"
+        task "#{domain.task_prefix}:docker:run" => ["#{domain.task_prefix}:docker:build"] do
+          image_name = "#{domain.name}#{domain.version.nil? ? '' : ":#{domain.version}"}"
+          info("Running docker image for '#{domain.name}' domain with key '#{domain.key}' as #{image_name}")
+          command = "docker run -ti --rm -P --name #{domain.name} #{image_name} #{ENV['DOCKER_ARGS']}"
+          puts(command) if ::Buildr.application.options.trace
+          exec(command)
         end
       end
 
