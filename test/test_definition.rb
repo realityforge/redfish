@@ -43,6 +43,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.packaged?, false
     assert_equal definition.extends, nil
     assert_equal definition.version, nil
+    assert_equal definition.ports, []
 
     definition.secure = false
     definition.complete = false
@@ -61,6 +62,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.packaged = true
     definition.file('a', '/tmp/a.txt')
     definition.version = '1.21'
+    definition.ports << 8080
 
     assert_equal definition.secure?, false
     assert_equal definition.complete?, false
@@ -80,6 +82,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.packaged?, true
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
     assert_equal definition.version, '1.21'
+    assert_equal definition.ports, [8080]
 
     context = definition.to_task_context
 
@@ -112,6 +115,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.system_user = 'glassfish'
     definition.system_group = 'glassfish-group'
     definition.file('a', '/tmp/a.txt')
+    definition.ports << 8080
 
     # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
     definition.complete = false
@@ -158,6 +162,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.packaged?, true
     assert_equal definition.extends, nil
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal definition.ports, [8080]
 
     definition2 = Redfish.domain('appserver2', :extends => 'appserver')
 
@@ -183,6 +188,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition2.packaged?, false
     assert_equal definition2.extends, 'appserver'
     assert_equal definition2.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal definition2.ports, [8080]
 
     assert_equal definition2.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
     assert_equal definition2.pre_artifacts.size, 0

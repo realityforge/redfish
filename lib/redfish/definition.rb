@@ -34,6 +34,7 @@ module Redfish
       @admin_password_random = true
       @glassfish_home = nil
       @domains_directory = nil
+      @ports = []
       @pre_artifacts = []
       @post_artifacts = []
       @authbind_executable = nil
@@ -52,6 +53,7 @@ module Redfish
         @secure = parent.secure?
         @echo = parent.echo?
         @terse = parent.terse?
+        @ports = parent.ports.dup
         @admin_port = parent.admin_port
         @admin_username = parent.admin_username
         @admin_password = parent.admin_password
@@ -102,6 +104,9 @@ module Redfish
     attr_reader :admin_password
     # The password to use when accessing keystore.
     attr_accessor :master_password
+
+    # An array of ports that will are accessible from the domain
+    attr_accessor :ports
 
     def admin_password=(admin_password)
       @admin_password_random = false
