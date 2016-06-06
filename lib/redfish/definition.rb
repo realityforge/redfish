@@ -288,6 +288,14 @@ module Redfish
         f.write <<SCRIPT
 FROM stocksoftware/redfish:latest
 USER root
+SCRIPT
+        if labels.size > 0
+          f.write <<SCRIPT
+LABEL #{self.labels.collect{|k,v| "#{k}=\"#{v}\""}.join(" \\\n      ")}
+SCRIPT
+        end
+
+        f.write <<SCRIPT
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish

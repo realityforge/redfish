@@ -436,6 +436,9 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_docker_file('Dockerfile', <<CONTENT)
 FROM stocksoftware/redfish:latest
 USER root
+LABEL org.realityforge.redfish.domain_name="appserver" \\
+      org.realityforge.redfish.domain_version="" \\
+      org.realityforge.redfish.domain_hash="#{domain.version_hash}"
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish
@@ -505,6 +508,9 @@ CONTENT
     assert_docker_file('Dockerfile', <<CONTENT)
 FROM stocksoftware/redfish:latest
 USER root
+LABEL org.realityforge.redfish.domain_name="appserver" \\
+      org.realityforge.redfish.domain_version="" \\
+      org.realityforge.redfish.domain_hash="#{domain.version_hash}"
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish

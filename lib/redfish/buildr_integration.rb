@@ -93,7 +93,7 @@ module Redfish
           labels = domain.labels
           if `docker images --format "{{.ID}}" #{labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
             info("Building docker image for '#{domain.name}' domain with key '#{domain.key}' as #{image_name}")
-            sh("docker build #{quiet_flag} #{labels.collect { |k, v| "--label=#{k}=#{v}" }.join(' ')} --rm=true -t #{image_name} #{directory}")
+            sh("docker build #{quiet_flag} --rm=true -t #{image_name} #{directory}")
           end
         end
 
