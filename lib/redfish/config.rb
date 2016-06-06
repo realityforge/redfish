@@ -21,7 +21,7 @@ module Redfish
       def base_directory
         return @base_directory unless @base_directory.nil?
         if defined?(::Buildr)
-          File.dirname(::Buildr.application.buildfile.to_s)
+          File.dirname(::Buildr.application.buildfile.to_s) rescue '.'
         else
           '.'
         end
