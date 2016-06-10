@@ -249,6 +249,46 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal data2.keys, %w(1 2 3 4 a b)
   end
 
+  def test_export_to_file_and_expand
+    Redfish::Config.default_glassfish_home = '/path/to/glassfish'
+
+    definition = Redfish::DomainDefinition.new('appserver')
+
+    filename2 = "#{temp_dir}/export1.json"
+    definition.export_to_file(filename2, :expand => true)
+    assert File.exist?(filename2)
+    assert_equal JSON.load(File.new(filename2)).to_h, {'jms_resources' => {}, 'properties' => {}}
+
+    definition.data['properties']['some.property'] = '{{domain_name}}'
+    definition.data['jms_resources']['myapp/jms/MyQueue']['restype'] = 'javax.jms.Queue'
+    definition.data['jms_resources']['myapp/jms/MyQueue']['properties']['name'] = 'MyQueue'
+
+    filename2 = "#{temp_dir}/export2.json"
+    definition.export_to_file(filename2, :expand => true)
+    assert File.exist?(filename2)
+    data2 = JSON.load(File.new(filename2)).to_h
+    expected =
+      {
+        'jms_resources' =>
+          {
+            'myapp/jms/MyQueue' => {'properties' => {'name' => 'MyQueue'}, 'restype' => 'javax.jms.Queue'}
+          },
+        'properties' => {'some.property' => 'appserver'},
+        'resource_adapters' =>
+          {
+            'jmsra' =>
+              {
+                'admin_objects' =>
+                  {
+                    'myapp/jms/MyQueue' => {'restype' => 'javax.jms.Queue', 'properties' => {'name' => 'MyQueue'}
+                    }
+                  }
+              }
+          }
+      }
+    assert_equal data2, expected
+  end
+
   def test_task_prefix
     definition = Redfish::DomainDefinition.new('appserver')
 

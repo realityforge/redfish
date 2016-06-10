@@ -114,7 +114,7 @@ module Redfish
       task "#{domain.task_prefix}:export" => ["#{domain.task_prefix}:pre_build"] do
         filename = "#{Redfish::Config.base_directory}/generated/redfish/definitions/#{domain.key}.json"
         info("Exporting '#{domain.name}' domain with key '#{domain.key}' to #{filename}")
-        domain.export_to_file(filename)
+        domain.export_to_file(filename, :expand => domain.complete?)
       end
     end
 

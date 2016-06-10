@@ -267,8 +267,13 @@ module Redfish
       }.merge(self.additional_labels)
     end
 
-    def export_to_file(filename)
+    def export_to_file(filename, options = {})
       data = self.resolved_data
+      if options[:expand]
+        Redfish::Interpreter::PreInterpreter.pre_interpret(data)
+        data = Redfish::Interpreter::Interpolater.interpolate(self.to_task_context, data.to_h)
+      end
+
       dir = File.dirname(filename)
       FileUtils.mkdir_p dir
       File.open(filename, 'wb') do |f|
