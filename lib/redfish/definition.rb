@@ -181,6 +181,10 @@ module Redfish
       @dockerize.nil? ? false : @dockerize
     end
 
+    def image_name
+      "#{self.name}#{self.version.nil? ? '' : ":#{self.version}"}"
+    end
+
     def task_prefix
       raise 'task_prefix invoked' unless enable_rake_integration? || packaged? || dockerize?
       "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain_key?(self.key) ? '' : ":#{self.key}"}"

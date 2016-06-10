@@ -418,6 +418,16 @@ class Redfish::TestDefinition < Redfish::TestCase
     version_hash
   end
 
+  def test_image_name
+    domain = Redfish::DomainDefinition.new('appserver')
+
+    assert_equal domain.image_name, 'appserver'
+
+    domain.version = '1.0'
+
+    assert_equal domain.image_name, 'appserver:1.0'
+  end
+
   def test_setup_docker_dir
     Redfish::Config.default_glassfish_home = '/opt/glassfish'
 
