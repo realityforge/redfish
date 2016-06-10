@@ -189,10 +189,10 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         end
         FileUtils.chmod 0400, pass_file
         FileUtils.chown context.system_user, context.system_group, pass_file if context.system_user || context.system_group
-        prefix = '--savelogin=false --savemasterpassword=false '
+        prefix = ''
         prefix << "--domaindir #{context.domains_directory}" if context.domains_directory
         {
-          'asadmin' => '"$@"',
+          'asadmin' => "--savelogin=false --savemasterpassword=false \"$@\"",
           'asadmin_stop' => "stop-domain #{prefix} \"$@\" #{context.domain_name}",
           'asadmin_start' => "start-domain #{prefix} \"$@\" #{context.domain_name}",
           'asadmin_run' => "start-domain #{prefix} --verbose=true \"$@\" #{context.domain_name}",
