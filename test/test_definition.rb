@@ -541,7 +541,7 @@ end
 
 Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])
 CONTENT
-    assert_docker_file('redfish/domain.json', "{\n}")
+    assert_docker_file('redfish/domain.json', JSON.pretty_generate({}))
   end
 
   def test_setup_docker_dir_with_files_and_env_vars
