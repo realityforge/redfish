@@ -124,6 +124,7 @@ module RedfishPlus
       set_default_auth_realm(domain, 'file')
       disable_classloading_delegation(domain)
       disable_autodeploy(domain)
+      disable_dynamic_reload(domain)
       disable_non_portable_jndi_names(domain)
       domain.ports << 8080
     end
@@ -227,6 +228,10 @@ module RedfishPlus
 
     def disable_non_portable_jndi_names(domain)
       set(domain, 'configs.config.server-config.ejb-container.property.disable-nonportable-jndi-names', 'true')
+    end
+
+    def disable_dynamic_reload(domain)
+      set(domain, 'configs.config.server-config.admin-service.das-config.dynamic-reload-enabled', 'false')
     end
 
     def disable_autodeploy(domain)
