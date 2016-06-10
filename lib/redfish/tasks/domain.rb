@@ -258,6 +258,7 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
 
         FileUtils.rm_f "#{context.domain_directory}/config/.consolestate"
         FileUtils.rm_f "#{context.domain_directory}/config/.instancestate"
+        FileUtils.rm_f "#{context.domain_directory}/config/pid"
         FileUtils.rm_f "#{context.domain_directory}/config/pid.prev"
         FileUtils.rm_f "#{context.domain_directory}/config/derby.log"
         FileUtils.rm_f "#{context.domain_directory}/config/domain.xml.bak"

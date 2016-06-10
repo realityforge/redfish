@@ -395,6 +395,7 @@ AS_ADMIN_PASSWORD=secret1
 
     %W{ #{t.context.domain_directory}/config/.consolestate
         #{t.context.domain_directory}/config/.instancestate
+        #{t.context.domain_directory}/config/pid
         #{t.context.domain_directory}/config/pid.prev
         #{t.context.domain_directory}/config/derby.log
         #{t.context.domain_directory}/config/lockfile
