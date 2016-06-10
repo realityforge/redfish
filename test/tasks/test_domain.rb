@@ -805,28 +805,28 @@ AS_ADMIN_PASSWORD=secret1
     assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin"), <<-CMD
 #!/bin/sh
 
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 --savelogin=false --savemasterpassword=false "$@"
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 --host 127.0.0.1 "$@"
     CMD
 
     assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_stop"), <<-CMD
 #!/bin/sh
 
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 --host 127.0.0.1 stop-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
     CMD
     assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_start"), <<-CMD
 #!/bin/sh
 
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 --host 127.0.0.1 start-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
     CMD
     assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_run"), <<-CMD
 #!/bin/sh
 
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 start-domain --domaindir #{test_domains_dir} --verbose=true \"$@\" #{t.context.domain_name}
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 --host 127.0.0.1 start-domain --domaindir #{test_domains_dir} --verbose=true \"$@\" #{t.context.domain_name}
     CMD
     assert_equal IO.read("#{test_domains_dir}/domain1/bin/asadmin_restart"), <<-CMD
 #!/bin/sh
 
-/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
+/opt/payara-4.1.151/glassfish/bin/asadmin --terse=false --echo=true --user admin --passwordfile=#{t.context.domain_password_file_location} #{secure ? '--secure ' : ''}--port 4848 --host 127.0.0.1 restart-domain --domaindir #{test_domains_dir} \"$@\" #{t.context.domain_name}
     CMD
   end
 end

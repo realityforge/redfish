@@ -192,11 +192,11 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
         prefix = ''
         prefix << "--domaindir #{context.domains_directory}" if context.domains_directory
         {
-          'asadmin' => "--savelogin=false --savemasterpassword=false \"$@\"",
-          'asadmin_stop' => "stop-domain #{prefix} \"$@\" #{context.domain_name}",
-          'asadmin_start' => "start-domain #{prefix} \"$@\" #{context.domain_name}",
-          'asadmin_run' => "start-domain #{prefix} --verbose=true \"$@\" #{context.domain_name}",
-          'asadmin_restart' => "restart-domain #{prefix} \"$@\" #{context.domain_name}",
+          'asadmin' => "--host 127.0.0.1 \"$@\"",
+          'asadmin_stop' => "--host 127.0.0.1 stop-domain #{prefix} \"$@\" #{context.domain_name}",
+          'asadmin_start' => "--host 127.0.0.1 start-domain #{prefix} \"$@\" #{context.domain_name}",
+          'asadmin_run' => "--host 127.0.0.1 start-domain #{prefix} --verbose=true \"$@\" #{context.domain_name}",
+          'asadmin_restart' => "--host 127.0.0.1 restart-domain #{prefix} \"$@\" #{context.domain_name}",
         }.each do |key, script|
           cmd = "#{context.domain_directory}/bin/#{key}"
           File.open(cmd, 'wb') do |f|
