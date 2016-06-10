@@ -17,27 +17,21 @@ require File.expand_path('../helper', __FILE__)
 class Redfish::TestConfig < Redfish::TestCase
 
   def test_default_glassfish_home
-    original = ENV['GLASSFISH_HOME']
+    ENV['GLASSFISH_HOME'] = nil
 
+    assert_raise(RuntimeError, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'") { Redfish::Config.default_glassfish_home }
+
+    assert_equal Redfish::CAPTURE.string, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'\n"
+
+    ENV['GLASSFISH_HOME'] = 'X'
     begin
-      ENV['GLASSFISH_HOME'] = nil
-
-      assert_raise(RuntimeError, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'") { Redfish::Config.default_glassfish_home }
-
-      assert_equal Redfish::CAPTURE.string, "Unable to determine default_glassfish_home, GLASSFISH_HOME environment variable not specified. Please specify using Redfish::Config.default_glassfish_home = '/path/to/glassfish'\n"
-
-      ENV['GLASSFISH_HOME'] = 'X'
-      begin
-        assert_equal Redfish::Config.default_glassfish_home, 'X'
-      ensure
-        ENV['GLASSFISH_HOME'] = nil
-      end
-
-      Redfish::Config.default_glassfish_home = 'Y'
-      assert_equal Redfish::Config.default_glassfish_home, 'Y'
+      assert_equal Redfish::Config.default_glassfish_home, 'X'
     ensure
-      ENV['GLASSFISH_HOME'] = original
+      ENV['GLASSFISH_HOME'] = nil
     end
+
+    Redfish::Config.default_glassfish_home = 'Y'
+    assert_equal Redfish::Config.default_glassfish_home, 'Y'
   end
 
   def test_task_prefix
@@ -60,13 +54,8 @@ class Redfish::TestConfig < Redfish::TestCase
 
     assert_equal Redfish::Config.default_domains_directory, 'Y/glassfish/domains'
 
-    original = ENV['GLASSFISH_DOMAINS_DIR']
-    begin
-      ENV['GLASSFISH_DOMAINS_DIR'] = '/srv/domains'
-      assert_equal Redfish::Config.default_domains_directory, '/srv/domains'
-    ensure
-      ENV['GLASSFISH_DOMAINS_DIR'] = original
-    end
+    ENV['GLASSFISH_DOMAINS_DIR'] = '/srv/domains'
+    assert_equal Redfish::Config.default_domains_directory, '/srv/domains'
   end
 
   def test_default_domain_key
