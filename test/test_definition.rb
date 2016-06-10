@@ -511,14 +511,14 @@ LABEL org.realityforge.redfish.domain_name="appserver" \\
       org.realityforge.redfish.domain_hash="#{domain.version_hash}"
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
-USER glassfish
+USER glassfish:glassfish
 RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
     java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml
 
-USER glassfish
+USER glassfish:glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
 LABEL org.realityforge.redfish.complete="true"
@@ -543,7 +543,6 @@ Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.n
 CONTENT
     assert_docker_file('redfish/domain.json', "{\n}")
   end
-
 
   def test_setup_docker_dir_with_files_and_env_vars
     Redfish::Config.default_glassfish_home = '/opt/glassfish'
@@ -584,14 +583,14 @@ LABEL org.realityforge.redfish.domain_name="appserver" \\
       org.realityforge.redfish.domain_hash="#{domain.version_hash}"
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
-USER glassfish
+USER glassfish:glassfish
 RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
     java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@
 
-USER glassfish
+USER glassfish:glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
 LABEL org.realityforge.redfish.complete="true"
