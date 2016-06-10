@@ -301,6 +301,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     definition.additional_labels['application'] = 'ember'
 
+    Redfish::Config.default_glassfish_home = '/path/to/glassfish'
     labels = definition.labels
     assert_equal labels.size, 4
     assert_equal labels['org.realityforge.redfish.domain_name'], 'appserver'
