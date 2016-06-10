@@ -69,7 +69,7 @@ module Redfish
       task "#{domain.task_prefix}:pre_build"
 
       if domain.complete? && domain.local?
-        desc "Configure a local GlassFish instance based on #{domain.name} domain definition"
+        desc "Configure a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
           Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
         end
@@ -77,7 +77,7 @@ module Redfish
 
       if domain.dockerize?
         directory = "#{Redfish::Config.base_directory}/generated/redfish/docker/#{domain.key}"
-        desc "Setup a directory containing docker configuration for GlassFish instance based on #{domain.name} domain definition"
+        desc "Setup a directory containing docker configuration for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:setup" => ["#{domain.task_prefix}:pre_build"] do
           info("Configuring docker directory for '#{domain.name}' domain with key '#{domain.key}' at #{directory}")
           domain.file_map.values.each do |filename|
@@ -86,7 +86,7 @@ module Redfish
           domain.setup_docker_dir(directory)
         end
 
-        desc "Build a docker image for GlassFish instance based on #{domain.name} domain definition"
+        desc "Build a docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:build" => ["#{domain.task_prefix}:docker:setup"] do
           image_name = "#{domain.name}#{domain.version.nil? ? '' : ":#{domain.version}"}"
           quiet_flag = ::Buildr.application.options.trace ? '' : '-q'
@@ -97,7 +97,7 @@ module Redfish
           end
         end
 
-        desc "Run a container based on the docker image for GlassFish instance based on #{domain.name} domain definition"
+        desc "Run a container based on the docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:run" => ["#{domain.task_prefix}:docker:build"] do
           image_name = "#{domain.name}#{domain.version.nil? ? '' : ":#{domain.version}"}"
           info("Running docker image for '#{domain.name}' domain with key '#{domain.key}' as #{image_name}")
