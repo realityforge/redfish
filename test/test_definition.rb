@@ -427,6 +427,16 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build -q --rm=true -t appserver:X /my/dir'
   end
 
+  def test_docker_run_command
+    domain = Redfish::DomainDefinition.new('appserver')
+    assert_equal domain.docker_run_command, 'docker run -ti --rm -P --name appserver appserver'
+    domain.docker_dns = '10.0.9.9'
+    assert_equal domain.docker_run_command, 'docker run -ti --rm -P --dns=10.0.9.9 --name appserver appserver'
+    domain.docker_run_args << '--env=A=a'
+    domain.docker_run_args << '--env=B=b'
+    assert_equal domain.docker_run_command, 'docker run -ti --rm -P --dns=10.0.9.9 --name appserver --env=A=a --env=B=b appserver'
+  end
+
   def test_image_name
     domain = Redfish::DomainDefinition.new('appserver')
 

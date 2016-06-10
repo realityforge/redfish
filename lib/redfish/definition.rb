@@ -185,9 +185,24 @@ module Redfish
       "#{self.name}#{self.version.nil? ? '' : ":#{self.version}"}"
     end
 
+    # Arguments passed to the docker command when attempting to run domain
+    # Useful for setting environment variables etc.
+    def docker_run_args
+      @docker_run_args ||= []
+    end
+
+    # ip address of dns server to fallback to when non-local addresses used.
+    attr_accessor :docker_dns
+
     def docker_build_command(directory, options = {})
       quiet_flag = !!options[:quiet] ? '-q ' : ''
       "docker build #{quiet_flag}--rm=true -t #{self.image_name} #{directory}"
+    end
+
+    def docker_run_command
+      dns_opt = self.docker_dns.nil? ? '' : " --dns=#{self.docker_dns}"
+      args = self.docker_run_args.join(' ')
+      "docker run -ti --rm -P#{dns_opt} --name #{self.name} #{args}#{args.empty? ? '' : ' '}#{self.image_name}"
     end
 
     def task_prefix
