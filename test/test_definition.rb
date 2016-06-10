@@ -418,6 +418,15 @@ class Redfish::TestDefinition < Redfish::TestCase
     version_hash
   end
 
+  def test_docker_build_command
+    domain = Redfish::DomainDefinition.new('appserver')
+    assert_equal domain.docker_build_command('/my/dir'), 'docker build --rm=true -t appserver /my/dir'
+    assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build -q --rm=true -t appserver /my/dir'
+
+    domain.version = 'X'
+    assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build -q --rm=true -t appserver:X /my/dir'
+  end
+
   def test_image_name
     domain = Redfish::DomainDefinition.new('appserver')
 

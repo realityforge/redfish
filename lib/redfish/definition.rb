@@ -185,6 +185,11 @@ module Redfish
       "#{self.name}#{self.version.nil? ? '' : ":#{self.version}"}"
     end
 
+    def docker_build_command(directory, options = {})
+      quiet_flag = !!options[:quiet] ? '-q ' : ''
+      "docker build #{quiet_flag}--rm=true -t #{self.image_name} #{directory}"
+    end
+
     def task_prefix
       raise 'task_prefix invoked' unless enable_rake_integration? || packaged? || dockerize?
       "#{Redfish::Config.task_prefix}:domain#{Redfish::Config.default_domain_key?(self.key) ? '' : ":#{self.key}"}"
