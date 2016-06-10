@@ -119,7 +119,7 @@ module Redfish
     end
 
     def self.define_domain_packages(options = {})
-      buildr_project = get_buildr_project("generating domain packages", options)
+      buildr_project = get_buildr_project('generating domain packages', options)
 
       Redfish.domains.each do |domain|
         next unless domain.package?
