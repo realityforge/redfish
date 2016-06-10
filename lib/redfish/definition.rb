@@ -291,7 +291,7 @@ USER root
 SCRIPT
         if labels.size > 0
           f.write <<SCRIPT
-LABEL #{self.labels.collect{|k,v| "#{k}=\"#{v}\""}.join(" \\\n      ")}
+LABEL #{self.labels.collect { |k, v| "#{k}=\"#{v}\"" }.join(" \\\n      ")}
 SCRIPT
         end
 
