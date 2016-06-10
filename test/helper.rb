@@ -42,6 +42,10 @@ class Redfish::TestCase < Minitest::Test
   include Test::Unit::Assertions
 
   def setup
+    @original_glassfish_home = ENV['GLASSFISH_HOME']
+    @original_glassfish_domains_dir = ENV['GLASSFISH_DOMAINS_DIR']
+    ENV['GLASSFISH_HOME'] = nil
+
     Redfish::CAPTURE.reopen('')
     @temp_dir = nil
     Redfish.clear_domain_map
@@ -53,6 +57,8 @@ class Redfish::TestCase < Minitest::Test
   end
 
   def teardown
+    ENV['GLASSFISH_HOME'] = @original_glassfish_home
+    ENV['GLASSFISH_DOMAINS_DIR'] = @original_glassfish_domains_dir
     unless @temp_dir.nil?
       FileUtils.rm_rf @temp_dir
       @temp_dir = nil
