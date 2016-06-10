@@ -223,7 +223,7 @@ module RedfishPlus
 
     def environment_variable(domain, key, value = 'UNSPECIFIED', default_value = '')
       system_property(domain, key, value)
-      domain.environment_vars[key] = default_value
+      domain.data['environment_vars'][key] = default_value
     end
 
     def disable_non_portable_jndi_names(domain)

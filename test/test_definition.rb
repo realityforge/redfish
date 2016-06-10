@@ -68,7 +68,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.file('a', '/tmp/a.txt')
     definition.version = '1.21'
     definition.ports << 8080
-    definition.environment_vars['A'] = '1'
+    definition.data['environment_vars']['A'] = '1'
 
     assert_equal definition.secure?, false
     assert_equal definition.complete?, false
@@ -126,7 +126,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.system_group = 'glassfish-group'
     definition.file('a', '/tmp/a.txt')
     definition.ports << 8080
-    definition.environment_vars['A'] = '1'
+    definition.data['environment_vars']['A'] = '1'
 
     # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
     definition.complete = false
@@ -151,7 +151,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.key, 'appserver'
     assert_equal definition.name, 'appserver'
     assert definition.data.is_a?(Redfish::Mash)
-    assert_equal definition.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
+    assert_equal definition.resolved_data,
+                 {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r', 'environment_vars' => {'A' => '1'}}
     assert_equal definition.pre_artifacts.size, 1
     assert_equal definition.post_artifacts.size, 1
     assert_equal definition.secure?, false
@@ -205,7 +206,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition2.ports, [8080]
     assert_equal definition2.environment_vars, {'A' => '1'}
 
-    assert_equal definition2.resolved_data, {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r'}
+    assert_equal definition2.resolved_data,
+                 {'a' => 1, 'b' => 'p', 'd' => 3, 'e' => 4, 'f' => 'r', 'environment_vars' => {'A' => '1'}}
     assert_equal definition2.pre_artifacts.size, 0
     assert_equal definition2.post_artifacts.size, 0
 
@@ -218,12 +220,15 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition2.pre_artifacts << pre_filename2
     definition2.post_artifacts << post_filename2
 
-    assert_equal definition2.resolved_data, {'a' => 4, 'b' => 'p', 'd' => 3, 'e' => 5, 'f' => 'r'}
+    assert_equal definition2.resolved_data,
+                 {'a' => 4, 'b' => 'p', 'd' => 3, 'e' => 5, 'f' => 'r', 'environment_vars' => {'A' => '1'}}
 
     definition2.data['d'] = 'X'
     definition2.data['q'] = 'Y'
 
-    assert_equal definition2.resolved_data, {'a' => 4, 'b' => 'p', 'd' => 'X', 'e' => 5, 'f' => 'r', 'q' => 'Y'}
+    assert_equal definition2.resolved_data,
+                 {'a' => 4, 'b' => 'p', 'd' => 'X', 'e' => 5, 'f' => 'r',
+                  'q' => 'Y', 'environment_vars' => {'A' => '1'}}
   end
 
   def test_export_to_file
@@ -406,7 +411,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.system_group = 'gf-admins'
     version_hash = check_version_hash(definition, true, version_hash)
 
-    definition.environment_vars['A'] = 'P'
+    definition.data['environment_vars']['A'] = 'P'
     version_hash = check_version_hash(definition, true, version_hash)
 
     definition.file('b', '/tmp/b.txt')
@@ -560,9 +565,9 @@ CONTENT
 
     domain.data['data'] = 'some data here'
 
-    domain.environment_vars['A'] = nil
-    domain.environment_vars['B'] = nil
-    domain.environment_vars['C'] = '1'
+    domain.data['environment_vars']['A'] = nil
+    domain.data['environment_vars']['B'] = nil
+    domain.data['environment_vars']['C'] = '1'
 
     domain.file('a', file1)
     domain.file('b', file2)
@@ -627,7 +632,12 @@ end
 
 Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])
 CONTENT
-    assert_docker_file('redfish/domain.json', "{\n  \"data\": \"some data here\"\n}")
+    expected =
+      {
+        'data' => 'some data here',
+        'environment_vars' => {'A' => nil, 'B' => nil, 'C' => '1'}
+      }
+    assert_docker_file('redfish/domain.json', JSON.pretty_generate(expected))
   end
 
   def assert_docker_file(filename, content = nil)
