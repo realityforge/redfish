@@ -105,7 +105,6 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
     assert_pre_interpret(expected, input)
   end
 
-
   def test_pre_interpret_jms_destination_resources
     input =
       {
