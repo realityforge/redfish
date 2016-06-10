@@ -313,6 +313,7 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish
 EXPOSE #{self.ports.join(' ')} #{self.admin_port}
 CMD ["/opt/redfish/run"]
+LABEL org.realityforge.redfish.complete="true"
 SCRIPT
       end
     end

@@ -462,6 +462,7 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
+LABEL org.realityforge.redfish.complete="true"
 CONTENT
 
     assert_docker_file('redfish/run', <<CONTENT)
@@ -534,6 +535,7 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
+LABEL org.realityforge.redfish.complete="true"
 CONTENT
 
     assert_docker_file('redfish/run', <<CONTENT)
