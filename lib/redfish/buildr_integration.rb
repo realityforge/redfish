@@ -88,20 +88,17 @@ module Redfish
 
         desc "Build a docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:build" => ["#{domain.task_prefix}:docker:setup"] do
-          image_name = "#{domain.name}#{domain.version.nil? ? '' : ":#{domain.version}"}"
-          quiet_flag = ::Buildr.application.options.trace ? '' : '-q'
-          labels = domain.labels
-          if `docker images --format "{{.ID}}" #{labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
-            info("Building docker image for '#{domain.name}' domain with key '#{domain.key}' as #{image_name}")
-            sh("docker build #{quiet_flag} --rm=true -t #{image_name} #{directory}")
+          if `docker images --format "{{.ID}}" --filter label=org.realityforge.redfish.complete=true #{domain.labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
+            info("Building docker image for '#{domain.name}' domain with key '#{domain.key}' as #{domain.image_name}")
+            command = domain.docker_build_command(directory, :quiet => !!::Buildr.application.options.trace)
+            sh(command)
           end
         end
 
         desc "Run a container based on the docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:run" => ["#{domain.task_prefix}:docker:build"] do
-          image_name = "#{domain.name}#{domain.version.nil? ? '' : ":#{domain.version}"}"
-          info("Running docker image for '#{domain.name}' domain with key '#{domain.key}' as #{image_name}")
-          command = "docker run -ti --rm -P --name #{domain.name} #{image_name} #{ENV['DOCKER_ARGS']}"
+          info("Running docker image for '#{domain.name}' domain with key '#{domain.key}' as #{domain.image_name}")
+          command = "#{domain.docker_run_command} #{ENV['DOCKER_ARGS']}"
           puts(command) if ::Buildr.application.options.trace
           exec(command)
         end
