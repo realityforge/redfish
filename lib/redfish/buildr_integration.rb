@@ -66,7 +66,9 @@ module Redfish
     def self.define_tasks_for_domain(domain)
       raise "Attempted to define rake tasks for #{domain.name} which has disabled rake integration" unless domain.enable_rake_integration?
 
-      task "#{domain.task_prefix}:pre_build"
+      task "#{domain.task_prefix}:config"
+
+      task "#{domain.task_prefix}:pre_build" => ["#{domain.task_prefix}:config"]
 
       if domain.complete? && domain.local?
         desc "Configure a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
@@ -104,7 +106,7 @@ module Redfish
         end
 
         desc "Print command to run a container based on the docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
-        task "#{domain.task_prefix}:docker:print_run" do
+        task "#{domain.task_prefix}:docker:print_run" => ["#{domain.task_prefix}:config"] do
           command = "#{domain.docker_run_command} #{ENV['DOCKER_ARGS']}"
           puts(command)
         end
