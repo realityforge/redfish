@@ -222,7 +222,7 @@ module RedfishPlus
     end
 
     def environment_variable(domain, key, value = 'UNSPECIFIED', default_value = '')
-      domain.data['system_properties'][key] = value
+      system_property(domain, key, value)
       domain.environment_vars[key] = default_value
     end
 
