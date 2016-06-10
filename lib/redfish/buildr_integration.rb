@@ -102,6 +102,12 @@ module Redfish
           puts(command) if ::Buildr.application.options.trace
           exec(command)
         end
+
+        desc "Print command to run a container based on the docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
+        task "#{domain.task_prefix}:docker:print_run" do
+          command = "#{domain.docker_run_command} #{ENV['DOCKER_ARGS']}"
+          puts(command)
+        end
       end
 
       desc "Export GlassFish configation based on #{domain.name} domain definition"
