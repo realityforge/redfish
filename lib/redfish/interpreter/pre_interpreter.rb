@@ -32,13 +32,10 @@ module Redfish #nodoc
             if %w(javax.jms.ConnectionFactory javax.jms.TopicConnectionFactory javax.jms.QueueConnectionFactory).include?(jms_config['restype'])
               pool = data['resource_adapters']['jmsra']['connection_pools']["#{key}-Connection-Pool"]
               pool['connection_definition_name'] = jms_config['restype']
-              resource = pool['resources'][key]
+              # Force the creation of the resource with next line
+              pool['resources'][key]
               jms_config['properties'].each_pair do |property_key, property_value|
-                if %w(AddressList ReconnectEnabled ReconnectAttempts ReconnectInterval AddressListBehavior AddressListIterations)
-                  pool['properties'][property_key] = property_value
-                else
-                  resource['properties'][property_key] = property_value
-                end
+                pool['properties'][property_key] = property_value
               end
             else
               admin_object = data['resource_adapters']['jmsra']['admin_objects'][key]
