@@ -244,10 +244,11 @@ module Redfish
     end
 
     def export_to_file(filename)
+      data = self.resolved_data
       dir = File.dirname(filename)
       FileUtils.mkdir_p dir
       File.open(filename, 'wb') do |f|
-        f.write JSON.pretty_generate(self.resolved_data)
+        f.write JSON.pretty_generate(data)
       end
     end
 
