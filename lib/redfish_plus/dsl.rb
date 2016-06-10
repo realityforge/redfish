@@ -24,11 +24,7 @@ module RedfishPlus
       domain.local = false
       domain.dockerize = true
 
-      setup_standard_jvm_options(domain)
-      standard_domain_setup(domain)
-      setup_http_thread_pool(domain)
-      setup_default_logging(domain)
-      shutdown_on_complete(domain)
+      common_domain_setup(domain)
 
       if features.include?(:jms)
         setup_jms_host(domain, 'REMOTE')
@@ -45,13 +41,8 @@ module RedfishPlus
     def setup_for_local_development(domain, options = {})
       features = options[:features] || []
       domain.package = false
-      setup_standard_jvm_options(domain)
 
-      standard_domain_setup(domain)
-
-      setup_http_thread_pool(domain)
-
-      setup_default_logging(domain)
+      common_domain_setup(domain)
 
       base_setup_for_local_development(domain)
       if features.include?(:jms)
@@ -59,6 +50,14 @@ module RedfishPlus
       else
         disable_jms_service(domain)
       end
+    end
+
+    def common_domain_setup(domain)
+      setup_standard_jvm_options(domain)
+      standard_domain_setup(domain)
+      setup_http_thread_pool(domain)
+      setup_default_logging(domain)
+      shutdown_on_complete(domain)
     end
 
     def setup_http_thread_pool(domain)
@@ -70,7 +69,6 @@ module RedfishPlus
       domain.admin_password = nil
       domain.secure = false
       set_idea_compatible_debug_settings(domain)
-      shutdown_on_complete(domain)
       mark_applications_as_not_managed(domain)
     end
 
