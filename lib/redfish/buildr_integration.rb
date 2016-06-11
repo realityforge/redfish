@@ -127,6 +127,7 @@ module Redfish
         next unless domain.package?
         buildr_project.instance_eval do
           project.define(domain.name) do
+            project.no_iml
             Redfish::Buildr.define_domain_package(domain.name, options)
           end
         end
