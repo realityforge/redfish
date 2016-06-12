@@ -78,7 +78,7 @@ class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
     assert_domain_directories
 
     # Master password synthesized
-    assert IO.read(t.context.domain_password_file_location) =~ /^AS_ADMIN_MASTERPASSWORD\=.+\nAS_ADMIN_PASSWORD=\n$/
+    assert IO.read(t.context.domain_password_file_location) =~ /^AS_ADMIN_MASTERPASSWORD=.+\nAS_ADMIN_PASSWORD=\n$/
 
     ensure_domain_scripts_created(t)
   end
