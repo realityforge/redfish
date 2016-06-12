@@ -14,6 +14,7 @@
 
 require File.expand_path('../../helper', __FILE__)
 
+# noinspection RubyTooManyMethodsInspection
 class Redfish::Tasks::TestDomain < Redfish::Tasks::BaseTaskTest
   def test_to_s
     executor = Redfish::Executor.new
