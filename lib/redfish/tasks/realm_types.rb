@@ -32,7 +32,7 @@ module Redfish
             f.write text
           end
 
-          FileUtils.chmod 0700, filename
+          FileUtils.chmod 0600, filename
           FileUtils.chown context.system_user, context.system_group, filename if context.system_user || context.system_group
 
           context.require_restart!

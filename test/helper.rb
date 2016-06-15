@@ -78,6 +78,10 @@ class Redfish::TestCase < Minitest::Test
     "#{temp_dir}/domains"
   end
 
+  def assert_file_mode(filename, mode)
+    assert_equal sprintf('%o', File::Stat.new(filename).mode)[-3, 3], mode
+  end
+
   def create_simple_context(executor = Redfish::Executor.new, options = {})
     Redfish::Context.new(executor,
                          '/opt/payara-4.1.151/',

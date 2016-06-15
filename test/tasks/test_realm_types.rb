@@ -38,6 +38,8 @@ class Redfish::Tasks::TestRealmTypes < Redfish::Tasks::BaseTaskTest
 
     assert_equal content, "fileRealm {\n    com.sun.enterprise.security.auth.login.FileLoginModule required ;\n};\n"
 
+    assert_file_mode(filename, '600')
+
     ensure_task_updated_by_last_action(t)
   end
 

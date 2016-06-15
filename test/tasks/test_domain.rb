@@ -796,10 +796,6 @@ AS_ADMIN_PASSWORD=secret1
     assert_file_mode(filename, mode)
   end
 
-  def assert_file_mode(filename, mode)
-    assert_equal sprintf("%o", File::Stat.new(filename).mode)[-3, 3], mode
-  end
-
   def ensure_domain_scripts_created(t, secure = false)
     assert_domain_file('bin/asadmin', '700')
     assert_domain_file('bin/asadmin_stop', '700')
