@@ -27,10 +27,15 @@ class Redfish::Tasks::TestWebEnvEntry < Redfish::Tasks::BaseTaskTest
                                  equals('deploydir'),
                                  anything,
                                  equals({})).
-      returns('')
+      returns("Command deploy executed successfully.\n")
     executor.expects(:exec).with(equals(context),
                                  equals('get'),
                                  equals(['applications.application.MyApp.module.*']),
+                                 equals(:terse => true, :echo => false)).
+      returns('')
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApp.property.org.glassfish.*']),
                                  equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(context),
