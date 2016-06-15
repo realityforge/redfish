@@ -23,7 +23,7 @@ class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
 
     executor.
       expects(:exec).
-      with(equals(t.context),equals('get'),equals(%w(*)),equals(:terse => true, :echo => false)).
+      with(equals(t.context), equals('get'), equals(%w(*)), equals(:terse => true, :echo => false)).
       returns('')
 
     t.expects(:output).with(equals('- a=1'))
