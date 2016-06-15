@@ -18,6 +18,7 @@ module Redfish
       private
 
       attribute :banner, :kind_of => String
+      attribute :error_on_differences, :type => :boolean, :default => false
 
       action :create do
         do_create
@@ -55,6 +56,9 @@ module Redfish
             output("\n-------------------\n") if self.banner
 
             updated_by_last_action
+            if self.error_on_differences
+              raise 'Unexpected differences when error_on_differences property set results in an error'
+            end
           end
         end
       end
