@@ -58,7 +58,6 @@ module Redfish
     def self.define_tasks_for_domains
       Redfish.domains.each do |domain|
         next unless domain.enable_rake_integration?
-        domain.file('glassfish_domain_patcher', ::Buildr.artifact('org.realityforge.glassfish.patcher:glassfish-domain-patcher:jar:0.1').to_s)
         define_tasks_for_domain(domain)
       end
     end

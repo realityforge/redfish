@@ -334,7 +334,7 @@ RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
-    java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.keys.collect { |k| "-s#{k}=@@#{k}@@" }.join(' ')}
+    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.keys.collect { |k| "-s#{k}=@@#{k}@@" }.join(' ')}
 
 USER glassfish:glassfish
 EXPOSE #{self.ports.join(' ')} #{self.admin_port}
@@ -367,7 +367,7 @@ fi
 SCRIPT
         end
         f.write <<SCRIPT
-java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.collect { |k, v| "-s#{k}=${#{k}:-#{v}}" }.join(' ')} && \\
+java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.collect { |k, v| "-s#{k}=${#{k}:-#{v}}" }.join(' ')} && \\
 /srv/glassfish/domains/#{self.name}/bin/asadmin_run
 SCRIPT
       end

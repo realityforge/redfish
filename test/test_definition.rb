@@ -521,7 +521,7 @@ RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
-    java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml
+    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml
 
 USER glassfish:glassfish
 EXPOSE  4848
@@ -532,7 +532,7 @@ CONTENT
     assert_docker_file('redfish/run', <<CONTENT)
 #!/bin/bash
 
-java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml && \\
+java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml && \\
 /srv/glassfish/domains/appserver/bin/asadmin_run
 CONTENT
     assert_docker_file('redfish/domain.rb', <<CONTENT)
@@ -593,7 +593,7 @@ RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
-    java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@
+    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@
 
 USER glassfish:glassfish
 EXPOSE  4848
@@ -616,7 +616,7 @@ if [ "${C:-1}" = '' ]; then
   echo "Failed to supply environment data for C"
   exit 1
 fi
-java -jar /opt/redfish/files/glassfish_domain_patcher/glassfish-domain-patcher-0.1.jar -f /srv/glassfish/domains/appserver/config/domain.xml -sA=${A:-} -sB=${B:-} -sC=${C:-1} && \\
+java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml -sA=${A:-} -sB=${B:-} -sC=${C:-1} && \\
 /srv/glassfish/domains/appserver/bin/asadmin_run
 CONTENT
     assert_docker_file('redfish/domain.rb', <<CONTENT)
