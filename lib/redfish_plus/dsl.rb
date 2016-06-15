@@ -27,6 +27,7 @@ module RedfishPlus
       domain.dockerize = true
 
       common_domain_setup(domain)
+      set_jsp_caching(domain, true)
 
       if features.include?(:jms)
         setup_jms_host(domain, 'REMOTE')
@@ -67,6 +68,7 @@ module RedfishPlus
       standard_domain_setup(domain)
       setup_http_thread_pool(domain)
       configure_rest_container(domain)
+      configure_web_container(domain)
       setup_default_logging(domain)
       shutdown_on_complete(domain)
     end
@@ -125,6 +127,17 @@ module RedfishPlus
       set(domain, 'configs.config.server-config.rest-config.show-deprecated-items', 'false')
       set(domain, 'configs.config.server-config.rest-config.show-hidden-commands', 'false')
       set(domain, 'configs.config.server-config.rest-config.wadl-generation', 'false')
+    end
+
+    def configure_web_container(domain)
+      set(domain, 'configs.config.server-config.web-container.session-config.session-properties.timeout-in-seconds', '1800')
+      set(domain, 'configs.config.server-config.web-container.session-config.session-manager.manager-properties.max-sessions', '-1')
+      set(domain, 'configs.config.server-config.web-container.session-config.session-manager.manager-properties.reap-interval-in-seconds', '60')
+      set_jsp_caching(domain, false)
+    end
+
+    def set_jsp_caching(domain, value)
+      set(domain, 'configs.config.server-config.web-container.jsp-caching-enabled', value.to_s)
     end
 
     # Orb required to use Resource adapters for MDBs and JDBC connection pools
