@@ -66,6 +66,7 @@ module RedfishPlus
       setup_standard_jvm_options(domain)
       standard_domain_setup(domain)
       setup_http_thread_pool(domain)
+      configure_rest_container(domain)
       setup_default_logging(domain)
       shutdown_on_complete(domain)
     end
@@ -113,6 +114,17 @@ module RedfishPlus
       set(domain, 'configs.config.server-config.mdb-container.max-pool-size', '32')
       set(domain, 'configs.config.server-config.mdb-container.pool-resize-quantity', '8')
       set(domain, 'configs.config.server-config.mdb-container.steady-pool-size', '0')
+    end
+
+    def configure_rest_container(domain)
+      set(domain, 'configs.config.server-config.rest-config.debug', 'false')
+      set(domain, 'configs.config.server-config.rest-config.indent-level', '-1')
+      set(domain, 'configs.config.server-config.rest-config.log-input', 'false')
+      set(domain, 'configs.config.server-config.rest-config.log-output', 'false')
+      set(domain, 'configs.config.server-config.rest-config.session-token-timeout', '30')
+      set(domain, 'configs.config.server-config.rest-config.show-deprecated-items', 'false')
+      set(domain, 'configs.config.server-config.rest-config.show-hidden-commands', 'false')
+      set(domain, 'configs.config.server-config.rest-config.wadl-generation', 'false')
     end
 
     # Orb required to use Resource adapters for MDBs and JDBC connection pools
