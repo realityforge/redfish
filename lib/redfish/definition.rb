@@ -325,8 +325,8 @@ USER glassfish:glassfish
 RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
-    rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
-    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.keys.collect { |k| "-s#{k}=@@#{k}@@" }.join(' ')}
+    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.keys.collect { |k| "-s#{k}=@@#{k}@@" }.join(' ')} && \\
+    rm -rf /tmp/glassfish /srv/glassfish/.gfclient /tmp/hsperfdata_glassfish
 
 USER glassfish:glassfish
 EXPOSE #{self.ports.join(' ')} #{self.admin_port}

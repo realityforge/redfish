@@ -517,8 +517,8 @@ USER glassfish:glassfish
 RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
-    rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
-    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml
+    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml && \\
+    rm -rf /tmp/glassfish /srv/glassfish/.gfclient /tmp/hsperfdata_glassfish
 
 USER glassfish:glassfish
 EXPOSE  4848
@@ -588,8 +588,8 @@ USER glassfish:glassfish
 RUN mkdir /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
-    rm -rf /tmp/glassfish /srv/glassfish/.gfclient && \\
-    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@
+    java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@ && \\
+    rm -rf /tmp/glassfish /srv/glassfish/.gfclient /tmp/hsperfdata_glassfish
 
 USER glassfish:glassfish
 EXPOSE  4848
