@@ -70,6 +70,8 @@ module RedfishPlus
       configure_rest_container(domain)
       configure_web_container(domain)
       add_default_concurrency_resources(domain)
+      # Temporarily comment this out until differences are elimintated.
+      #force_unexpected_differences_to_cause_failure(domain)
       setup_default_logging(domain)
       shutdown_on_complete(domain)
     end
@@ -353,6 +355,10 @@ module RedfishPlus
     def environment_variable(domain, key, value = 'UNSPECIFIED', default_value = '')
       system_property(domain, key, value)
       domain.data['environment_vars'][key] = default_value
+    end
+
+    def force_unexpected_differences_to_cause_failure(domain)
+      domain.data['config']['error_on_differences'] = true
     end
 
     def disable_non_portable_jndi_names(domain)

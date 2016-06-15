@@ -273,7 +273,12 @@ module Redfish #nodoc
 
         restart_domain_if_required(run_context, domain_options)
 
-        run_context.task('property_cache', 'banner' => 'End of Converge Property Diff').action(:diff) unless interpret_options['diff_on_completion'].to_s == 'false'
+        unless interpret_options['diff_on_completion'].to_s == 'false'
+          run_context.task('property_cache',
+                           'banner' => 'End of Converge Property Diff',
+                           'error_on_differences' => interpret_options['error_on_differences'].to_s == 'true').
+            action(:diff)
+        end
         run_context.task('property_cache').action(:destroy)
 
         run_context.task('domain', domain_options).action(:complete)
