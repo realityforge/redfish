@@ -58,6 +58,11 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.options = resource_parameters
 
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['domain.version']),
+                                 equals(:terse => true, :echo => false)).
+      returns("domain.version=#{DOMAIN_VERSION}\n")
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(t.context),
@@ -81,6 +86,11 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.options = resource_parameters
 
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['domain.version']),
+                                 equals(:terse => true, :echo => false)).
+      returns("domain.version=#{DOMAIN_VERSION}\n")
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("APool\n")
     executor.expects(:exec).with(equals(t.context), equals('get'), equals(%W(#{property_prefix}property.*)), equals(:terse => true, :echo => false)).
@@ -105,6 +115,11 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     t.options = resource_parameters
 
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['domain.version']),
+                                 equals(:terse => true, :echo => false)).
+      returns("domain.version=#{DOMAIN_VERSION}\n")
     executor.expects(:exec).with(equals(t.context), equals('list-jdbc-connection-pools'), equals(%w()), equals(:terse => true, :echo => false)).
       returns("APool\n")
     # Return a property that should be deleted
@@ -159,9 +174,10 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.context.cache_properties({})
+    t.context.cache_properties({'domain.version' => DOMAIN_VERSION})
 
     t.options = resource_parameters
+
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-jdbc-connection-pool'),
@@ -173,6 +189,61 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
 
     ensure_task_updated_by_last_action(t)
     ensure_expected_cache_values(t)
+  end
+
+  def test_create_element_where_support_log_jdbc_calls_with_defaults
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties({'domain.version' => '116'})
+
+    t.options = resource_parameters
+
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-jdbc-connection-pool'),
+                                 equals(['--datasourceclassname=net.sourceforge.jtds.jdbcx.JtdsDataSource', '--initsql=', '--sqltracelisteners=', '--driverclassname=', '--validationclassname=', '--validationtable=', '--steadypoolsize=8', '--maxpoolsize=32', '--maxwait=60000', '--poolresize=2', '--idletimeout=300', '--validateatmostonceperiod=0', '--leaktimeout=0', '--statementleaktimeout=0', '--creationretryattempts=0', '--creationretryinterval=10', '--statementtimeout=-1', '--maxconnectionusagecount=0', '--statementcachesize=0', '--isisolationguaranteed=true', '--isconnectvalidatereq=true', '--failconnection=false', '--allownoncomponentcallers=false', '--nontransactionalconnections=false', '--statementleakreclaim=false', '--leakreclaim=false', '--lazyconnectionenlistment=false', '--lazyconnectionassociation=false', '--associatewiththread=false', '--matchconnections=false', '--ping=true', '--pooling=true', '--wrapjdbcobjects=true', '--restype=javax.sql.DataSource', '--isolationlevel=', '--validationmethod=auto-commit', '--property', 'Instance=MSSQLSERVER:ServerName=db\\.example\\.com:User=sa:Password=password:PortNumber=1234:DatabaseName=MYDB', '--description', 'Audit Connection Pool', 'APool']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:create)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_expected_cache_values(t,
+                                 "#{property_prefix}log-jdbc-calls" => 'false',
+                                 "#{property_prefix}slow-query-threshold-in-seconds" => '-1')
+  end
+
+  def test_create_element_where_support_log_jdbc_calls
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties({'domain.version' => '116'})
+
+    t.options = resource_parameters
+    t.log_jdbc_calls = true
+    t.slow_query_threshold_in_seconds = 33
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}log-jdbc-calls=true"]),
+                                 equals(:terse => true, :echo => false))
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(["#{property_prefix}slow-query-threshold-in-seconds=33"]),
+                                 equals(:terse => true, :echo => false))
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-jdbc-connection-pool'),
+                                 equals(['--datasourceclassname=net.sourceforge.jtds.jdbcx.JtdsDataSource', '--initsql=', '--sqltracelisteners=', '--driverclassname=', '--validationclassname=', '--validationtable=', '--steadypoolsize=8', '--maxpoolsize=32', '--maxwait=60000', '--poolresize=2', '--idletimeout=300', '--validateatmostonceperiod=0', '--leaktimeout=0', '--statementleaktimeout=0', '--creationretryattempts=0', '--creationretryinterval=10', '--statementtimeout=-1', '--maxconnectionusagecount=0', '--statementcachesize=0', '--isisolationguaranteed=true', '--isconnectvalidatereq=true', '--failconnection=false', '--allownoncomponentcallers=false', '--nontransactionalconnections=false', '--statementleakreclaim=false', '--leakreclaim=false', '--lazyconnectionenlistment=false', '--lazyconnectionassociation=false', '--associatewiththread=false', '--matchconnections=false', '--ping=true', '--pooling=true', '--wrapjdbcobjects=true', '--restype=javax.sql.DataSource', '--isolationlevel=', '--validationmethod=auto-commit', '--property', 'Instance=MSSQLSERVER:ServerName=db\\.example\\.com:User=sa:Password=password:PortNumber=1234:DatabaseName=MYDB', '--description', 'Audit Connection Pool', 'APool']),
+                                 equals({})).
+      returns('')
+
+    t.perform_action(:create)
+
+    ensure_task_updated_by_last_action(t)
+    ensure_expected_cache_values(t,
+                                 "#{property_prefix}log-jdbc-calls" => 'true',
+                                 "#{property_prefix}slow-query-threshold-in-seconds" => '33')
   end
 
   def test_create_element_where_cache_present_and_element_present_but_modified
@@ -189,7 +260,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
     # This property should be removed
     cache_values["#{property_prefix}property.DatabaseName2"] = 'MYDB'
 
-    t.context.cache_properties(cache_values)
+    t.context.cache_properties(cache_values.merge('domain.version' => DOMAIN_VERSION))
 
     t.options = resource_parameters
 
@@ -228,7 +299,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
   def test_create_element_where_cache_present_and_element_present
     t = new_task
 
-    t.context.cache_properties(expected_properties)
+    t.context.cache_properties(expected_properties.merge('domain.version' => DOMAIN_VERSION))
 
     t.options = resource_parameters
 
@@ -282,7 +353,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
   def test_delete_element_where_cache_present_and_element_not_present
     t = new_task
 
-    t.context.cache_properties({})
+    t.context.cache_properties('domain.version' => DOMAIN_VERSION)
     t.options = {'name' => 'APool'}
 
     t.perform_action(:destroy)
@@ -295,7 +366,7 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     t = new_task(executor)
 
-    t.context.cache_properties(expected_properties)
+    t.context.cache_properties(expected_properties.merge('domain.version' => DOMAIN_VERSION))
     t.options = {'name' => 'APool'}
 
     executor.expects(:exec).with(equals(t.context),

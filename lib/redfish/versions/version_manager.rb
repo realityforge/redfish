@@ -68,6 +68,10 @@ module Redfish
         [:payara, :glassfish]
       end
 
+      def support_log_jdbc_calls?
+        false
+      end
+
       def default_log_levels
         raise 'default_log_levels not implemented'
       end

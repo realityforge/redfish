@@ -45,6 +45,8 @@ module Redfish
           set_properties(property_prefix, properties_to_set_in_create)
         end
 
+        set_properties(property_prefix, properties_to_always_set)
+
         set_deployment_order(property_prefix)
 
         if create_occurred
@@ -144,6 +146,10 @@ module Redfish
 
       def properties_to_record_in_create
         raise 'properties_to_record_in_create unimplemented'
+      end
+
+      def properties_to_always_set
+        {}
       end
 
       def properties_to_set_in_create

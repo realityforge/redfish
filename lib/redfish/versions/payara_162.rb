@@ -20,6 +20,10 @@ module Redfish
         super('116', :payara, '4.1.1.162')
       end
 
+      def support_log_jdbc_calls?
+        true
+      end
+
       def default_log_levels
         {
           'com.sun.enterprise.server.logging.GFFileHandler.level' => 'ALL',

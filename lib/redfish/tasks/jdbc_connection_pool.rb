@@ -105,6 +105,9 @@ module Redfish
         end
       end
 
+      attribute :log_jdbc_calls, :type => :boolean, :default => false
+      attribute :slow_query_threshold_in_seconds, :type => :integer, :default => -1
+
       action :create do
         create(resource_property_prefix)
       end
@@ -118,9 +121,16 @@ module Redfish
       end
 
       def properties_to_record_in_create
-        # statement-cache-type does not seem to be configurable during create, may need to call set on property
-        # as a later step. For now just set the default value
-        {'object-type' => 'user', 'name' => self.name, 'deployment-order' => '100', 'statement-cache-type' => ''}
+        # statement-cache-type, log-jdbc-calls, slow-query-threshold-in-seconds do not seem to be configurable
+        # during create, this sets to defaults and may be explicitly set.
+        {
+          'object-type' => 'user',
+          'name' => self.name,
+          'deployment-order' => '100',
+          'statement-cache-type' => '',
+          'log-jdbc-calls' => 'false',
+          'slow-query-threshold-in-seconds' => '-1'
+        }
       end
 
       def properties_to_set_in_create
@@ -135,6 +145,17 @@ module Redfish
         property_map['description'] = self.description
 
         property_map
+      end
+
+      def properties_to_always_set
+        if self.domain_version.support_log_jdbc_calls?
+          {
+            'log-jdbc-calls' => self.log_jdbc_calls.to_s,
+            'slow-query-threshold-in-seconds' => self.slow_query_threshold_in_seconds.to_s
+          }
+        else
+          {}
+        end
       end
 
       def do_create
