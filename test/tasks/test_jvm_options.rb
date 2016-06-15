@@ -44,7 +44,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :set, :exclude_jvm_options => true)
+    perform_interpret(context, data, true, :set, :exclude_jvm_options => true, :property_cache_reload_updates => true)
   end
 
   def test_interpret_set_partial
@@ -76,7 +76,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
                                  equals(:terse => true, :echo => false)).
       returns('-DA=a,-DB=b')
 
-    perform_interpret(context, data, true, :set, :exclude_jvm_options => true)
+    perform_interpret(context, data, true, :set, :exclude_jvm_options => true, :property_cache_reload_updates => true)
   end
 
   def test_interpret_set_when_matches

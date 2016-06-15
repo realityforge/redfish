@@ -231,8 +231,10 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
     complete_task_count = 1
 
-    property_cache_actions = 2
-    property_cache_reload = 1
+    property_cache_reload_updates = !!options[:property_cache_reload_updates]
+
+    property_cache_actions = 2 + (property_cache_reload_updates ? 1 : 0)
+    property_cache_reload = (property_cache_reload_updates ? 0 : 1)
 
     expected_updated = domain_create_count + (task_ran ? 1 : 0) + property_cache_actions + additional_task_count
     assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
@@ -240,7 +242,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     expected_unchanged = (task_ran ? 0 : 1) + property_cache_reload + (domain_dir_exists ? 1 : 0) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
-    assert_property_cache_records(updated_records)
+    assert_property_cache_records(updated_records, property_cache_reload_updates)
 
     unless exclude_domain_create
       assert_equal updated_records.select { |r| r.task.class.registered_name == 'domain' && r.action == :create }.size, 1, 'updated domain.create actions' unless domain_dir_exists
@@ -280,9 +282,9 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     setup_interpreter_expects(executor, context, create_fake_element_properties(names, property_prefix, attributes).collect { |k, v| "#{k}=#{v}" }.join("\n"))
   end
 
-  def setup_interpreter_expects(executor, context, property_results)
+  def setup_interpreter_expects(executor, context, property_results, count = 2)
     data = "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=#{JVM_OPTIONS}\n#{property_results}"
-    mock_property_get(executor, context, data, 2)
+    mock_property_get(executor, context, data, count)
   end
 
   def mock_property_get(executor, context, results, times = 1)
@@ -293,8 +295,8 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
       returns(results)
   end
 
-  def assert_property_cache_records(records)
-    assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :create }.size, 1
+  def assert_property_cache_records(records, property_cache_reload_updates)
+    assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :create }.size, 1 + (property_cache_reload_updates ? 1 : 0)
     assert_equal records.select { |r| r.task.class.registered_name == 'property_cache' && r.action == :destroy }.size, 1
   end
 
