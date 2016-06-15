@@ -231,10 +231,13 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
 
     complete_task_count = 1
 
-    expected_updated = domain_create_count + (task_ran ? 1 : 0) + 2 + additional_task_count
+    property_cache_actions = 2
+    property_cache_reload = 1
+
+    expected_updated = domain_create_count + (task_ran ? 1 : 0) + property_cache_actions + additional_task_count
     assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
 
-    expected_unchanged = (task_ran ? 0 : 1) + (domain_dir_exists ? 1 : 0) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
+    expected_unchanged = (task_ran ? 0 : 1) + property_cache_reload + (domain_dir_exists ? 1 : 0) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records)
@@ -278,15 +281,15 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
   end
 
   def setup_interpreter_expects(executor, context, property_results)
-    mock_property_get(executor,
-                      context,
-                      "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=#{JVM_OPTIONS}\n#{property_results}")
+    data = "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=#{JVM_OPTIONS}\n#{property_results}"
+    mock_property_get(executor, context, data, 2)
   end
 
-  def mock_property_get(executor, context, results)
+  def mock_property_get(executor, context, results, times = 1)
     executor.
       expects(:exec).
       with(equals(context), equals('get'), equals(%w(*)), equals(:terse => true, :echo => false)).
+      times(times).
       returns(results)
   end
 

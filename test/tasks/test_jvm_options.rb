@@ -21,7 +21,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DMyOtherDefine=true,-A=B:1\n")
+    mock_property_get(executor, context, "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DMyOtherDefine=true,-A=B:1\n", 2)
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-jvm-options'),
@@ -53,7 +53,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DA=a,-DB=2\n")
+    mock_property_get(executor, context, "domain.version=#{DOMAIN_VERSION}\nconfigs.config.server-config.java-config.jvm-options=-DMyDefine=true,-DA=a,-DB=2\n", 2)
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-jvm-options'),
@@ -85,7 +85,7 @@ class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
     executor = Redfish::Executor.new
     context = create_simple_context(executor)
 
-    mock_property_get(executor, context, "configs.config.server-config.java-config.jvm-options=-DA=B:1,-XMagic\n")
+    mock_property_get(executor, context, "configs.config.server-config.java-config.jvm-options=-DA=B:1,-XMagic\n", 2)
 
     executor.expects(:exec).with(equals(context),
                                  equals('list-jvm-options'),

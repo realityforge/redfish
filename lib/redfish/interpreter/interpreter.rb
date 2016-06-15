@@ -299,6 +299,8 @@ module Redfish #nodoc
           restart_domain_if_required(run_context, domain_options)
         end
 
+        run_context.task('property_cache').action(:create)
+
         if managed?(data['system_properties'])
           interpret_system_properties(run_context, data['system_properties'] || {})
         end
