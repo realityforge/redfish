@@ -312,5 +312,55 @@ module RedfishPlus
       domain.data['jms_hosts'][name]['admin_username'] = admin_username
       domain.data['jms_hosts'][name]['admin_password'] = admin_password
     end
+
+    def mssql_jdbc_resource(domain, name, resource_name)
+      connection_pool = "#{resource_name}ConnectionPool"
+
+      domain.data['jdbc_connection_pools'][connection_pool]['datasourceclassname'] =  'net.sourceforge.jtds.jdbcx.JtdsDataSource'
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['AppName'] = domain.name
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['ProgName'] = 'GlassFish'
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['SocketTimeout'] = '1200'
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['LoginTimeout'] = '60'
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['SocketKeepAlive'] = 'true'
+
+      # This next lines is required for jtds drivers as still old driver style
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['jdbc30DataSource'] = 'true'
+
+      jdbc_resource(domain, name, resource_name)
+    end
+
+    def pgsql_jdbc_resource(domain, name, resource_name)
+      connection_pool = "#{resource_name}ConnectionPool"
+
+      domain.data['jdbc_connection_pools'][connection_pool]['datasourceclassname'] =  'org.postgresql.ds.PGSimpleDataSource'
+
+      jdbc_resource(domain, name, resource_name)
+    end
+
+    def jdbc_resource(domain, name, resource_name)
+      constant_prefix = ::Redfish::Naming.uppercase_constantize(domain.name)
+      cname = ::Redfish::Naming.uppercase_constantize(name)
+      prefix = cname == constant_prefix ? constant_prefix : "#{constant_prefix}_#{cname}"
+
+      connection_pool = "#{resource_name}ConnectionPool"
+      domain.data['jdbc_connection_pools'][connection_pool]['restype'] = 'javax.sql.DataSource'
+      domain.data['jdbc_connection_pools'][connection_pool]['isconnectvalidatereq'] = 'true'
+      domain.data['jdbc_connection_pools'][connection_pool]['validationmethod'] = 'auto-commit'
+      domain.data['domain.jdbc_connection_pools'][connection_pool]['ping'] = 'true'
+      domain.data['jdbc_connection_pools'][connection_pool]['description'] = "#{resource_name} connection pool for application #{domain.name}"
+      domain.data['jdbc_connection_pools'][connection_pool]['resources'][resource_name]['description'] = "#{resource_name} resource for application #{domain.name}"
+
+      domain.data['environment_vars']["#{prefix}_DB_HOST"] = nil
+      domain.data['environment_vars']["#{prefix}_DB_PORT"] = nil
+      domain.data['environment_vars']["#{prefix}_DB_DATABASE"] = nil
+      domain.data['environment_vars']["#{prefix}_DB_USERNAME"] = domain.name
+      domain.data['environment_vars']["#{prefix}_DB_PASSWORD"] = nil
+
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['ServerName'] = "${#{prefix}_DB_HOST}"
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['PortNumber'] = "${#{prefix}_DB_PORT}"
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['DatabaseName'] = "${#{prefix}_DB_DATABASE}"
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['User'] = "${#{prefix}_DB_USERNAME}"
+      domain.data['jdbc_connection_pools'][connection_pool]['properties']['Password'] = "${#{prefix}_DB_PASSWORD}"
+    end
   end
 end
