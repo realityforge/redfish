@@ -772,6 +772,8 @@ AS_ADMIN_PASSWORD=secret1
     assert_domain_directory('lib', '755')
     assert_domain_directory('lib/ext', '755')
     assert_domain_directory('docroot', '755')
+    assert_domain_directory('tmp', '700')
+    assert_domain_directory('prefs', '700')
   end
 
   def assert_domain_directory(filename, mode)

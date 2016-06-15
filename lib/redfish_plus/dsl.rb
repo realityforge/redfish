@@ -236,6 +236,8 @@ module RedfishPlus
     # Standard configuration used across all of our GlassFish instances
     def standard_domain_setup(domain)
       set_payara_domain_template(domain)
+      set_user_prefs_dir(domain)
+      set_tmpdir(domain)
       disable_update_tool(domain)
       enable_implicit_cdi(domain)
       setup_default_admin(domain)
@@ -334,6 +336,14 @@ module RedfishPlus
       options.each_pair do |k, v|
         domain.data['thread_pools'][name][k.to_s] = v
       end
+    end
+
+    def set_user_prefs_dir(domain)
+      domain.data['jvm_options']['defines']['java.util.prefs.userRoot'] = '{{domain_directory}}/prefs'
+    end
+
+    def set_tmpdir(domain)
+      domain.data['jvm_options']['defines']['java.io.tmpdir'] = '{{domain_directory}}/tmp'
     end
 
     def disable_update_tool(domain)

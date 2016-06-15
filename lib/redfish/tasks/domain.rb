@@ -180,6 +180,13 @@ module Redfish
         # This line is probably not needed outside tests...
         create_dir("#{context.domain_directory}/config", 0700)
 
+        # Setup a temp directory so can configure domain to write to this
+        # location rather than global temp directory
+        create_dir("#{context.domain_directory}/tmp", 0700)
+
+        # Setup preferences directory so preferences are stored within the domain dir
+        create_dir("#{context.domain_directory}/prefs", 0700)
+
         pass_file = context.domain_password_file_location
         File.open(pass_file, 'wb') do |f|
           f.write <<-PASS
