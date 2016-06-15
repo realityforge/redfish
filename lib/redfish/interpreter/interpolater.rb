@@ -40,6 +40,7 @@ module Redfish #nodoc
           data = {
             'domain_name' => task_context.domain_name,
             'glassfish_home' => task_context.install_dir,
+            'domain_directory' => task_context.domain_directory,
             'domains_directory' => task_context.domains_directory,
           }
           task_context.file_map.each_pair do |key, path|

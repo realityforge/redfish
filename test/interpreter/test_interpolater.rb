@@ -24,6 +24,7 @@ class Redfish::TestInterpolater < Redfish::TestCase
                  {
                    'domain_name' => 'domain1',
                    'glassfish_home' => '/opt/payara-4.1.151',
+                   'domain_directory' => "#{test_domains_dir}/domain1",
                    'domains_directory' => test_domains_dir
                  }
 
@@ -36,6 +37,7 @@ class Redfish::TestInterpolater < Redfish::TestCase
                  {
                    'domain_name' => 'domain1',
                    'glassfish_home' => '/opt/payara-4.1.151',
+                   'domain_directory' => "#{test_domains_dir}/domain1",
                    'domains_directory' => test_domains_dir,
                    'file:a' => '/tmp/a.txt',
                    'file:b' => '/tmp/b.txt'
