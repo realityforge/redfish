@@ -89,7 +89,7 @@ module Redfish
 
         desc "Build a docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:build" => ["#{domain.task_prefix}:docker:setup"] do
-          if `docker images --format "{{.ID}}" --filter label=org.realityforge.redfish.complete=true #{domain.labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
+          if `docker images --format "{{.ID}}" #{domain.labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
             info("Building docker image for '#{domain.name}' domain with key '#{domain.key}' as #{domain.image_name}")
             command = domain.docker_build_command(directory)
             sh(command)

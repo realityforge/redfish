@@ -319,14 +319,6 @@ module Redfish
         f.write <<SCRIPT
 FROM stocksoftware/redfish:latest
 USER root
-SCRIPT
-        if labels.size > 0
-          f.write <<SCRIPT
-LABEL #{self.labels.collect { |k, v| "#{k}=\"#{v}\"" }.join(" \\\n      ")}
-SCRIPT
-        end
-
-        f.write <<SCRIPT
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish:glassfish
@@ -339,8 +331,12 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish:glassfish
 EXPOSE #{self.ports.join(' ')} #{self.admin_port}
 CMD ["/opt/redfish/run"]
-LABEL org.realityforge.redfish.complete="true"
 SCRIPT
+        if labels.size > 0
+          f.write <<SCRIPT
+LABEL #{self.labels.collect { |k, v| "#{k}=\"#{v}\"" }.join(" \\\n      ")}
+SCRIPT
+        end
       end
     end
 
