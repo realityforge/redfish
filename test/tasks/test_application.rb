@@ -32,6 +32,11 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
+      returns("Command deploy executed successfully.\n")
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.property.org.glassfish.*']),
+                                 equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(context),
                                  equals('get'),
@@ -74,7 +79,7 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
-      returns('')
+      returns("Command deploy executed successfully.\n")
     executor.expects(:exec).with(equals(t.context), equals('get'),
                                  equals(["#{property_prefix}deployment-order"]),
                                  equals(:terse => true, :echo => false)).
@@ -172,7 +177,13 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
-      returns('')
+      returns("Command deploy executed successfully.\n")
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.property.org.glassfish.*']),
+                                 equals(:terse => true, :echo => false)).
+      returns("applications.application.MyApplication.property.org.glassfish.ejb.container.application_unique_id=96073498887454720\n" +
+                "applications.application.MyApplication.property.org.glassfish.persistence.app_name_property=MyApplication\n")
     executor.expects(:exec).with(equals(t.context),
                                  equals('get'),
                                  equals(['applications.application.MyApplication.module.*']),
@@ -189,6 +200,8 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
     assert_equal t.context.property_cache['applications.application.MyApplication.module.B'], 'b'
     assert_equal t.context.property_cache['applications.application.MyApplication.module.C'], 'c'
     assert_equal t.context.property_cache['applications.application.MyApplication.module.X'], ''
+    assert_equal t.context.property_cache['applications.application.MyApplication.property.org.glassfish.ejb.container.application_unique_id'], '96073498887454720'
+    assert_equal t.context.property_cache['applications.application.MyApplication.property.org.glassfish.persistence.app_name_property'], 'MyApplication'
   end
 
   def test_create_element_where_cache_present_and_element_not_present_for_war
@@ -203,6 +216,11 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploy'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', self.location_as_war]),
                                  equals({})).
+      returns("Command deploy executed successfully.\n")
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.property.org.glassfish.*']),
+                                 equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(t.context),
                                  equals('get'),
@@ -354,6 +372,11 @@ class Redfish::Tasks::TestApplication < Redfish::Tasks::BaseTaskTest
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
+      returns("Command deploy executed successfully.\n")
+    executor.expects(:exec).with(equals(context),
+                                 equals('get'),
+                                 equals(['applications.application.MyApplication.property.org.glassfish.*']),
+                                 equals(:terse => true, :echo => false)).
       returns('')
     executor.expects(:exec).with(equals(context),
                                  equals('get'),

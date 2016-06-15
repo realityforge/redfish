@@ -122,9 +122,17 @@ module Redfish
         args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
         args << resolved_location.to_s
 
-        context.exec(is_location_a_directory? ? 'deploydir' : 'deploy', args)
+        output = context.exec(is_location_a_directory? ? 'deploydir' : 'deploy', args)
+        if output =~ /Command deploy failed./ || !(output =~ /Command deploy executed successfully\./)
+          raise "Failed to deploy application #{self.name}. Output follows:\n#{output}"
+        end
+      end
 
-        reload_properties_with_prefix("applications.application.#{self.name}.module.") if context.property_cache?
+      def post_create_hook
+        if context.property_cache?
+          reload_properties_with_prefix("applications.application.#{self.name}.property.org.glassfish.")
+          reload_properties_with_prefix("applications.application.#{self.name}.module.")
+        end
       end
 
       def do_destroy
