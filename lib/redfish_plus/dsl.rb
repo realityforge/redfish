@@ -16,6 +16,7 @@
 # noinspection SpellCheckingInspection
 # noinspection RubyStringKeysInHashInspection
 module RedfishPlus
+  # noinspection RubySimplifyBooleanInspection
   class << self
 
     def setup_for_docker(domain, options = {})
