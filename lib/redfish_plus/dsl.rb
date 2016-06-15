@@ -69,6 +69,7 @@ module RedfishPlus
       setup_http_thread_pool(domain)
       configure_rest_container(domain)
       configure_web_container(domain)
+      add_default_concurrency_resources(domain)
       setup_default_logging(domain)
       shutdown_on_complete(domain)
     end
@@ -146,6 +147,90 @@ module RedfishPlus
       add_thread_pool(domain, 'orb-thread-pool', 5, 150)
       set_orb_thread_pool(domain, 'orb-thread-pool')
       add_dummy_iiop_listener(domain)
+    end
+
+    def add_default_concurrency_resources(domain)
+      # This should not be used but as Payara/GlassFish will recreate them on
+      # restart, we create them to avoid having them recreated
+      add_default_context_service(domain)
+      add_default_managed_thread_factory(domain)
+      add_default_managed_executor_service(domain)
+      add_default_managed_scheduled_executor_service(domain)
+    end
+
+    def add_default_context_service(domain)
+      add_context_service(domain, 'concurrent/__defaultContextService', 'enabled' => 'false')
+    end
+
+    def add_context_service(domain, name, options = {})
+      domain.data['context_services'][name]['enabled'] = options['enabled'] || 'true'
+      domain.data['context_services'][name]['context_info_enabled'] = 'true'
+      domain.data['context_services'][name]['context_info'] = 'Classloader,JNDI,Security,WorkArea'
+      domain.data['context_services'][name]['deployment_order'] = 100
+      options.each_pair do |key, value|
+        domain.data['context_services'][name][key] = value
+      end
+    end
+
+    def add_default_managed_thread_factory(domain)
+      add_managed_thread_factory(domain, 'concurrent/__defaultManagedThreadFactory', 'enabled' => 'false')
+    end
+
+    def add_managed_thread_factory(domain, name, options = {})
+      domain.data['managed_thread_factories'][name]['enabled'] = options['enabled'] || 'true'
+      domain.data['managed_thread_factories'][name]['context_info_enabled'] = 'true'
+      domain.data['managed_thread_factories'][name]['context_info'] = 'Classloader,JNDI,Security,WorkArea'
+      domain.data['managed_thread_factories'][name]['deployment_order'] = 100
+      domain.data['managed_thread_factories'][name]['thread_priority'] = 5
+      options.each_pair do |key, value|
+        domain.data['managed_thread_factories'][name][key] = value
+      end
+    end
+
+    def add_default_managed_executor_service(domain)
+      add_managed_executor_service(domain,
+                                   'concurrent/__defaultManagedExecutorService',
+                                   'enabled' => 'false',
+                                   'long_running_tasks' => 'false',
+                                   'hung_after_seconds' => '1',
+                                   'core_pool_size' => '0',
+                                   'maximum_pool_size' => '1',
+                                   'keep_alive_seconds' => '1',
+                                   'thread_lifetime_seconds' => '1',
+                                   'task_queue_capacity' => '1')
+    end
+
+    def add_managed_executor_service(domain, name, options = {})
+      domain.data['managed_executor_services'][name]['enabled'] = options['enabled'] || 'true'
+      domain.data['managed_executor_services'][name]['context_info_enabled'] = 'true'
+      domain.data['managed_executor_services'][name]['context_info'] = 'Classloader,JNDI,Security,WorkArea'
+      domain.data['managed_executor_services'][name]['deployment_order'] = 100
+      domain.data['managed_executor_services'][name]['thread_priority'] = 5
+      options.each_pair do |key, value|
+        domain.data['managed_executor_services'][name][key] = value
+      end
+    end
+
+    def add_default_managed_scheduled_executor_service(domain)
+      add_managed_scheduled_executor_service(domain,
+                                             'concurrent/__defaultManagedScheduledExecutorService',
+                                             'enabled' => 'false',
+                                             'long_running_tasks' => 'false',
+                                             'hung_after_seconds' => '1',
+                                             'core_pool_size' => '0',
+                                             'keep_alive_seconds' => '1',
+                                             'thread_lifetime_seconds' => '1')
+    end
+
+    def add_managed_scheduled_executor_service(domain, name, options = {})
+      domain.data['managed_scheduled_executor_services'][name]['enabled'] = options['enabled'] || 'true'
+      domain.data['managed_scheduled_executor_services'][name]['context_info_enabled'] = 'true'
+      domain.data['managed_scheduled_executor_services'][name]['context_info'] = 'Classloader,JNDI,Security,WorkArea'
+      domain.data['managed_scheduled_executor_services'][name]['deployment_order'] = 100
+      domain.data['managed_scheduled_executor_services'][name]['thread_priority'] = 5
+      options.each_pair do |key, value|
+        domain.data['managed_scheduled_executor_services'][name][key] = value
+      end
     end
 
     # Standard configuration used across all of our GlassFish instances
