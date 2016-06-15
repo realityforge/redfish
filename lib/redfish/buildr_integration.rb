@@ -91,7 +91,7 @@ module Redfish
         task "#{domain.task_prefix}:docker:build" => ["#{domain.task_prefix}:docker:setup"] do
           if `docker images --format "{{.ID}}" --filter label=org.realityforge.redfish.complete=true #{domain.labels.collect { |k, v| "--filter label=#{k}=#{v}" }.join(' ') }`.empty?
             info("Building docker image for '#{domain.name}' domain with key '#{domain.key}' as #{domain.image_name}")
-            command = domain.docker_build_command(directory, :quiet => !!::Buildr.application.options.trace)
+            command = domain.docker_build_command(directory)
             sh(command)
           end
         end
