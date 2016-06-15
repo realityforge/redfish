@@ -20,6 +20,7 @@ module RedfishPlus
   class << self
 
     def setup_for_docker(domain, options = {})
+      # Assume docker is for production, and thus tune it so
       features = options[:features] || []
       domain.package = false
       domain.local = false
