@@ -33,6 +33,10 @@ module RedfishPlus
       else
         disable_jms_service(domain)
       end
+
+      if features.include?(:jms) || features.include?(:jdbc)
+        setup_orb_to_support_resource_adapter(domain)
+      end
     end
 
     def setup_default_logging(domain)
@@ -51,6 +55,10 @@ module RedfishPlus
         setup_jms_host(domain, 'EMBEDDED')
       else
         disable_jms_service(domain)
+      end
+
+      if features.include?(:jms) || features.include?(:jdbc)
+        setup_orb_to_support_resource_adapter(domain)
       end
     end
 
@@ -85,7 +93,6 @@ module RedfishPlus
       environment_variable(domain, 'OPENMQ_ADMIN_USERNAME', 'admin')
       environment_variable(domain, 'OPENMQ_ADMIN_PASSWORD', 'admin')
 
-      setup_orb_to_support_jms(domain)
       jms_host(domain, 'DefaultJmsHost', '${OPENMQ_HOST}', '${OPENMQ_PORT}', '${OPENMQ_ADMIN_USERNAME}', '${OPENMQ_ADMIN_PASSWORD}')
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.default-jms-host', 'DefaultJmsHost')
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.type', service_type)
@@ -108,10 +115,10 @@ module RedfishPlus
       set(domain, 'configs.config.server-config.mdb-container.steady-pool-size', '0')
     end
 
-    # Orb required to use MDBs due to feature/bugs of GlassFish/Payara
-    def setup_orb_to_support_jms(domain)
+    # Orb required to use Resource adapters for MDBs and JDBC connection pools
+    def setup_orb_to_support_resource_adapter(domain)
       # Orb can not share a thread pool with http
-      add_thread_pool(domain, 'orb-thread-pool', 1, 1)
+      add_thread_pool(domain, 'orb-thread-pool', 5, 150)
       set_orb_thread_pool(domain, 'orb-thread-pool')
       add_dummy_iiop_listener(domain)
     end
