@@ -17,7 +17,9 @@ module Redfish
     class << self
       # Generate a random password with lowercase, uppercase and numeric values
       def generate_password(size = 10)
-        size.times.map { [*('0'..'9'), *('A'..'Z'), *('a'..'z')].sample }.join
+        set = (('0'..'9').to_a + ('A'..'Z').to_a + ('a'..'z').to_a)
+        set[rand(set.length)]
+        size.times.map { set[rand(set.length)] }.join
       end
 
       def is_buildr_present?
