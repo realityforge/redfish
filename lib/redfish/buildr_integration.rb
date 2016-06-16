@@ -17,14 +17,16 @@ module Redfish
     def add_pre_artifacts(*artifacts)
       ::Buildr.artifacts(artifacts).each do |a|
         self.pre_artifacts << a.to_s
-        task "#{self.task_prefix}:pre_build" => [a]
+        project = Redfish::Buildr.get_buildr_project('adding pre_artifacts dependencies')
+        project.task ":#{self.task_prefix}:pre_build" => [a.to_s]
       end
     end
 
     def add_post_artifacts(*artifacts)
       ::Buildr.artifacts(artifacts).each do |a|
         self.post_artifacts << a.to_s
-        task "#{self.task_prefix}:pre_build" => [a]
+        project = Redfish::Buildr.get_buildr_project('adding post_artifacts dependencies')
+        project.task ":#{self.task_prefix}:pre_build" => [a]
       end
     end
   end
@@ -143,9 +145,7 @@ module Redfish
       end
     end
 
-    protected
-
-    def self.get_buildr_project(reason, options)
+    def self.get_buildr_project(reason, options = {})
       buildr_project = options[:buildr_project]
       if buildr_project.nil? && ::Buildr.application.current_scope.size > 0
         buildr_project = ::Buildr.project(::Buildr.application.current_scope.join(':')) rescue nil
