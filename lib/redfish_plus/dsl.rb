@@ -422,6 +422,11 @@ module RedfishPlus
       domain.data['custom_resources'][name]['properties']['value'] = value
     end
 
+    def custom_resource_from_env(domain, name, env_key)
+      custom_resource(domain, name, "${#{env_key}}")
+      RedfishPlus.environment_variable(domain, env_key)
+    end
+
     def jms_connection_factory(domain, name)
       domain.data['jms_resources'][name]['restype'] = 'javax.jms.ConnectionFactory'
     end
