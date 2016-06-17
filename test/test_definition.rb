@@ -523,6 +523,7 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish:glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
+WORKDIR /srv/glassfish/domains/appserver
 LABEL org.realityforge.redfish.domain_name="appserver" \\
       org.realityforge.redfish.domain_version="" \\
       org.realityforge.redfish.domain_hash="#{domain.version_hash}"
@@ -594,6 +595,7 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish:glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
+WORKDIR /srv/glassfish/domains/appserver
 LABEL org.realityforge.redfish.domain_name="appserver" \\
       org.realityforge.redfish.domain_version="" \\
       org.realityforge.redfish.domain_hash="#{domain.version_hash}"

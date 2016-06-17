@@ -331,6 +331,7 @@ RUN mkdir /tmp/glassfish && \\
 USER glassfish:glassfish
 EXPOSE #{self.ports.join(' ')} #{self.admin_port}
 CMD ["/opt/redfish/run"]
+WORKDIR /srv/glassfish/domains/#{self.name}
 SCRIPT
         if labels.size > 0
           f.write <<SCRIPT
