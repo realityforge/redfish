@@ -157,6 +157,12 @@ module Redfish
       self.resolved_data['environment_vars'].to_h
     end
 
+    # A helper to retrieve the set of volumes expected to be defined.
+    # Extracted from volumes key after resolving data attribute.
+    def volume_requirements
+      self.resolved_data['volumes'].to_h
+    end
+
     # Use terse output from the underlying asadmin.
     def terse?
       !!@terse

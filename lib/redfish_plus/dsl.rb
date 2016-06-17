@@ -357,6 +357,10 @@ module RedfishPlus
       domain.data['environment_vars'][key] = default_value
     end
 
+    def volume_requirement(domain, key)
+      domain.data['volumes'][key]
+    end
+
     def force_unexpected_differences_to_cause_failure(domain)
       domain.data['config']['error_on_differences'] = true
     end
