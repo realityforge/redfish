@@ -31,6 +31,14 @@ class Redfish::TestInterpolater < Redfish::TestCase
     context.file('a', '/tmp/a.txt')
     context.file('b', '/tmp/b.txt')
 
+    volume_dir = "#{temp_dir}/test_volume"
+    FileUtils.mkdir_p volume_dir
+    context.volume('A', volume_dir)
+
+    volume_dir2 = "#{temp_dir}/test_volume2"
+    FileUtils.mkdir_p volume_dir2
+    context.volume('B', volume_dir2)
+
     map = Redfish::Interpreter::Interpolater.send(:build_variable_map, context)
 
     assert_equal map,
@@ -40,7 +48,9 @@ class Redfish::TestInterpolater < Redfish::TestCase
                    'domain_directory' => "#{test_domains_dir}/domain1",
                    'domains_directory' => test_domains_dir,
                    'file:a' => '/tmp/a.txt',
-                   'file:b' => '/tmp/b.txt'
+                   'file:b' => '/tmp/b.txt',
+                   'volume:A' => volume_dir,
+                   'volume:B' => volume_dir2
                  }
   end
 

@@ -90,6 +90,41 @@ class Redfish::TestContext < Redfish::TestCase
     assert_equal e.message, "File with key 'a' is associated with local file '/tmp/a.txt', can not associate with '/tmp/other.txt'"
   end
 
+  def test_volume_map
+    volume_dir = "#{temp_dir}/test_volume"
+    FileUtils.mkdir_p volume_dir
+
+    volume_dir2 = "#{temp_dir}/test_volume"
+    FileUtils.mkdir_p volume_dir2
+
+    context = Redfish::Context.new(Redfish::Executor.new,
+                                   '/opt/glassfish',
+                                   'appserver',
+                                   4848,
+                                   true,
+                                   'admin',
+                                   nil)
+
+    assert_equal context.file_map, {}
+
+    context.volume('a', volume_dir)
+
+    assert_equal context.volume_map, {'a' => volume_dir}
+
+    context.volume('b', volume_dir2)
+
+    assert_equal context.volume_map, {'a' => volume_dir, 'b' => volume_dir2}
+
+    # Ensure it can not be changed directly
+
+    context.volume_map['c'] = '/filec.txt'
+
+    assert_equal context.volume_map, {'a' => volume_dir, 'b' => volume_dir2}
+
+    e = assert_raises(RuntimeError) { context.volume('a', volume_dir) }
+    assert_equal e.message, "Volume with key 'a' is associated with directory '#{volume_dir}', can not associate with '#{volume_dir}'"
+  end
+
   def test_domain_master_password_can_be_set
     context = Redfish::Context.new(Redfish::Executor.new,
                                    '/opt/glassfish',

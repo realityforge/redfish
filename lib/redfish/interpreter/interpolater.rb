@@ -46,6 +46,9 @@ module Redfish #nodoc
           task_context.file_map.each_pair do |key, path|
             data["file:#{key}"] = path
           end
+          task_context.volume_map.each_pair do |key, path|
+            data["volume:#{key}"] = path
+          end
           data
         end
       end

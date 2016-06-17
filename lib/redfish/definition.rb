@@ -21,6 +21,7 @@ module Redfish
       @data = Redfish::Mash.new
       @version = nil
       @file_map = {}
+      @volume_map = {}
       @secure = true
       @local = true
       @echo = false
@@ -46,6 +47,9 @@ module Redfish
       (options.delete(:file_map) || {}).each_pair do |file_key, path|
         file(file_key, path)
       end
+      (options.delete(:volume_map) || {}).each_pair do |volume_key, path|
+        volume(volume_key, path)
+      end
 
       options = options.dup
       @extends = options.delete(:extends)
@@ -68,6 +72,9 @@ module Redfish
         @system_group = parent.system_group
         parent.file_map.each_pair do |file_key, path|
           file(file_key, path)
+        end
+        parent.volume_map.each_pair do |volume_key, path|
+          volume(volume_key, path)
         end
         # Deliberately do not copy @packaged, @package, @complete, @pre_artifacts, @post_artifacts, @rake_integration
       end
@@ -203,7 +210,8 @@ module Redfish
     def docker_run_command
       dns_opt = self.docker_dns.nil? ? '' : " --dns=#{self.docker_dns}"
       args = self.docker_run_args.join(' ')
-      "docker run -ti --rm -P#{dns_opt} --name #{self.name} #{args}#{args.empty? ? '' : ' '}#{self.image_name}"
+      volumes = self.volume_map.collect { |key, local_path| "--volume=#{local_path}:/srv/glassfish/volumes/#{key}" }.join(' ')
+      "docker run -ti --rm -P#{dns_opt} #{volumes}#{volumes.empty? ? '' : ' '}--name #{self.name} #{args}#{args.empty? ? '' : ' '}#{self.image_name}"
     end
 
     def task_prefix
@@ -221,6 +229,15 @@ module Redfish
 
     def file_map
       @file_map.dup
+    end
+
+    def volume(key, local_path)
+      raise "Volume with key '#{key.to_s}' is associated with directory '#{@volume_map[key.to_s]}', can not associate with '#{local_path}'" if @volume_map[key.to_s]
+      @volume_map[key.to_s] = local_path
+    end
+
+    def volume_map
+      @volume_map.dup
     end
 
     def resolved_data
@@ -252,6 +269,7 @@ module Redfish
                              :system_group => self.system_group,
                              :authbind_executable => self.authbind_executable,
                              :file_map => self.file_map,
+                             :volume_map => self.volume_map,
                              :domains_directory => self.domains_directory
                            })
     end
@@ -309,6 +327,7 @@ module Redfish
       end
       data['definition']['admin_password'] = self.admin_password unless self.admin_password_random?
       data['definition']['file_map'] = self.file_map.keys
+      data['definition']['volume_map'] = self.volume_map.keys
 
       Digest::MD5.hexdigest(JSON.pretty_generate(data))
     end
@@ -316,13 +335,14 @@ module Redfish
     def setup_dockerfile(dir)
       # When the Dockerfile format improves we should be able to remove redfish from the image altogether
       File.open("#{dir}/Dockerfile", 'wb') do |f|
+        volumes = self.volume_map.keys.collect{|key| "/srv/glassfish/volumes/#{key}"}.join(' ')
         f.write <<SCRIPT
 FROM stocksoftware/redfish:latest
 USER root
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish:glassfish
-RUN mkdir /tmp/glassfish && \\
+RUN mkdir -p /tmp/glassfish #{volumes}#{volumes.empty? ? '' : ' '}&& \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/#{self.name}/config/domain.xml#{self.environment_vars.empty? ? '' : ' '}#{self.environment_vars.keys.collect { |k| "-s#{k}=@@#{k}@@" }.join(' ')} && \\
@@ -333,6 +353,11 @@ EXPOSE #{self.ports.join(' ')} #{self.admin_port}
 CMD ["/opt/redfish/run"]
 WORKDIR /srv/glassfish/domains/#{self.name}
 SCRIPT
+        unless volumes.empty?
+          f.write <<SCRIPT
+VOLUME #{volumes}
+SCRIPT
+        end
         if labels.size > 0
           f.write <<SCRIPT
 LABEL #{self.labels.collect { |k, v| "#{k}=\"#{v}\"" }.join(" \\\n      ")}
@@ -391,6 +416,9 @@ SCRIPT
           end
           FileUtils.cp_r File.expand_path(File.dirname(__FILE__) + '/..') + '/.', "#{dir}/redfish/lib"
           f.write "  domain.file('#{key}', '/opt/redfish/files/#{key}/#{short_name}')\n"
+        end
+        self.volume_map.keys.each do |key|
+          f.write "  domain.volume('#{key}', '/srv/glassfish/volumes/#{key}')\n"
         end
         f.write <<SCRIPT
 end

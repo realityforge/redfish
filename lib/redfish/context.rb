@@ -64,6 +64,11 @@ module Redfish
         file(key, path)
       end
 
+      @volume_map = {}
+      (options[:volume_map] || {}).each_pair do |key, path|
+        volume(key, path)
+      end
+
       @echo = options[:echo].nil? ? false : !!options[:echo]
       @terse = options[:terse].nil? ? false : !!options[:terse]
       @system_user = options[:system_user]
@@ -82,6 +87,15 @@ module Redfish
 
     def file_map
       @file_map.dup
+    end
+
+    def volume(key, local_path)
+      raise "Volume with key '#{key.to_s}' is associated with directory '#{@volume_map[key.to_s]}', can not associate with '#{local_path}'" if @volume_map[key.to_s]
+      @volume_map[key.to_s] = local_path
+    end
+
+    def volume_map
+      @volume_map.dup
     end
 
     # Directory of specific domain context is referencing

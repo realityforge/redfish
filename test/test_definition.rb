@@ -20,6 +20,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition = Redfish::DomainDefinition.new('appserver')
 
     assert_equal definition.file_map, {}
+    assert_equal definition.volume_map, {}
 
     Redfish::Config.default_glassfish_home = 'Y'
     assert_equal definition.name, 'appserver'
@@ -66,6 +67,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.packaged = true
     definition.dockerize = true
     definition.file('a', '/tmp/a.txt')
+    volume_dir = "#{temp_dir}/test_volume"
+    definition.volume('Z', volume_dir)
     definition.version = '1.21'
     definition.ports << 8080
     definition.data['environment_vars']['A'] = '1'
@@ -89,6 +92,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.packaged?, true
     assert_equal definition.dockerize?, true
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal definition.volume_map, {'Z' => volume_dir}
     assert_equal definition.version, '1.21'
     assert_equal definition.ports, [8080]
     assert_equal definition.environment_vars, {'A' => '1'}
@@ -107,6 +111,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal context.terse?, true
     assert_equal context.echo?, true
     assert_equal context.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal context.volume_map, {'Z' => volume_dir}
   end
 
   def test_extends
@@ -125,6 +130,8 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.system_user = 'glassfish'
     definition.system_group = 'glassfish-group'
     definition.file('a', '/tmp/a.txt')
+    volume_dir = "#{temp_dir}/test_volume"
+    definition.volume('Z', volume_dir)
     definition.ports << 8080
     definition.data['environment_vars']['A'] = '1'
 
@@ -175,6 +182,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.packaged?, true
     assert_equal definition.extends, nil
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal definition.volume_map, {'Z' => volume_dir}
     assert_equal definition.ports, [8080]
     assert_equal definition.environment_vars, {'A' => '1'}
 
@@ -203,6 +211,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition2.packaged?, false
     assert_equal definition2.extends, 'appserver'
     assert_equal definition2.file_map, {'a' => '/tmp/a.txt'}
+    assert_equal definition2.volume_map, {'Z' => volume_dir}
     assert_equal definition2.ports, [8080]
     assert_equal definition2.environment_vars, {'A' => '1'}
 
@@ -341,6 +350,28 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal e.message, "File with key 'a' is associated with local file '/tmp/a.txt', can not associate with '/tmp/other.txt'"
   end
 
+  def test_volume_map
+    volume_dir = "#{temp_dir}/test_volume"
+    volume_dir2 = "#{temp_dir}/test_volume"
+
+    definition = Redfish::DomainDefinition.new('appserver', :volume_map => {'a' => volume_dir})
+
+    assert_equal definition.volume_map, {'a' => volume_dir}
+
+    definition.volume('b', volume_dir2)
+
+    assert_equal definition.volume_map, {'a' => volume_dir, 'b' => volume_dir2}
+
+    # Ensure it can not be changed directly
+
+    definition.volume_map['c'] = '/filec.txt'
+
+    assert_equal definition.volume_map, {'a' => volume_dir, 'b' => volume_dir2}
+
+    e = assert_raises(RuntimeError) { definition.volume('a', volume_dir) }
+    assert_equal e.message, "Volume with key 'a' is associated with directory '#{volume_dir}', can not associate with '#{volume_dir}'"
+  end
+
   def test_labels
     definition = Redfish::DomainDefinition.new('appserver')
 
@@ -417,6 +448,10 @@ class Redfish::TestDefinition < Redfish::TestCase
     definition.file('b', '/tmp/b.txt')
     version_hash = check_version_hash(definition, true, version_hash)
 
+    volume_dir = "#{temp_dir}/test_volume"
+    definition.volume('A', volume_dir)
+    version_hash = check_version_hash(definition, true, version_hash)
+
     definition.package = false
     version_hash = check_version_hash(definition, false, version_hash)
 
@@ -480,6 +515,12 @@ class Redfish::TestDefinition < Redfish::TestCase
     domain.docker_run_args << '--env=A=a'
     domain.docker_run_args << '--env=B=b'
     assert_equal domain.docker_run_command, 'docker run -ti --rm -P --dns=10.0.9.9 --name appserver --env=A=a --env=B=b appserver'
+
+    volume_dir = "#{temp_dir}/test_volume"
+    volume_dir2 = "#{temp_dir}/test_volume2"
+    domain.volume('A', volume_dir)
+    domain.volume('B', volume_dir2)
+    assert_equal domain.docker_run_command, "docker run -ti --rm -P --dns=10.0.9.9 --volume=#{volume_dir}:/srv/glassfish/volumes/A --volume=#{volume_dir2}:/srv/glassfish/volumes/B --name appserver --env=A=a --env=B=b appserver"
   end
 
   def test_image_name
@@ -514,7 +555,7 @@ USER root
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish:glassfish
-RUN mkdir /tmp/glassfish && \\
+RUN mkdir -p /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml && \\
@@ -549,7 +590,7 @@ CONTENT
     assert_docker_file('redfish/domain.json', JSON.pretty_generate({}))
   end
 
-  def test_setup_docker_dir_with_files_and_env_vars
+  def test_setup_docker_dir_with_files_volumes_and_env_vars
     Redfish::Config.default_glassfish_home = '/opt/glassfish'
 
     file1 = "#{temp_dir}/file1.json"
@@ -572,6 +613,12 @@ CONTENT
     domain.file('a', file1)
     domain.file('b', file2)
 
+    volume_dir = "#{temp_dir}/test_volume"
+    domain.volume('A', volume_dir)
+
+    volume_dir = "#{temp_dir}/test_volume2"
+    domain.volume('B', volume_dir)
+
     domain.setup_docker_dir(dir)
 
     assert_docker_directory('redfish')
@@ -586,7 +633,7 @@ USER root
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
 USER glassfish:glassfish
-RUN mkdir /tmp/glassfish && \\
+RUN mkdir -p /tmp/glassfish /srv/glassfish/volumes/A /srv/glassfish/volumes/B && \\
     export TMPDIR=/tmp/glassfish && \\
     java -jar ${JRUBY_JAR} /opt/redfish/domain.rb && \\
     java -jar ${GLASSFISH_PATCHER_JAR} -f /srv/glassfish/domains/appserver/config/domain.xml -sA=@@A@@ -sB=@@B@@ -sC=@@C@@ && \\
@@ -596,6 +643,7 @@ USER glassfish:glassfish
 EXPOSE  4848
 CMD ["/opt/redfish/run"]
 WORKDIR /srv/glassfish/domains/appserver
+VOLUME /srv/glassfish/volumes/A /srv/glassfish/volumes/B
 LABEL org.realityforge.redfish.domain_name="appserver" \\
       org.realityforge.redfish.domain_version="" \\
       org.realityforge.redfish.domain_hash="#{domain.version_hash}"
@@ -628,6 +676,8 @@ domain = Redfish.domain('appserver') do |domain|
   domain.pre_artifacts << "\#{CURRENT_DIR}/domain.json"
   domain.file('a', '/opt/redfish/files/a/file1.json')
   domain.file('b', '/opt/redfish/files/b/file2.json')
+  domain.volume('A', '/srv/glassfish/volumes/A')
+  domain.volume('B', '/srv/glassfish/volumes/B')
 end
 
 Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])

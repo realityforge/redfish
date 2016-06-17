@@ -74,6 +74,9 @@ module Redfish
       if domain.complete? && domain.local?
         desc "Configure a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
+          domain.volume_map.values.each do |volume|
+            FileUtils.mkdir_p volume
+          end
           Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
         end
       end
@@ -101,6 +104,9 @@ module Redfish
         desc "Run a container based on the docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:run" => ["#{domain.task_prefix}:docker:build"] do
           info("Running docker image for '#{domain.name}' domain with key '#{domain.key}' as #{domain.image_name}")
+          domain.volume_map.values.each do |volume|
+            FileUtils.mkdir_p volume
+          end
           command = "#{domain.docker_run_command} #{ENV['DOCKER_ARGS']}"
           puts(command) if ::Buildr.application.options.trace
           exec(command)
