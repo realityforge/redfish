@@ -117,6 +117,20 @@ module Redfish
           command = "#{domain.docker_run_command} #{ENV['DOCKER_ARGS']}"
           puts(command)
         end
+
+        desc "Remove docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
+        task "#{domain.task_prefix}:docker:rm" do
+          unless `docker images -q #{domain.image_name}`.empty?
+            sh("docker rmi $(docker images -q #{domain.image_name})")
+          end
+        end
+
+        desc "Remove all docker docker images for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
+        task "#{domain.task_prefix}:docker:rm_all" do
+          unless `docker images -q #{domain.name}`.empty?
+            sh("docker rmi $(docker images -q #{domain.name})")
+          end
+        end
       end
 
       desc "Export GlassFish configation based on #{domain.name} domain definition"
