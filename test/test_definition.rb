@@ -562,6 +562,10 @@ class Redfish::TestDefinition < Redfish::TestCase
     domain.volume('A', volume_dir)
     domain.volume('B', volume_dir2)
     assert_equal domain.docker_run_command, "docker run -ti --rm -P --dns=10.0.9.9 --volume=#{volume_dir}:/srv/glassfish/volumes/A --volume=#{volume_dir2}:/srv/glassfish/volumes/B --name appserver --env=A=a --env=B=b appserver"
+
+    domain.data['environment_vars']['C'] = '1'
+    domain.data['environment_vars']['D'] = '2'
+    assert_equal domain.docker_run_command, "docker run -ti --rm -P --dns=10.0.9.9 --env=C=1 --env=D=2 --volume=#{volume_dir}:/srv/glassfish/volumes/A --volume=#{volume_dir2}:/srv/glassfish/volumes/B --name appserver --env=A=a --env=B=b appserver"
   end
 
   def test_image_name

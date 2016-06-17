@@ -217,7 +217,11 @@ module Redfish
       dns_opt = self.docker_dns.nil? ? '' : " --dns=#{self.docker_dns}"
       args = self.docker_run_args.join(' ')
       volumes = self.volume_map.collect { |key, local_path| "--volume=#{local_path}:/srv/glassfish/volumes/#{key}" }.join(' ')
-      "docker run -ti --rm -P#{dns_opt} #{volumes}#{volumes.empty? ? '' : ' '}--name #{self.name} #{args}#{args.empty? ? '' : ' '}#{self.image_name}"
+      env_vars = []
+      self.environment_vars.each_pair do |key, value|
+        env_vars << "--env=#{key}=#{value}" unless value.to_s == ''
+      end
+      "docker run -ti --rm -P#{dns_opt} #{env_vars.join(' ')}#{env_vars.empty? ? '' : ' '}#{volumes}#{volumes.empty? ? '' : ' '}--name #{self.name} #{args}#{args.empty? ? '' : ' '}#{self.image_name}"
     end
 
     def task_prefix
