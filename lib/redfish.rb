@@ -24,21 +24,25 @@ require 'redfish/core'
 require 'redfish/mash'
 require 'redfish/util'
 require 'redfish/config'
-require 'redfish/property_cache'
-require 'redfish/context'
-require 'redfish/executor'
 require 'redfish/task_manager'
 require 'redfish/task'
 require 'redfish/task_execution_record'
+require 'redfish/listener'
 require 'redfish/run_context'
+
+#
+# GlassFish specific parts
+#
+
+require 'redfish/property_cache'
+require 'redfish/context'
+require 'redfish/executor'
 require 'redfish/interpreter/pre_interpreter'
 require 'redfish/interpreter/interpolater'
 require 'redfish/interpreter/interpreter'
 require 'redfish/model'
 require 'redfish/definition'
 require 'redfish/driver'
-require 'redfish/listener'
-
 require 'redfish/buildr_integration'
 
 require 'redfish/glassfish/versions/version_manager'
