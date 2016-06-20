@@ -36,6 +36,5 @@ class Redfish::Versions::TestVersionManager < Redfish::TestCase
     assert_equal version.variant, :payara
     assert_equal version.payara?, true
     assert_equal version.glassfish?, false
-
   end
 end
