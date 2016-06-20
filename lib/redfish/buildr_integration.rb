@@ -29,6 +29,11 @@ module Redfish
         project.task ":#{self.task_prefix}:pre_build" => [a]
       end
     end
+
+    def resolve_file(filename)
+      Redfish::Buildr.get_buildr_project('resolving missing file').file(filename).invoke unless File.exist?(filename)
+      filename
+    end
   end
 
   class Buildr

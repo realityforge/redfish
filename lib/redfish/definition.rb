@@ -254,11 +254,11 @@ module Redfish
       data = Redfish::Mash.new
       data.merge!(Redfish.domain_by_key(self.extends).resolved_data) if self.extends
       self.pre_artifacts.each do |filename|
-        data.merge!(JSON.load(File.new(filename)))
+        data.merge!(JSON.load(File.new(resolve_file(filename))))
       end
       data.merge!(self.data)
       self.post_artifacts.each do |filename|
-        data.merge!(JSON.load(File.new(filename)))
+        data.merge!(JSON.load(File.new(resolve_file(filename))))
       end
       data.sort
     end
@@ -324,6 +324,10 @@ module Redfish
     end
 
     private
+
+    def resolve_file(filename)
+      filename
+    end
 
     def calculate_version_hash
       data = self.resolved_data.to_h
