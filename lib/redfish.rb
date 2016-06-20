@@ -41,9 +41,9 @@ require 'redfish/listener'
 
 require 'redfish/buildr_integration'
 
-require 'redfish/versions/version_manager'
-require 'redfish/versions/payara_154'
-require 'redfish/versions/payara_162'
+require 'redfish/glassfish/versions/version_manager'
+require 'redfish/glassfish/versions/payara_154'
+require 'redfish/glassfish/versions/payara_162'
 
 require 'redfish/glassfish/tasks/asadmin_task'
 require 'redfish/glassfish/tasks/base_cleaner_task'
