@@ -349,7 +349,7 @@ module Redfish
     def setup_dockerfile(dir)
       # When the Dockerfile format improves we should be able to remove redfish from the image altogether
       File.open("#{dir}/Dockerfile", 'wb') do |f|
-        volumes = self.volume_map.keys.collect{|key| "/srv/glassfish/volumes/#{key}"}.join(' ')
+        volumes = self.volume_map.keys.collect { |key| "/srv/glassfish/volumes/#{key}" }.join(' ')
         f.write <<SCRIPT
 FROM stocksoftware/redfish:latest
 USER root
