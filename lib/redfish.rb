@@ -34,16 +34,17 @@ require 'redfish/run_context'
 # GlassFish specific parts
 #
 
-require 'redfish/property_cache'
-require 'redfish/context'
-require 'redfish/executor'
+require 'redfish/glassfish/property_cache'
+require 'redfish/glassfish/context'
+require 'redfish/glassfish/executor'
+require 'redfish/glassfish/model'
+require 'redfish/glassfish/definition'
+require 'redfish/glassfish/driver'
+require 'redfish/glassfish/buildr_integration'
+
 require 'redfish/glassfish/interpreter/pre_interpreter'
 require 'redfish/glassfish/interpreter/interpolater'
 require 'redfish/glassfish/interpreter/interpreter'
-require 'redfish/model'
-require 'redfish/definition'
-require 'redfish/driver'
-require 'redfish/buildr_integration'
 
 require 'redfish/glassfish/versions/version_manager'
 require 'redfish/glassfish/versions/payara_154'
