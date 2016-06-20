@@ -60,7 +60,7 @@ class Redfish::TestCase < Minitest::Test
     ENV['GLASSFISH_HOME'] = @original_glassfish_home
     ENV['GLASSFISH_DOMAINS_DIR'] = @original_glassfish_domains_dir
     unless @temp_dir.nil?
-      FileUtils.rm_rf @temp_dir
+      FileUtils.rm_rf @temp_dir unless ENV['NO_DELETE_DIR'] == 'true'
       @temp_dir = nil
     end
   end
