@@ -22,6 +22,9 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.file_map, {}
     assert_equal definition.volume_map, {}
 
+    assert_equal definition.glassfish_home_defined?, false
+    assert_equal definition.domains_directory_defined?, false
+
     Redfish::Config.default_glassfish_home = 'Y'
     assert_equal definition.name, 'appserver'
     assert definition.data.is_a?(Redfish::Mash)
@@ -49,6 +52,9 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.ports, []
     assert_equal definition.environment_vars, {}
     assert_equal definition.volume_requirements, {}
+
+    assert_equal definition.glassfish_home_defined?, false
+    assert_equal definition.domains_directory_defined?, false
 
     definition.secure = false
     definition.complete = false
@@ -99,6 +105,9 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.ports, [8080]
     assert_equal definition.environment_vars, {'A' => '1'}
     assert_equal definition.volume_requirements, {'V' => {}}
+
+    assert_equal definition.glassfish_home_defined?, true
+    assert_equal definition.domains_directory_defined?, true
 
     context = definition.to_task_context
 

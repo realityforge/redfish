@@ -65,8 +65,8 @@ module Redfish
         @admin_password = parent.admin_password
         @admin_password_random = parent.admin_password_random?
         @master_password = parent.master_password
-        @glassfish_home = parent.glassfish_home
-        @domains_directory = parent.domains_directory
+        @glassfish_home = parent.glassfish_home if parent.glassfish_home_defined?
+        @domains_directory = parent.domains_directory if parent.domains_directory_defined?
         @authbind_executable = parent.authbind_executable
         @system_user = parent.system_user
         @system_group = parent.system_group
@@ -136,11 +136,19 @@ module Redfish
       @glassfish_home || Redfish::Config.default_glassfish_home
     end
 
+    def glassfish_home_defined?
+      !@glassfish_home.nil?
+    end
+
     attr_writer :glassfish_home
 
     # The directory that contains the domains. If nil then assumes the default directory.
     def domains_directory
       @domains_directory || Redfish::Config.default_domains_directory
+    end
+
+    def domains_directory_defined?
+      !@domains_directory.nil?
     end
 
     attr_writer :domains_directory
@@ -334,11 +342,12 @@ module Redfish
       data['definition'] = {}
       [
         :key, :name, :extends, :version, :pre_artifacts, :post_artifacts, :secure?,
-        :admin_port, :admin_username, :glassfish_home, :domains_directory,
-        :ports, :authbind_executable, :system_user, :system_group
+        :admin_port, :admin_username, :ports, :authbind_executable, :system_user, :system_group
       ].each do |key|
         data['definition'][key.to_s] = self.send(key)
       end
+      data['definition']['domains_directory'] = self.domains_directory if self.domains_directory_defined?
+      data['definition']['glassfish_home'] = self.glassfish_home if self.glassfish_home_defined?
       data['definition']['admin_password'] = self.admin_password unless self.admin_password_random?
       data['definition']['file_map'] = self.file_map.keys
       data['definition']['volume_map'] = self.volume_map.keys
