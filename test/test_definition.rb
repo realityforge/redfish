@@ -607,7 +607,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 FROM stocksoftware/redfish:latest
 USER root
 COPY ./redfish /opt/redfish
-RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
+RUN chmod -R a+r /opt/redfish && find /opt/redfish -type d -exec chmod a+x {} \; && chmod a+x /opt/redfish/run
 USER glassfish:glassfish
 RUN mkdir -p /tmp/glassfish && \\
     export TMPDIR=/tmp/glassfish && \\
@@ -687,7 +687,7 @@ CONTENT
 FROM stocksoftware/redfish:latest
 USER root
 COPY ./redfish /opt/redfish
-RUN chmod -R a+r /opt/redfish && chmod a+x /opt/redfish/run
+RUN chmod -R a+r /opt/redfish && find /opt/redfish -type d -exec chmod a+x {} \; && chmod a+x /opt/redfish/run
 USER glassfish:glassfish
 RUN mkdir -p /tmp/glassfish /srv/glassfish/volumes/A /srv/glassfish/volumes/B && \\
     export TMPDIR=/tmp/glassfish && \\
