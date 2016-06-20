@@ -395,6 +395,9 @@ SCRIPT
       export_to_file("#{dir}/redfish/domain.json")
       write_redfish_script(dir)
       write_run_script(dir)
+      # This seems to be required for auxfs storage driver under Linux
+      FileUtils.chmod_R 'a+r', dir
+      FileUtils.chmod 'a+x', Dir["#{dir}/**/*"].select{|f| File.directory?(f)}
     end
 
     def write_run_script(dir)
