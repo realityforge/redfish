@@ -427,7 +427,9 @@ module RedfishPlus
     end
 
     def custom_resource_from_env(domain, name, env_key = nil)
-      env_key = name.gsub('/', '_').upcase if env_key.nil?
+      components = name.split('/')
+      components = [components.first] + components[2..components.size] if components.size > 2 && components[1] == 'env'
+      env_key = components.join('_').upcase if env_key.nil?
       custom_resource(domain, name, "${#{env_key}}")
       RedfishPlus.environment_variable(domain, env_key)
     end
