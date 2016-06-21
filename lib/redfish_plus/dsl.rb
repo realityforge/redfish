@@ -458,7 +458,7 @@ module RedfishPlus
     def mssql_jdbc_resource(domain, name, resource_name)
       connection_pool = "#{resource_name}ConnectionPool"
 
-      domain.data['jdbc_connection_pools'][connection_pool]['datasourceclassname'] =  'net.sourceforge.jtds.jdbcx.JtdsDataSource'
+      domain.data['jdbc_connection_pools'][connection_pool]['datasourceclassname'] = 'net.sourceforge.jtds.jdbcx.JtdsDataSource'
       domain.data['jdbc_connection_pools'][connection_pool]['properties']['AppName'] = domain.name
       domain.data['jdbc_connection_pools'][connection_pool]['properties']['ProgName'] = 'GlassFish'
       domain.data['jdbc_connection_pools'][connection_pool]['properties']['SocketTimeout'] = '1200'
@@ -474,7 +474,7 @@ module RedfishPlus
     def pgsql_jdbc_resource(domain, name, resource_name)
       connection_pool = "#{resource_name}ConnectionPool"
 
-      domain.data['jdbc_connection_pools'][connection_pool]['datasourceclassname'] =  'org.postgresql.ds.PGSimpleDataSource'
+      domain.data['jdbc_connection_pools'][connection_pool]['datasourceclassname'] = 'org.postgresql.ds.PGSimpleDataSource'
 
       jdbc_resource(domain, name, resource_name)
     end
