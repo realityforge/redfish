@@ -19,7 +19,11 @@ module Redfish #nodoc
     class Interpolater
       class << self
         def interpolate(task_context, data)
-          interpolate_data(data, build_variable_map(task_context))
+          interpolate_data(data, build_variable_map_from_task_context(task_context))
+        end
+
+        def interpolate_definition(definition, data)
+          interpolate_data(data, build_variable_map_from_definition(definition))
         end
 
         private
@@ -36,20 +40,35 @@ module Redfish #nodoc
           data
         end
 
-        def build_variable_map(task_context)
+        def build_variable_map_from_task_context(task_context)
           data = {
             'domain_name' => task_context.domain_name,
             'glassfish_home' => task_context.install_dir,
             'domain_directory' => task_context.domain_directory,
             'domains_directory' => task_context.domains_directory,
           }
-          task_context.file_map.each_pair do |key, path|
+          add_files(data, task_context)
+          add_volumes(data, task_context)
+          data
+        end
+
+        def build_variable_map_from_definition(definition)
+          data = {'domain_name' => definition.name}
+          add_files(data, definition)
+          add_volumes(data, definition)
+          data
+        end
+
+        def add_files(data, context)
+          context.file_map.each_pair do |key, path|
             data["file:#{key}"] = path
           end
-          task_context.volume_map.each_pair do |key, path|
+        end
+
+        def add_volumes(data, context)
+          context.volume_map.each_pair do |key, path|
             data["volume:#{key}"] = path
           end
-          data
         end
       end
     end
