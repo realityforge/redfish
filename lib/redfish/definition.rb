@@ -325,6 +325,9 @@ module Redfish
 
       setup_docker_redfish_dir(dir)
       setup_dockerfile(dir)
+      # This seems to be required for auxfs storage driver under Linux
+      FileUtils.chmod_R 0644, Dir["#{dir}/**/*"].select { |f| !File.directory?(f) }
+      FileUtils.chmod_R 0755, Dir["#{dir}/**/*"].select { |f| File.directory?(f) }
     end
 
     def version_hash
@@ -395,9 +398,6 @@ SCRIPT
       export_to_file("#{dir}/redfish/domain.json")
       write_redfish_script(dir)
       write_run_script(dir)
-      # This seems to be required for auxfs storage driver under Linux
-      FileUtils.chmod_R 0444, Dir["#{dir}/**/*"].select { |f| !File.directory?(f) }
-      FileUtils.chmod_R 0555, Dir["#{dir}/**/*"].select { |f| File.directory?(f) }
     end
 
     def write_run_script(dir)
