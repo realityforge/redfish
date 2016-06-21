@@ -422,15 +422,16 @@ module RedfishPlus
       domain.data['logging']['levels'][key] = level
     end
 
-    def custom_resource(domain, name, value)
+    def custom_resource(domain, name, value, restype = nil)
       domain.data['custom_resources'][name]['properties']['value'] = value
+      domain.data['custom_resources'][name]['properties']['restype'] = restype if restype
     end
 
-    def custom_resource_from_env(domain, name, env_key = nil)
+    def custom_resource_from_env(domain, name, env_key = nil, restype = nil)
       components = name.split('/')
       components = [components.first] + components[2..components.size] if components.size > 2 && components[1] == 'env'
       env_key = components.join('_').upcase if env_key.nil?
-      custom_resource(domain, name, "${#{env_key}}")
+      custom_resource(domain, name, "${#{env_key}}", restype)
       RedfishPlus.environment_variable(domain, env_key)
     end
 
