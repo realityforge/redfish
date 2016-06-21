@@ -94,4 +94,4 @@ class Redfish::TestCase < Minitest::Test
   end
 end
 
-require "#{File.dirname(__FILE__)}/tasks/base_task_test.rb"
+require "#{File.dirname(__FILE__)}/glassfish/tasks/base_task_test.rb"
