@@ -80,6 +80,10 @@ module Redfish
       @domain_master_password = options[:domain_master_password] || @domain_password || Redfish::Util.generate_password
     end
 
+    def task_group
+      nil
+    end
+
     def file(key, local_path)
       raise "File with key '#{key.to_s}' is associated with local file '#{@file_map[key.to_s]}', can not associate with '#{local_path}'" if @file_map[key.to_s]
       @file_map[key.to_s] = local_path

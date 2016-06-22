@@ -86,6 +86,12 @@ module Redfish
       def registered_name
         Redfish::Naming.underscore(name.split('::').last)
       end
+
+      def registered_group
+        elements = name.split('::')
+        return nil if elements.size == 1 || elements[-2] == 'Tasks'
+        Redfish::Naming.underscore(elements[-2])
+      end
     end
 
     include MetaDataHelper

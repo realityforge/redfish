@@ -17,8 +17,8 @@ require File.expand_path('../helper', __FILE__)
 class Redfish::TestTaskManager < Redfish::TestCase
 
   def test_tasks_registered_correctly
-    assert Redfish::TaskManager.registered_task_names.include?('property')
-    assert Redfish::TaskManager.registered_task_names.include?('property_cache')
+    assert Redfish::TaskManager.registered_task_names(nil).include?('property')
+    assert Redfish::TaskManager.registered_task_names(nil).include?('property_cache')
     assert Redfish::TaskManager.tasks.include?(Redfish::Tasks::Property)
     assert Redfish::TaskManager.tasks.include?(Redfish::Tasks::PropertyCache)
   end
@@ -37,7 +37,7 @@ class Redfish::TestTaskManager < Redfish::TestCase
   def test_create_task_with_bad_name
     error = false
     begin
-      Redfish::TaskManager.create_task('no_such_task')
+      Redfish::TaskManager.create_task(nil, 'no_such_task')
     rescue => e
       assert_equal e.to_s, "No task registered with name 'no_such_task'"
       error = true
@@ -46,10 +46,11 @@ class Redfish::TestTaskManager < Redfish::TestCase
   end
 
   def test_create_task
-    pc = Redfish::TaskManager.create_task('property_cache')
+    pc = Redfish::TaskManager.create_task(nil, 'property_cache')
     assert pc.is_a?(Redfish::Tasks::PropertyCache)
 
-    t = Redfish::TaskManager.create_task('property',
+    t = Redfish::TaskManager.create_task(nil,
+                                         'property',
                                          'name' => 'configs.config.server-config.security-service.activate-default-principal-to-role-mapping',
                                          'value' => 'true')
     assert t.is_a?(Redfish::Tasks::Property)
@@ -60,7 +61,7 @@ class Redfish::TestTaskManager < Redfish::TestCase
   def test_create_abstract_task_produces_error
     error = false
     begin
-      Redfish::TaskManager.create_task('asadmin_task')
+      Redfish::TaskManager.create_task(nil, 'asadmin_task')
     rescue => e
       assert_equal e.to_s, "Attempted to instantiate abstract task with name 'asadmin_task'"
       error = true

@@ -30,7 +30,7 @@ module Redfish #nodoc
     end
 
     def task(name, options = {}, &block)
-      task = Redfish::TaskManager.create_task(name, options.merge(:run_context => self), &block)
+      task = Redfish::TaskManager.create_task(app_context.task_group, name, options.merge(:run_context => self), &block)
       execution_record = TaskExecutionRecord.new(task)
       add_execution_record(execution_record)
       execution_record
