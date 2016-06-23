@@ -14,75 +14,77 @@
 
 module Redfish
   module Tasks
-    class BaseCleanerTask < AsadminTask
+    module Glassfish
+      class BaseCleanerTask < AsadminTask
 
-      self.mark_as_abstract!
+        self.mark_as_abstract!
 
-      attribute :expected, :kind_of => Array, :required => true
+        attribute :expected, :kind_of => Array, :required => true
 
-      protected
+        protected
 
-      def property_prefix
-        Redfish::Tasks.
-          const_get(self.class.name.to_s.split('::').last.gsub(/Cleaner$/, '')).
-          const_get(:PROPERTY_PREFIX)
-      end
-
-      def clean_action
-        :destroy
-      end
-
-      def resource_name_key
-        'name'
-      end
-
-      def additional_resource_properties
-        {}
-      end
-
-      def remove_element(element)
-        cascade_clean(element)
-        t = run_context.task(registered_name, additional_resource_properties.merge(resource_name_key => element))
-        t.action(clean_action)
-        t.converge
-        t
-      end
-
-      def cascade_clean(element)
-      end
-
-      action :clean do
-        self.elements_to_remove.each do |element|
-          t = remove_element(element)
-          updated_by_last_action if t.task.updated_by_last_action?
+        def property_prefix
+          Redfish::Tasks.
+            const_get(self.class.name.to_s.split('::').last.gsub(/Cleaner$/, '')).
+            const_get(:PROPERTY_PREFIX)
         end
-      end
 
-      def elements_to_remove
-        self.existing_elements - self.expected
-      end
-
-      def existing_elements
-        elements_with_prefix(property_prefix)
-      end
-
-      def elements_with_prefix_and_property(prefix, property_key, property_value)
-        elements_with_prefix(prefix).select do |key|
-          run_context.app_context.property_cache["#{prefix}#{key}.#{property_key}"] == property_value
+        def clean_action
+          :destroy
         end
-      end
 
-      def elements_with_prefix(prefix)
-        context.property_cache.get_keys_starting_with(prefix).
-          collect { |k| k[prefix.size, k.size].gsub(/^([^.]+).*$/, '\1') }.sort.uniq
-      end
+        def resource_name_key
+          'name'
+        end
 
-      def task_name
-        self.class.name.to_s.split('::').last.gsub(/Cleaner$/, '')
-      end
+        def additional_resource_properties
+          {}
+        end
 
-      def registered_name
-        Redfish::Naming.underscore(task_name)
+        def remove_element(element)
+          cascade_clean(element)
+          t = run_context.task(registered_name, additional_resource_properties.merge(resource_name_key => element))
+          t.action(clean_action)
+          t.converge
+          t
+        end
+
+        def cascade_clean(element)
+        end
+
+        action :clean do
+          self.elements_to_remove.each do |element|
+            t = remove_element(element)
+            updated_by_last_action if t.task.updated_by_last_action?
+          end
+        end
+
+        def elements_to_remove
+          self.existing_elements - self.expected
+        end
+
+        def existing_elements
+          elements_with_prefix(property_prefix)
+        end
+
+        def elements_with_prefix_and_property(prefix, property_key, property_value)
+          elements_with_prefix(prefix).select do |key|
+            run_context.app_context.property_cache["#{prefix}#{key}.#{property_key}"] == property_value
+          end
+        end
+
+        def elements_with_prefix(prefix)
+          context.property_cache.get_keys_starting_with(prefix).
+            collect { |k| k[prefix.size, k.size].gsub(/^([^.]+).*$/, '\1') }.sort.uniq
+        end
+
+        def task_name
+          self.class.name.to_s.split('::').last.gsub(/Cleaner$/, '')
+        end
+
+        def registered_name
+          Redfish::Naming.underscore(task_name)
+        end
       end
     end
   end

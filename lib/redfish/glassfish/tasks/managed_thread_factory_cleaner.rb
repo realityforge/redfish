@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class ManagedThreadFactoryCleaner < BaseCleanerTask
+    module Glassfish
+      class ManagedThreadFactoryCleaner < BaseCleanerTask
+      end
     end
   end
 end

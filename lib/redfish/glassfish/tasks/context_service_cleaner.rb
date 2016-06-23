@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class ContextServiceCleaner < BaseCleanerTask
+    module Glassfish
+      class ContextServiceCleaner < BaseCleanerTask
+      end
     end
   end
 end

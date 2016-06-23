@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestCustomResource < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestCustomResource < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'custom_resources' => resource_parameters_as_tree}
 

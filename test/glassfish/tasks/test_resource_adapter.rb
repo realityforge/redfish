@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestResourceAdapter < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'resource_adapters' => resource_parameters_as_tree}
 
@@ -301,13 +301,13 @@ class Redfish::Tasks::TestResourceAdapter < Redfish::Tasks::BaseTaskTest
     existing = %w(Element1 Element2 Element3)
     create_fake_elements(t.context, existing)
 
-    t.context.property_cache["#{Redfish::Tasks::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement1.resource-adapter-name"] = 'Element1'
-    t.context.property_cache["#{Redfish::Tasks::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement2.resource-adapter-name"] = 'Element2'
-    t.context.property_cache["#{Redfish::Tasks::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement3.resource-adapter-name"] = 'Element3'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement1.resource-adapter-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement2.resource-adapter-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorConnectionPool::PROPERTY_PREFIX}SubElement3.resource-adapter-name"] = 'Element3'
 
-    t.context.property_cache["#{Redfish::Tasks::AdminObject::PROPERTY_PREFIX}SubElement4.resource-adapter-name"] = 'Element1'
-    t.context.property_cache["#{Redfish::Tasks::AdminObject::PROPERTY_PREFIX}SubElement5.resource-adapter-name"] = 'Element2'
-    t.context.property_cache["#{Redfish::Tasks::AdminObject::PROPERTY_PREFIX}SubElement6.resource-adapter-name"] = 'Element3'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::AdminObject::PROPERTY_PREFIX}SubElement4.resource-adapter-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::AdminObject::PROPERTY_PREFIX}SubElement5.resource-adapter-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::AdminObject::PROPERTY_PREFIX}SubElement6.resource-adapter-name"] = 'Element3'
 
 
     t.expected = existing[1,existing.size]

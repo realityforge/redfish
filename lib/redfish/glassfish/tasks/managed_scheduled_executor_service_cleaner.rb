@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class ManagedScheduledExecutorServiceCleaner < BaseCleanerTask
+    module Glassfish
+      class ManagedScheduledExecutorServiceCleaner < BaseCleanerTask
+      end
     end
   end
 end

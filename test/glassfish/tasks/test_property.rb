@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestProperty < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestProperty < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'properties' => {'configs.config.server-config.security-service.activate-default-principal-to-role-mapping' => 'true'}}
 

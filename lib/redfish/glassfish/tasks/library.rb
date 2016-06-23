@@ -14,39 +14,41 @@
 
 module Redfish
   module Tasks
-    class Library < AsadminTask
-      LIBRARY_TYPES = %w(common ext app)
+    module Glassfish
+      class Library < AsadminTask
+        LIBRARY_TYPES = %w(common ext app)
 
-      private
+        private
 
-      attribute :library_type, :equal_to => LIBRARY_TYPES, :default => 'common', :identity_field => true
-      attribute :file, :kind_of => String, :required => true, :identity_field => true
-      attribute :upload, :type => :boolean, :default => false
-      attribute :require_restart, :type => :boolean, :default => false
+        attribute :library_type, :equal_to => LIBRARY_TYPES, :default => 'common', :identity_field => true
+        attribute :file, :kind_of => String, :required => true, :identity_field => true
+        attribute :upload, :type => :boolean, :default => false
+        attribute :require_restart, :type => :boolean, :default => false
 
-      action :create do
-        unless present?
-          args = []
-          args << '--type' << self.library_type.to_s
-          args << '--upload' << self.upload.to_s
-          args << self.file.to_s
+        action :create do
+          unless present?
+            args = []
+            args << '--type' << self.library_type.to_s
+            args << '--upload' << self.upload.to_s
+            args << self.file.to_s
 
-          context.exec('add-library', args)
+            context.exec('add-library', args)
 
-          updated_by_last_action
+            updated_by_last_action
+          end
         end
-      end
 
-      action :destroy do
-        if present?
-          context.exec('remove-library', ['--type', self.library_type.to_s, File.basename(self.file)])
+        action :destroy do
+          if present?
+            context.exec('remove-library', ['--type', self.library_type.to_s, File.basename(self.file)])
 
-          updated_by_last_action
+            updated_by_last_action
+          end
         end
-      end
 
-      def present?
-        (context.exec('list-libraries', ['--type', self.library_type.to_s], :terse => true, :echo => false) =~ /^#{Regexp.escape(File.basename(self.file))}$/)
+        def present?
+          (context.exec('list-libraries', ['--type', self.library_type.to_s], :terse => true, :echo => false) =~ /^#{Regexp.escape(File.basename(self.file))}$/)
+        end
       end
     end
   end

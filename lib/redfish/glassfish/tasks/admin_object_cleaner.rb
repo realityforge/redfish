@@ -14,13 +14,15 @@
 
 module Redfish
   module Tasks
-    class AdminObjectCleaner < BaseCleanerTask
-      attribute :resource_adapter_name, :kind_of => String, :required => true, :identity_field => true
+    module Glassfish
+      class AdminObjectCleaner < BaseCleanerTask
+        attribute :resource_adapter_name, :kind_of => String, :required => true, :identity_field => true
 
-      protected
+        protected
 
-      def existing_elements
-        elements_with_prefix_and_property(property_prefix, 'resource-adapter-name', self.resource_adapter_name)
+        def existing_elements
+          elements_with_prefix_and_property(property_prefix, 'resource-adapter-name', self.resource_adapter_name)
+        end
       end
     end
   end

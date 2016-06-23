@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class ThreadPoolCleaner < BaseCleanerTask
+    module Glassfish
+      class ThreadPoolCleaner < BaseCleanerTask
+      end
     end
   end
 end

@@ -14,20 +14,22 @@
 
 module Redfish
   module Tasks
-    class ConnectorConnectionPoolCleaner < BaseCleanerTask
-      attribute :resource_adapter_name, :kind_of => String, :required => true, :identity_field => true
+    module Glassfish
+      class ConnectorConnectionPoolCleaner < BaseCleanerTask
+        attribute :resource_adapter_name, :kind_of => String, :required => true, :identity_field => true
 
-      def cascade_clean(element)
-        t = run_context.task('connector_resource_cleaner', 'connector_pool_name' => element, 'expected' => [])
-        t.action(:clean)
-        t.converge
-        t
-      end
+        def cascade_clean(element)
+          t = run_context.task('connector_resource_cleaner', 'connector_pool_name' => element, 'expected' => [])
+          t.action(:clean)
+          t.converge
+          t
+        end
 
-      protected
+        protected
 
-      def existing_elements
-        elements_with_prefix_and_property(property_prefix, 'resource-adapter-name', self.resource_adapter_name)
+        def existing_elements
+          elements_with_prefix_and_property(property_prefix, 'resource-adapter-name', self.resource_adapter_name)
+        end
       end
     end
   end

@@ -14,61 +14,63 @@
 
 module Redfish
   module Tasks
-    class ResourceAdapter < BaseResourceTask
-      PROPERTY_PREFIX = 'resources.resource-adapter-config.'
+    module Glassfish
+      class ResourceAdapter < BaseResourceTask
+        PROPERTY_PREFIX = 'resources.resource-adapter-config.'
 
-      private
+        private
 
-      attribute :name, :kind_of => String, :required => true, :identity_field => true
-      attribute :thread_pool_name, :kind_of => String, :default => nil
-      attribute :properties, :kind_of => Hash, :default => {}
+        attribute :name, :kind_of => String, :required => true, :identity_field => true
+        attribute :thread_pool_name, :kind_of => String, :default => nil
+        attribute :properties, :kind_of => Hash, :default => {}
 
-      action :create do
-        create(resource_property_prefix)
-      end
+        action :create do
+          create(resource_property_prefix)
+        end
 
-      action :destroy do
-        destroy(resource_property_prefix)
-      end
+        action :destroy do
+          destroy(resource_property_prefix)
+        end
 
-      def resource_property_prefix
-        "#{PROPERTY_PREFIX}#{self.name}."
-      end
+        def resource_property_prefix
+          "#{PROPERTY_PREFIX}#{self.name}."
+        end
 
-      def properties_to_record_in_create
-        {'object-type' => 'user', 'resource-adapter-name' => self.name, 'deployment-order' => '100'}
-      end
+        def properties_to_record_in_create
+          {'object-type' => 'user', 'resource-adapter-name' => self.name, 'deployment-order' => '100'}
+        end
 
-      def properties_to_set_in_create
-        property_map = {}
+        def properties_to_set_in_create
+          property_map = {}
 
-        collect_property_sets(resource_property_prefix, property_map)
+          collect_property_sets(resource_property_prefix, property_map)
 
-        property_map['thread-pool-ids'] = self.thread_pool_name
+          property_map['thread-pool-ids'] = self.thread_pool_name
 
-        property_map
-      end
+          property_map
+        end
 
-      def do_create
-        args = []
+        def do_create
+          args = []
 
-        args << '--threadpoolid' << self.thread_pool_name.to_s
-        args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
-        args << self.name.to_s
+          args << '--threadpoolid' << self.thread_pool_name.to_s
+          args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
+          args << self.name.to_s
 
-        context.exec('create-resource-adapter-config', args)
-      end
+          context.exec('create-resource-adapter-config', args)
+        end
 
-      def do_destroy
-        context.exec('delete-resource-adapter-config', [self.name])
-      end
+        def do_destroy
+          context.exec('delete-resource-adapter-config', [self.name])
+        end
 
-      def add_resource_ref?
-        false
-      end
+        def add_resource_ref?
+          false
+        end
 
-      def present?
-        (context.exec('list-resource-adapter-configs', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
+        def present?
+          (context.exec('list-resource-adapter-configs', [], :terse => true, :echo => false) =~ /^#{Regexp.escape(self.name)}$/)
+        end
       end
     end
   end

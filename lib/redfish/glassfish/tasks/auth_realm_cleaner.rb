@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class AuthRealmCleaner < BaseCleanerTask
+    module Glassfish
+      class AuthRealmCleaner < BaseCleanerTask
+      end
     end
   end
 end

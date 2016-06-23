@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestJdbcResource < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestJdbcResource < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'jdbc_connection_pools' => {'MyDBPool' => {'resources' => resource_parameters_as_tree}}}
 

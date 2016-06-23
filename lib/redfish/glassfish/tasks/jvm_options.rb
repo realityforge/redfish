@@ -14,63 +14,65 @@
 
 module Redfish
   module Tasks
-    class JvmOptions < AsadminTask
-      private
+    module Glassfish
+      class JvmOptions < AsadminTask
+        private
 
-      attribute :jvm_options, :kind_of => Array, :default => []
-      attribute :defines, :kind_of => Hash, :default => {}
-      attribute :default_defines, :type => :boolean, :default => true
+        attribute :jvm_options, :kind_of => Array, :default => []
+        attribute :defines, :kind_of => Hash, :default => {}
+        attribute :default_defines, :type => :boolean, :default => true
 
-      action :set do
-        existing = current_options
-        expected = expected_options
+        action :set do
+          existing = current_options
+          expected = expected_options
 
-        todelete = existing - expected
-        tocreate = expected - existing
+          todelete = existing - expected
+          tocreate = expected - existing
 
-        if !todelete.empty? || !tocreate.empty?
-          context.exec('delete-jvm-options', [encode_options(todelete)]) unless todelete.empty?
-          context.exec('create-jvm-options', [encode_options(tocreate)]) unless tocreate.empty?
+          if !todelete.empty? || !tocreate.empty?
+            context.exec('delete-jvm-options', [encode_options(todelete)]) unless todelete.empty?
+            context.exec('create-jvm-options', [encode_options(tocreate)]) unless tocreate.empty?
 
-          reload_property('configs.config.server-config.java-config.jvm-options') if context.property_cache?
+            reload_property('configs.config.server-config.java-config.jvm-options') if context.property_cache?
 
-          updated_by_last_action
-        end
-      end
-
-      def encode_options(existing)
-        existing.collect { |t| t.gsub(':', '\\:') }.join(':')
-      end
-
-      def instance_key
-        "default_defines=#{default_defines} options=#{jvm_options.inspect} defines=#{defines.inspect}"
-      end
-
-      def expected_options
-        options = []
-
-        # Add defines in sorted order
-        defines = derive_complete_defines
-        defines.keys.sort.each do |key|
-          options << "-D#{key}=#{defines[key]}"
+            updated_by_last_action
+          end
         end
 
-        options.concat(self.jvm_options)
-
-        options
-      end
-
-      def derive_complete_defines
-        defines = self.defines.dup
-        if self.default_defines
-          defines.merge!(self.domain_version.default_jvm_defines)
+        def encode_options(existing)
+          existing.collect { |t| t.gsub(':', '\\:') }.join(':')
         end
-        defines.merge!(self.defines)
-        defines
-      end
 
-      def current_options
-        context.exec('list-jvm-options', [], :terse => true, :echo => false).split("\n")
+        def instance_key
+          "default_defines=#{default_defines} options=#{jvm_options.inspect} defines=#{defines.inspect}"
+        end
+
+        def expected_options
+          options = []
+
+          # Add defines in sorted order
+          defines = derive_complete_defines
+          defines.keys.sort.each do |key|
+            options << "-D#{key}=#{defines[key]}"
+          end
+
+          options.concat(self.jvm_options)
+
+          options
+        end
+
+        def derive_complete_defines
+          defines = self.defines.dup
+          if self.default_defines
+            defines.merge!(self.domain_version.default_jvm_defines)
+          end
+          defines.merge!(self.defines)
+          defines
+        end
+
+        def current_options
+          context.exec('list-jvm-options', [], :terse => true, :echo => false).split("\n")
+        end
       end
     end
   end

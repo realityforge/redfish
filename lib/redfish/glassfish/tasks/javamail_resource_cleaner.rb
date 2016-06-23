@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class JavamailResourceCleaner < BaseCleanerTask
+    module Glassfish
+      class JavamailResourceCleaner < BaseCleanerTask
+      end
     end
   end
 end

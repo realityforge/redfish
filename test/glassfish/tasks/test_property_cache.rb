@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestPropertyCache < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestPropertyCache < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_diff
     executor = Redfish::Executor.new
     t = new_task(executor)

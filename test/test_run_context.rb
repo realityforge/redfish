@@ -33,7 +33,7 @@ class Redfish::TestRunContext < Redfish::TestCase
     end
   end
 
-  class ::Redfish::Tasks::MyTestTask2 < Redfish::Task
+  class ::Redfish::Tasks::Glassfish::MyTestTask2 < Redfish::Task
     attr_accessor :action1_ran
     attr_accessor :action2_ran
 

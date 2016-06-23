@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestJdbcConnectionPool < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'jdbc_connection_pools' => resource_parameters_as_tree}
 
@@ -420,9 +420,9 @@ class Redfish::Tasks::TestJdbcConnectionPool < Redfish::Tasks::BaseTaskTest
     existing = %w(Element1 Element2 Element3)
     create_fake_elements(t.context, existing)
 
-    t.context.property_cache["#{Redfish::Tasks::JdbcResource::PROPERTY_PREFIX}SubElement1.pool-name"] = 'Element1'
-    t.context.property_cache["#{Redfish::Tasks::JdbcResource::PROPERTY_PREFIX}SubElement2.pool-name"] = 'Element2'
-    t.context.property_cache["#{Redfish::Tasks::JdbcResource::PROPERTY_PREFIX}SubElement3.pool-name"] = 'Element3'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::JdbcResource::PROPERTY_PREFIX}SubElement1.pool-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::JdbcResource::PROPERTY_PREFIX}SubElement2.pool-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::JdbcResource::PROPERTY_PREFIX}SubElement3.pool-name"] = 'Element3'
 
     t.expected = existing[1, existing.size]
 

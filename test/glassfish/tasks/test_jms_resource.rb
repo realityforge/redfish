@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestJmsResource < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestJmsResource < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'jms_resources' => resource_parameters_as_tree}
 

@@ -14,13 +14,15 @@
 
 module Redfish
   module Tasks
-    class JdbcResourceCleaner < BaseCleanerTask
-      attribute :connectionpoolid, :kind_of => String, :required => true, :identity_field => true
+    module Glassfish
+      class JdbcResourceCleaner < BaseCleanerTask
+        attribute :connectionpoolid, :kind_of => String, :required => true, :identity_field => true
 
-      protected
+        protected
 
-      def existing_elements
-        elements_with_prefix_and_property(property_prefix, 'pool-name', self.connectionpoolid)
+        def existing_elements
+          elements_with_prefix_and_property(property_prefix, 'pool-name', self.connectionpoolid)
+        end
       end
     end
   end

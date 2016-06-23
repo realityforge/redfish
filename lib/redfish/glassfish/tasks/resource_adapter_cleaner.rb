@@ -14,16 +14,18 @@
 
 module Redfish
   module Tasks
-    class ResourceAdapterCleaner < BaseCleanerTask
-      def cascade_clean(element)
-        t = run_context.task('connector_connection_pool_cleaner', 'resource_adapter_name' => element, 'expected' => [])
-        t.action(:clean)
-        t.converge
+    module Glassfish
+      class ResourceAdapterCleaner < BaseCleanerTask
+        def cascade_clean(element)
+          t = run_context.task('connector_connection_pool_cleaner', 'resource_adapter_name' => element, 'expected' => [])
+          t.action(:clean)
+          t.converge
 
-        t = run_context.task('admin_object_cleaner', 'resource_adapter_name' => element, 'expected' => [])
-        t.action(:clean)
-        t.converge
-        t
+          t = run_context.task('admin_object_cleaner', 'resource_adapter_name' => element, 'expected' => [])
+          t.action(:clean)
+          t.converge
+          t
+        end
       end
     end
   end

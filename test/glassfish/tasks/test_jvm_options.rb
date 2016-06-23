@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestJvmOptions < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestJvmOptions < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_set
     data = {'jvm_options' => {'options' => ['-XMagic'], 'defines' => {'A' => 'B:1'}, 'default_defines' => false}}
 

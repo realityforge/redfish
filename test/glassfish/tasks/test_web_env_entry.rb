@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestWebEnvEntry < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestWebEnvEntry < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'applications' => {'MyApp' => {'location' => '.', 'web_env_entries' => resource_parameters_as_tree}}}
 

@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestConnectorResource < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestConnectorResource < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'resource_adapters' => {'jmsra' => {'connection_pools' => {'MyConnectorPool' => {'connection_definition_name' => 'X', 'resources' => resource_parameters_as_tree}}}}}
 

@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestLibrary < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestLibrary < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'libraries' => {'jtds' => {'file' => '/opt/jtds/jtds-1.3.1.jar', 'library_type' => 'ext'}}}
 

@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestManagedScheduledExecutorService < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestManagedScheduledExecutorService < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'managed_scheduled_executor_services' => resource_parameters_as_tree}
 

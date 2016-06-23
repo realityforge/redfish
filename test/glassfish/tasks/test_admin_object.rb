@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestAdminObject < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestAdminObject < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'resource_adapters' => {'jmsra' => {'admin_objects' => resource_parameters_as_tree}}}
 

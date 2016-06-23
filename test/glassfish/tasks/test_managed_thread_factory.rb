@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestManagedThreadFactory < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestManagedThreadFactory < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'managed_thread_factories' => resource_parameters_as_tree}
 

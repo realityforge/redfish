@@ -12,7 +12,7 @@
 # limitations under the License.
 #
 
-class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
+class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
 
   DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS = 3
   DOMAIN_RESTART_IF_REQUIRED_ACTIONS = 7 + DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS
@@ -317,7 +317,7 @@ class Redfish::Tasks::BaseTaskTest < Redfish::TestCase
     run_context = Redfish::RunContext.new(context)
     Redfish::Interpreter.interpret(run_context, data)
     run_context.execution_records.each do |execution_record|
-      if execution_record.task.is_a?(Redfish::Tasks::Domain)
+      if execution_record.task.is_a?(Redfish::Tasks::Glassfish::Domain)
         execution_record.task.stubs(:do_ensure_active)
       end
     end

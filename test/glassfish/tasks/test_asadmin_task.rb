@@ -14,8 +14,8 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestAsadminTask < Redfish::TestCase
-  class MyAsadminTask < Redfish::Tasks::AsadminTask
+class Redfish::Tasks::Glassfish::TestAsadminTask < Redfish::TestCase
+  class MyAsadminTask < Redfish::Tasks::Glassfish::AsadminTask
     attribute :properties, :kind_of => Hash, :default => {}
   end
 

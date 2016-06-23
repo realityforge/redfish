@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestRealmTypes < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestRealmTypes < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_set_when_changing
     executor = Redfish::Executor.new
     t = new_task(executor)

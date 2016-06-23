@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestSystemProperties < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestSystemProperties < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_set
     data = {'system_properties' => {'managed' => true, 'X' => 'Y', 'P' => 'Q'}}
 

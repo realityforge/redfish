@@ -14,56 +14,58 @@
 
 module Redfish
   module Tasks
-    class RealmTypes < AsadminTask
-      private
+    module Glassfish
+      class RealmTypes < AsadminTask
+        private
 
-      attribute :realm_types, :kind_of => Hash, :required => true
-      attribute :default_realm_types, :type => :boolean, :default => true
+        attribute :realm_types, :kind_of => Hash, :required => true
+        attribute :default_realm_types, :type => :boolean, :default => true
 
-      action :set do
-        text = as_text
+        action :set do
+          text = as_text
 
-        filename = "#{context.domain_directory}/config/login.conf"
+          filename = "#{context.domain_directory}/config/login.conf"
 
-        contents = IO.read(filename)
+          contents = IO.read(filename)
 
-        if contents != text
-          File.open(filename, 'wb') do |f|
-            f.write text
+          if contents != text
+            File.open(filename, 'wb') do |f|
+              f.write text
+            end
+
+            FileUtils.chmod 0600, filename
+            FileUtils.chown context.system_user, context.system_group, filename if context.system_user || context.system_group
+
+            context.require_restart!
+
+            updated_by_last_action
           end
 
-          FileUtils.chmod 0600, filename
-          FileUtils.chown context.system_user, context.system_group, filename if context.system_user || context.system_group
-
-          context.require_restart!
-
-          updated_by_last_action
         end
 
-      end
-
-      def as_text
-        s = ''
-        expected_realm_types.sort.each do |key, rules|
-          s << "#{key} {\n"
-          rules = rules.is_a?(Array) ? rules : [rules]
-          rules.each do |rule|
-            login_module = (rule.is_a?(Hash) ? rule['login_module'] : rule.to_s) || (raise "No login_module specified for #{k}")
-            flag = (rule.is_a?(Hash) ? rule['flag'] : nil) || 'required'
-            options = (rule.is_a?(Hash) ? rule['options'] : nil) || {}
-            s << "    #{login_module} #{flag} #{options.collect { |k, v| "#{k}=#{v}" }.join(' ') };\n"
+        def as_text
+          s = ''
+          expected_realm_types.sort.each do |key, rules|
+            s << "#{key} {\n"
+            rules = rules.is_a?(Array) ? rules : [rules]
+            rules.each do |rule|
+              login_module = (rule.is_a?(Hash) ? rule['login_module'] : rule.to_s) || (raise "No login_module specified for #{k}")
+              flag = (rule.is_a?(Hash) ? rule['flag'] : nil) || 'required'
+              options = (rule.is_a?(Hash) ? rule['options'] : nil) || {}
+              s << "    #{login_module} #{flag} #{options.collect { |k, v| "#{k}=#{v}" }.join(' ') };\n"
+            end
+            s << "};\n"
           end
-          s << "};\n"
+          s
         end
-        s
-      end
 
-      def expected_realm_types
-        (self.default_realm_types ? self.domain_version.default_realm_types : {}).merge(self.realm_types)
-      end
+        def expected_realm_types
+          (self.default_realm_types ? self.domain_version.default_realm_types : {}).merge(self.realm_types)
+        end
 
-      def instance_key
-        "default_realm_types=#{self.default_realm_types}, realm_types='#{self.realm_types.keys.join(',')}'"
+        def instance_key
+          "default_realm_types=#{self.default_realm_types}, realm_types='#{self.realm_types.keys.join(',')}'"
+        end
       end
     end
   end

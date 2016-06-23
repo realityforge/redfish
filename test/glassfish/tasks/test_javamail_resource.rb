@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestJavamailResource < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestJavamailResource < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'javamail_resources' => resource_parameters_as_tree}
 

@@ -14,65 +14,66 @@
 
 module Redfish
   module Tasks
-    class LogAttributes < AsadminTask
-      private
+    module Glassfish
+      class LogAttributes < AsadminTask
+        private
 
-      attribute :attributes, :kind_of => Hash, :required => true
-      attribute :default_attributes, :type => :boolean, :default => true
+        attribute :attributes, :kind_of => Hash, :required => true
+        attribute :default_attributes, :type => :boolean, :default => true
 
-      action :set do
-        existing = current_attributes
-        attributes_to_update = {}
+        action :set do
+          existing = current_attributes
+          attributes_to_update = {}
 
-        attr = expected_attributes
-        attr.each_pair do |key, level|
-          attributes_to_update[key] = level unless existing[key] == level
-        end
-
-        unless attributes_to_update.empty?
-          args = []
-
-          if self.domain_version.payara? && attr.keys.any? { |a| !standard_attributes.include?(a.to_s) }
-            args << '--validate=false'
+          attr = expected_attributes
+          attr.each_pair do |key, level|
+            attributes_to_update[key] = level unless existing[key] == level
           end
 
-          args << attr.collect { |k, v| "#{k}=#{v}" }.join(':')
+          unless attributes_to_update.empty?
+            args = []
 
-          context.exec('set-log-attributes', args)
+            if self.domain_version.payara? && attr.keys.any? { |a| !standard_attributes.include?(a.to_s) }
+              args << '--validate=false'
+            end
 
-          default_logging = "#{context.domain_directory}/config/default-logging.properties"
-          FileUtils.cp "#{context.domain_directory}/config/logging.properties", default_logging
-          FileUtils.chmod 0600, default_logging
-          FileUtils.chown context.system_user, context.system_group, default_logging if context.system_user || context.system_group
+            args << attr.collect { |k, v| "#{k}=#{v}" }.join(':')
 
-          updated_by_last_action
+            context.exec('set-log-attributes', args)
+
+            default_logging = "#{context.domain_directory}/config/default-logging.properties"
+            FileUtils.cp "#{context.domain_directory}/config/logging.properties", default_logging
+            FileUtils.chmod 0600, default_logging
+            FileUtils.chown context.system_user, context.system_group, default_logging if context.system_user || context.system_group
+
+            updated_by_last_action
+          end
         end
-      end
 
-      def instance_key
-        "default_attributes=#{self.default_attributes}, attributes='#{self.attributes.collect{|k,v| "#{k}=#{v}"}.join(',')}'"
-      end
-
-      def current_attributes
-        output = context.exec('list-log-attributes', [], :terse => true, :echo => false).gsub("[\n]+\n", "\n").split("\n").sort
-
-        current_attributes = {}
-        output.each do |line|
-          key, value = line.split
-          next unless key
-          # Remove <> brackets around attribute
-          current_attributes[key] = value[1, value.size - 2]
+        def instance_key
+          "default_attributes=#{self.default_attributes}, attributes='#{self.attributes.collect { |k, v| "#{k}=#{v}" }.join(',')}'"
         end
-        current_attributes
-      end
 
-      def expected_attributes
-        (self.default_attributes ? self.domain_version.default_log_attributes : {}).merge(self.attributes)
-      end
+        def current_attributes
+          output = context.exec('list-log-attributes', [], :terse => true, :echo => false).gsub("[\n]+\n", "\n").split("\n").sort
 
-      # The set of attributes that the non-payara asadmin can modify
-      def standard_attributes
-        %w(
+          current_attributes = {}
+          output.each do |line|
+            key, value = line.split
+            next unless key
+            # Remove <> brackets around attribute
+            current_attributes[key] = value[1, value.size - 2]
+          end
+          current_attributes
+        end
+
+        def expected_attributes
+          (self.default_attributes ? self.domain_version.default_log_attributes : {}).merge(self.attributes)
+        end
+
+        # The set of attributes that the non-payara asadmin can modify
+        def standard_attributes
+          %w(
           com.sun.enterprise.server.logging.GFFileHandler.alarms
           com.sun.enterprise.server.logging.GFFileHandler.file
           com.sun.enterprise.server.logging.GFFileHandler.flushFrequency
@@ -91,6 +92,7 @@ module Redfish
           java.util.logging.FileHandler.pattern
           log4j.logger.org.hibernate.validator.util.Version
         )
+        end
       end
     end
   end

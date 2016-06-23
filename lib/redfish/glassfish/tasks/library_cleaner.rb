@@ -14,25 +14,27 @@
 
 module Redfish
   module Tasks
-    class LibraryCleaner < BaseCleanerTask
-      attribute :library_type, :equal_to => Library::LIBRARY_TYPES, :identity_field => true, :default => 'common'
+    module Glassfish
+      class LibraryCleaner < BaseCleanerTask
+        attribute :library_type, :equal_to => Library::LIBRARY_TYPES, :identity_field => true, :default => 'common'
 
-      protected
+        protected
 
-      def additional_resource_properties
-        {:library_type => self.library_type}
-      end
+        def additional_resource_properties
+          {:library_type => self.library_type}
+        end
 
-      def resource_name_key
-        'file'
-      end
+        def resource_name_key
+          'file'
+        end
 
-      def elements_to_remove
-        self.existing_elements - self.expected.collect{|f| File.basename(f)}
-      end
+        def elements_to_remove
+          self.existing_elements - self.expected.collect { |f| File.basename(f) }
+        end
 
-      def existing_elements
-        context.exec('list-libraries', ['--type', self.library_type.to_s], :terse => true, :echo => false).split("\n")
+        def existing_elements
+          context.exec('list-libraries', ['--type', self.library_type.to_s], :terse => true, :echo => false).split("\n")
+        end
       end
     end
   end

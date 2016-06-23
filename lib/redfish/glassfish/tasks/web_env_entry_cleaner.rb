@@ -14,20 +14,22 @@
 
 module Redfish
   module Tasks
-    class WebEnvEntryCleaner < BaseCleanerTask
-      private
+    module Glassfish
+      class WebEnvEntryCleaner < BaseCleanerTask
+        private
 
-      # The name of the associated application.
-      attribute :application, :kind_of => String, :required => true, :identity_field => true
-      # The optional name of the module if part of multiple module application.
-      attribute :module, :kind_of => [String, NilClass]
+        # The name of the associated application.
+        attribute :application, :kind_of => String, :required => true, :identity_field => true
+        # The optional name of the module if part of multiple module application.
+        attribute :module, :kind_of => [String, NilClass]
 
-      def additional_resource_properties
-        {'application' => self.application, 'module' => self.module}
-      end
+        def additional_resource_properties
+          {'application' => self.application, 'module' => self.module}
+        end
 
-      def property_prefix
-        "applications.application.#{self.application}.module.#{self.module.nil? ? self.application : self.module}.engine.web.web-module-config.env-entry."
+        def property_prefix
+          "applications.application.#{self.application}.module.#{self.module.nil? ? self.application : self.module}.engine.web.web-module-config.env-entry."
+        end
       end
     end
   end

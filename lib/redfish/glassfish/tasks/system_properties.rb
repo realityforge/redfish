@@ -14,68 +14,70 @@
 
 module Redfish
   module Tasks
-    class SystemProperties < AsadminTask
-      PROPERTY_PREFIX = 'servers.server.server.system-property.'
+    module Glassfish
+      class SystemProperties < AsadminTask
+        PROPERTY_PREFIX = 'servers.server.server.system-property.'
 
-      private
+        private
 
-      attribute :properties, :kind_of => Hash, :default => {}
+        attribute :properties, :kind_of => Hash, :default => {}
 
-      action :set do
-        existing = current_properties
-        expected = properties.dup
+        action :set do
+          existing = current_properties
+          expected = properties.dup
 
-        tocreate = {}
-        expected.each do |k, v|
-          tocreate[k] = v unless existing[k] == v
-        end
-
-        todelete = []
-        existing.keys.each do |k|
-          todelete << k unless expected[k]
-        end
-
-        unless todelete.empty? && tocreate.empty?
-          todelete.each do |key|
-            context.exec('delete-system-property', [key])
-            context.property_cache.delete_all_with_prefix!("#{PROPERTY_PREFIX}#{key}.") if context.property_cache?
-          end
-          context.exec('create-system-properties', [encode_parameters(tocreate)]) unless tocreate.empty?
-
+          tocreate = {}
           expected.each do |k, v|
-            context.property_cache["#{PROPERTY_PREFIX}#{k}.name"] = k
-            context.property_cache["#{PROPERTY_PREFIX}#{k}.value"] = as_property_value(v)
-          end if context.property_cache?
-
-          updated_by_last_action
-        end
-      end
-
-      def instance_key
-        "properties=#{properties.inspect}"
-      end
-
-      def current_properties
-        properties = {}
-        cache_present = context.property_cache?
-
-        if cache_present
-          context.property_cache.get_keys_starting_with(PROPERTY_PREFIX).each do |key|
-            next unless key =~ /.*\.value$/
-            property_name = key[PROPERTY_PREFIX.size...-6]
-            properties[property_name] = context.property_cache[key]
+            tocreate[k] = v unless existing[k] == v
           end
-        else
-          context.exec('list-system-properties', [], :terse => true, :echo => false).split("\n").each do |line|
-            next if line == 'Nothing to list.'
-            next if line =~ /^The target server contains following.*/
-            index = line.index('=')
-            key = line[0, index]
-            value = line[index + 1, line.size]
-            properties[key] = value
+
+          todelete = []
+          existing.keys.each do |k|
+            todelete << k unless expected[k]
+          end
+
+          unless todelete.empty? && tocreate.empty?
+            todelete.each do |key|
+              context.exec('delete-system-property', [key])
+              context.property_cache.delete_all_with_prefix!("#{PROPERTY_PREFIX}#{key}.") if context.property_cache?
+            end
+            context.exec('create-system-properties', [encode_parameters(tocreate)]) unless tocreate.empty?
+
+            expected.each do |k, v|
+              context.property_cache["#{PROPERTY_PREFIX}#{k}.name"] = k
+              context.property_cache["#{PROPERTY_PREFIX}#{k}.value"] = as_property_value(v)
+            end if context.property_cache?
+
+            updated_by_last_action
           end
         end
-        properties
+
+        def instance_key
+          "properties=#{properties.inspect}"
+        end
+
+        def current_properties
+          properties = {}
+          cache_present = context.property_cache?
+
+          if cache_present
+            context.property_cache.get_keys_starting_with(PROPERTY_PREFIX).each do |key|
+              next unless key =~ /.*\.value$/
+              property_name = key[PROPERTY_PREFIX.size...-6]
+              properties[property_name] = context.property_cache[key]
+            end
+          else
+            context.exec('list-system-properties', [], :terse => true, :echo => false).split("\n").each do |line|
+              next if line == 'Nothing to list.'
+              next if line =~ /^The target server contains following.*/
+              index = line.index('=')
+              key = line[0, index]
+              value = line[index + 1, line.size]
+              properties[key] = value
+            end
+          end
+          properties
+        end
       end
     end
   end

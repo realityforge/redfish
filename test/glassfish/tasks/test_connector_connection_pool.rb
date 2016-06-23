@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestConnectorConnectionPool < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'resource_adapters' => {'jmsra' => {'connection_pools' => resource_parameters_as_tree}}}
 
@@ -384,11 +384,11 @@ class Redfish::Tasks::TestConnectorConnectionPool < Redfish::Tasks::BaseTaskTest
     properties["#{raw_property_prefix}Element4.resource-adapter-name"] = 'MyOtherDBPool'
     t.context.cache_properties(properties)
 
-    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement1.pool-name"] = 'Element1'
-    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement2.pool-name"] = 'Element2'
-    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement3.pool-name"] = 'ElementX'
-    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement4.pool-name"] = 'Element3'
-    t.context.property_cache["#{Redfish::Tasks::ConnectorResource::PROPERTY_PREFIX}SubElement5.pool-name"] = 'Element4'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorResource::PROPERTY_PREFIX}SubElement1.pool-name"] = 'Element1'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorResource::PROPERTY_PREFIX}SubElement2.pool-name"] = 'Element2'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorResource::PROPERTY_PREFIX}SubElement3.pool-name"] = 'ElementX'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorResource::PROPERTY_PREFIX}SubElement4.pool-name"] = 'Element3'
+    t.context.property_cache["#{Redfish::Tasks::Glassfish::ConnectorResource::PROPERTY_PREFIX}SubElement5.pool-name"] = 'Element4'
 
     t.resource_adapter_name = 'jmsra'
     t.expected = existing

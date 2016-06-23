@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class CustomResourceCleaner < BaseCleanerTask
+    module Glassfish
+      class CustomResourceCleaner < BaseCleanerTask
+      end
     end
   end
 end

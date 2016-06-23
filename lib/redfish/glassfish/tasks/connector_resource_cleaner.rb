@@ -14,13 +14,15 @@
 
 module Redfish
   module Tasks
-    class ConnectorResourceCleaner < BaseCleanerTask
-      attribute :connector_pool_name, :kind_of => String, :required => true, :identity_field => true
+    module Glassfish
+      class ConnectorResourceCleaner < BaseCleanerTask
+        attribute :connector_pool_name, :kind_of => String, :required => true, :identity_field => true
 
-      protected
+        protected
 
-      def existing_elements
-        elements_with_prefix_and_property(property_prefix, 'pool-name', self.connector_pool_name)
+        def existing_elements
+          elements_with_prefix_and_property(property_prefix, 'pool-name', self.connector_pool_name)
+        end
       end
     end
   end

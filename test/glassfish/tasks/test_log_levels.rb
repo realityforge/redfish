@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestLogLevels < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestLogLevels < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_set
     data = {'logging' => {'default_levels' => true, 'levels' => {'managed' => true, 'iris' => 'WARNING', 'iris.planner' => 'INFO'}}}
 

@@ -37,7 +37,7 @@ class Redfish::TestDriver < Redfish::TestCase
   end
 
   def test_basic_workflow
-    Redfish::TaskManager.tasks.each do |task|
+    Redfish::TaskManager.tasks('glassfish').each do |task|
       task.any_instance.expects(:perform_action).with(anything).at_least(0)
     end
 

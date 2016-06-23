@@ -358,7 +358,7 @@ module Redfish #nodoc
         end
 
         if managed?(data['libraries'])
-          Redfish::Tasks::Library::LIBRARY_TYPES.each do |library_type|
+          Redfish::Tasks::Glassfish::Library::LIBRARY_TYPES.each do |library_type|
             expected = libraries.values.collect { |v| v['file'] }
             run_context.task('library_cleaner', 'library_type' => library_type, 'expected' => expected).action(:clean)
           end

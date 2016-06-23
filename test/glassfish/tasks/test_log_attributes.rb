@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestLogAttributes < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestLogAttributes < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_set
     data = {'logging' => {'attributes' => {'managed' => true, 'handlers' => 'java.util.logging.ConsoleHandler', 'java.util.logging.ConsoleHandler.formatter' => 'com.sun.enterprise.server.logging.UniformLogFormatter'}}}
 

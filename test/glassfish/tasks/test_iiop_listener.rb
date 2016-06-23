@@ -14,7 +14,7 @@
 
 require File.expand_path('../../../helper', __FILE__)
 
-class Redfish::Tasks::TestIiopListener < Redfish::Tasks::BaseTaskTest
+class Redfish::Tasks::Glassfish::TestIiopListener < Redfish::Tasks::Glassfish::BaseTaskTest
   def test_interpret_create
     data = {'iiop_listeners' => resource_parameters_as_tree}
 

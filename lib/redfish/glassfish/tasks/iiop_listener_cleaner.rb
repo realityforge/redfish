@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class IiopListenerCleaner < BaseCleanerTask
+    module Glassfish
+      class IiopListenerCleaner < BaseCleanerTask
+      end
     end
   end
 end

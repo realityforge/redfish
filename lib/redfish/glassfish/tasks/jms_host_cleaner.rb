@@ -14,7 +14,9 @@
 
 module Redfish
   module Tasks
-    class JmsHostCleaner < BaseCleanerTask
+    module Glassfish
+      class JmsHostCleaner < BaseCleanerTask
+      end
     end
   end
 end

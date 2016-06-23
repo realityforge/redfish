@@ -14,12 +14,14 @@
 
 module Redfish
   module Tasks
-    class JdbcConnectionPoolCleaner < BaseCleanerTask
-      def cascade_clean(element)
-        t = run_context.task('jdbc_resource_cleaner', 'connectionpoolid' => element, 'expected' => [])
-        t.action(:clean)
-        t.converge
-        t
+    module Glassfish
+      class JdbcConnectionPoolCleaner < BaseCleanerTask
+        def cascade_clean(element)
+          t = run_context.task('jdbc_resource_cleaner', 'connectionpoolid' => element, 'expected' => [])
+          t.action(:clean)
+          t.converge
+          t
+        end
       end
     end
   end

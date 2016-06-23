@@ -81,7 +81,7 @@ module Redfish
     end
 
     def task_group
-      nil
+      'glassfish'
     end
 
     def file(key, local_path)
