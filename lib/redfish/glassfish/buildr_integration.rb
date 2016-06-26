@@ -17,21 +17,19 @@ module Redfish
     def add_pre_artifacts(*artifacts)
       ::Buildr.artifacts(artifacts).each do |a|
         self.pre_artifacts << a.to_s
-        project = Redfish::Buildr.get_buildr_project('adding pre_artifacts dependencies')
-        project.task ":#{self.task_prefix}:pre_build" => [a.to_s]
+        Rake::Task.define_task("#{self.task_prefix}:pre_build" => [a.to_s])
       end
     end
 
     def add_post_artifacts(*artifacts)
       ::Buildr.artifacts(artifacts).each do |a|
         self.post_artifacts << a.to_s
-        project = Redfish::Buildr.get_buildr_project('adding post_artifacts dependencies')
-        project.task ":#{self.task_prefix}:pre_build" => [a]
+        Rake::Task.define_task("#{self.task_prefix}:pre_build" => [a.to_s])
       end
     end
 
     def resolve_file(filename)
-      Redfish::Buildr.get_buildr_project('resolving missing file').file(filename).invoke unless File.exist?(filename)
+      Rake::FileTask.define_task(filename).invoke unless File.exist?(filename)
       filename
     end
   end
