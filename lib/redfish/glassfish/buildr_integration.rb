@@ -72,14 +72,15 @@ module Redfish
 
       task "#{domain.task_prefix}:config"
 
-      task "#{domain.task_prefix}:pre_build" => ["#{domain.task_prefix}:config"]
+      task "#{domain.task_prefix}:pre_build" => ["#{domain.task_prefix}:config"] do
+        domain.volume_map.values.each do |volume|
+          FileUtils.mkdir_p volume
+        end
+      end
 
       if domain.complete? && domain.local?
         desc "Configure a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
-          domain.volume_map.values.each do |volume|
-            FileUtils.mkdir_p volume
-          end
           Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
         end
       end
@@ -89,9 +90,6 @@ module Redfish
         desc "Setup a directory containing docker configuration for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:setup" => ["#{domain.task_prefix}:pre_build"] do
           info("Configuring docker directory for '#{domain.name}' domain with key '#{domain.key}' at #{directory}")
-          domain.file_map.values.each do |filename|
-            file(filename).invoke
-          end
           domain.setup_docker_dir(directory)
         end
 
