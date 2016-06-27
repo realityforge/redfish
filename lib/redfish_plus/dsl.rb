@@ -310,6 +310,11 @@ module RedfishPlus
       domain.data['auth_realms'][name]['properties']['file'] = file
     end
 
+    def add_file_realm_user(domain, realm_name, username, password, groups = [])
+      domain.data['auth_realms'][realm_name]['users'][username]['password'] = password
+      domain.data['auth_realms'][realm_name]['users'][username]['groups'] = groups
+    end
+
     def setup_default_admin(domain)
       add_default_admin_realm(domain)
       add_admin_thread_pool(domain)
