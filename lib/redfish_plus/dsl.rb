@@ -323,6 +323,7 @@ module RedfishPlus
 
     def add_default_admin_realm(domain)
       add_file_realm(domain, 'admin-realm', '${com.sun.aas.instanceRoot}/config/admin-keyfile')
+      add_file_realm_user(domain, 'admin-realm', domain.admin_username, domain.admin_password, ['asadmin'])
     end
 
     # Usually required unless the default realm has been changed
