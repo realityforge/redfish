@@ -49,9 +49,10 @@ module RedfishPlus
       features = options[:features] || []
       domain.package = false
 
+      base_setup_for_local_development(domain)
+
       common_domain_setup(domain)
 
-      base_setup_for_local_development(domain)
       if features.include?(:jms)
         setup_jms_host(domain, 'EMBEDDED')
       else
