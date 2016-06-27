@@ -99,7 +99,7 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
   end
 
   def task_class(task_suffix)
-    Redfish::Tasks.const_get("#{task_name}#{task_suffix}")
+    Redfish::Tasks::Glassfish.const_get("#{task_name}#{task_suffix}")
   end
 
   def task_name

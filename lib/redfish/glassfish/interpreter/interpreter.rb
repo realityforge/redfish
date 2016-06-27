@@ -470,7 +470,28 @@ module Redfish #nodoc
       end
 
       def interpret_auth_realm(run_context, key, config)
-        run_context.task('auth_realm', params(config).merge('name' => key)).action(:create)
+        params = config.dup
+        params.delete('users')
+
+        run_context.task('auth_realm', params(params).merge('name' => key)).action(:create)
+
+        users = psort(config['users'])
+        users.each_pair do |username, user_config|
+          interpret_file_realm_user(run_context, key, username, user_config)
+        end
+
+        if managed?(config['users'])
+          run_context.task('file_user_cleaner',
+                           'realm_name' => key,
+                           'expected' => users.keys).
+            action(:clean)
+        end
+      end
+
+      def interpret_file_realm_user(run_context, auth_realm_key, username, config)
+        run_context.task('file_user',
+                         params(config).merge('username' => username, 'realm_name' => auth_realm_key)).
+          action(:create)
       end
 
       def interpret_jms_hosts(run_context, key, config)
