@@ -336,10 +336,6 @@ module Redfish
 
     private
 
-    def resolve_file(filename)
-      filename
-    end
-
     def calculate_version_hash
       data = self.resolved_data.to_h
       data['definition'] = {}
