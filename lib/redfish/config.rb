@@ -59,6 +59,26 @@ module Redfish
         return false if @default_domain_key.nil?
         self.default_domain_key.to_s == domain_key.to_s
       end
+
+      attr_writer :default_var_directory
+
+      # Directory which contains the openmq instances
+      def default_var_directory
+        @default_var_directory ||
+          ENV['OPENMQ_INSTANCES_DIR'] ||
+          "#{self.default_glassfish_home}/mq/var"
+      end
+
+      attr_writer :default_instance_key
+
+      def default_instance_key
+        @default_instance_key || Redfish.error("Unable to determine default_instance_key. Please specify using Redfish::Config.default_instance_key = 'myapp'")
+      end
+
+      def default_instance_key?(instance_key)
+        return false if @default_instance_key.nil?
+        self.default_instance_key.to_s == instance_key.to_s
+      end
     end
   end
 end

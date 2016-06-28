@@ -42,6 +42,32 @@ class Redfish::TestConfig < Redfish::TestCase
     assert_equal Redfish::Config.task_prefix, 'redfish'
   end
 
+  def test_default_var_directory
+    Redfish::Config.default_glassfish_home = 'Y'
+    assert_equal Redfish::Config.default_var_directory, 'Y/mq/var'
+
+    Redfish::Config.default_var_directory = 'X/var'
+
+    assert_equal Redfish::Config.default_var_directory, 'X/var'
+
+    Redfish::Config.default_var_directory = nil
+
+    assert_equal Redfish::Config.default_var_directory, 'Y/mq/var'
+
+    ENV['OPENMQ_INSTANCES_DIR'] = '/srv/instances'
+    assert_equal Redfish::Config.default_var_directory, '/srv/instances'
+  end
+
+  def test_default_instance_key
+    assert_raise(RuntimeError, "Unable to determine default_instance_key. Please specify using Redfish::Config.default_instance_key = 'myapp'") { Redfish::Config.default_instance_key }
+    assert_equal Redfish::CAPTURE.string, "Unable to determine default_instance_key. Please specify using Redfish::Config.default_instance_key = 'myapp'\n"
+    assert_equal Redfish::Config.default_instance_key?('myapp'), false
+
+    Redfish::Config.default_instance_key = 'myapp'
+    assert_equal Redfish::Config.default_instance_key?('myapp'), true
+    assert_equal Redfish::Config.default_instance_key?(:myapp), true
+  end
+
   def test_default_domains_directory
     Redfish::Config.default_glassfish_home = 'Y'
     assert_equal Redfish::Config.default_domains_directory, 'Y/glassfish/domains'

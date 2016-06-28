@@ -51,6 +51,8 @@ class Redfish::TestCase < Minitest::Test
     Redfish.clear_domain_map
     Redfish::Config.default_glassfish_home = nil
     Redfish::Config.default_domains_directory = nil
+    Redfish::Config.default_instance_key = nil
+    Redfish::Config.default_var_directory = nil
     Redfish::Config.task_prefix = nil
     Redfish::Config.default_domain_key = nil
     Redfish::Config.base_directory = nil
