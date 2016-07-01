@@ -18,3 +18,11 @@ replace setup.sh infrastructure, (D) for docker integration.
   - underlying resources updated that are used by application. Do this by extra listeners that use additional rules. (C)
 
 * Add integration level tests (C)
+
+* When tmpfs support is improved for osx clients talking to Linux servers add something like the following for
+  all builds.
+
+
+    --tmpfs /tmp:rw,noexec,nosuid,size=65536k --tmpfs /srv/glassfish:rw,noexec,nosuid,size=65536k --read-only
+
+* Disable writing the shared memory mapped files for performance counters via `-XX:+PerfDisableSharedMem`
