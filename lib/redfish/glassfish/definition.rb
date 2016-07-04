@@ -218,7 +218,7 @@ module Redfish
 
     def docker_build_command(directory, options = {})
       quiet_flag = !!options[:quiet] ? '-q ' : ''
-      "docker build #{quiet_flag}--rm=true -t #{self.image_name} #{directory}"
+      "docker build --pull #{quiet_flag}--rm=true -t #{self.image_name} #{directory}"
     end
 
     def docker_run_command

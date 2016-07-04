@@ -550,11 +550,11 @@ class Redfish::TestDefinition < Redfish::TestCase
 
   def test_docker_build_command
     domain = Redfish::DomainDefinition.new('appserver')
-    assert_equal domain.docker_build_command('/my/dir'), 'docker build --rm=true -t appserver /my/dir'
-    assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build -q --rm=true -t appserver /my/dir'
+    assert_equal domain.docker_build_command('/my/dir'), 'docker build --pull --rm=true -t appserver /my/dir'
+    assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build --pull -q --rm=true -t appserver /my/dir'
 
     domain.version = 'X'
-    assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build -q --rm=true -t appserver:X /my/dir'
+    assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build --pull -q --rm=true -t appserver:X /my/dir'
   end
 
   def test_docker_run_command
