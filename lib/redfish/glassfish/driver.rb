@@ -18,7 +18,8 @@ module Redfish
       # Given definition and options, setup a run context and converge domain
       def configure_domain(definition, options = {})
         raise "Attempting to configure domain '#{definition.name}' using and incomplete domain definition '#{definition.key}'" unless definition.complete?
-        run_context = Redfish::RunContext.new(definition.to_task_context)
+        task_context = definition.to_task_context
+        run_context = Redfish::RunContext.new(task_context)
 
         (options[:listeners] || []).each do |listener|
           run_context.listeners << listener
@@ -26,7 +27,13 @@ module Redfish
 
         Redfish::Interpreter.interpret(run_context, definition.resolved_data.to_h)
 
-        run_context.converge
+        begin
+          run_context.converge
+        rescue Exception => e
+          log_file = "#{task_context.domain_directory}/logs/server.log"
+          puts IO.read(log_file) if File.exist?(log_file)
+          raise e
+        end
 
         run_context
       end
