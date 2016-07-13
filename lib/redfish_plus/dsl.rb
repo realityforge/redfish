@@ -499,7 +499,7 @@ module RedfishPlus
       domain.data['jdbc_connection_pools'][connection_pool]['restype'] = 'javax.sql.DataSource'
       domain.data['jdbc_connection_pools'][connection_pool]['isconnectvalidatereq'] = 'true'
       domain.data['jdbc_connection_pools'][connection_pool]['validationmethod'] = 'auto-commit'
-      domain.data['domain.jdbc_connection_pools'][connection_pool]['ping'] = 'true'
+      domain.data['jdbc_connection_pools'][connection_pool]['ping'] = 'true'
       domain.data['jdbc_connection_pools'][connection_pool]['description'] = "#{resource_name} connection pool for application #{domain.name}"
       domain.data['jdbc_connection_pools'][connection_pool]['resources'][resource_name]['description'] = "#{resource_name} resource for application #{domain.name}"
 
