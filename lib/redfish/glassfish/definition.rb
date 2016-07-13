@@ -19,6 +19,7 @@ module Redfish
       @key = key
       @name = key
       @data = Redfish::Mash.new
+      checkpoint_data!
       @version = nil
       @file_map = {}
       @volume_map = {}
@@ -85,6 +86,9 @@ module Redfish
     attr_reader :name
     attr_reader :extends
     attr_reader :data
+    # Data as it was represented last time the checkpoint method was called
+    # Checkpointing typically occurs just before specific environmemnt configuration is added
+    attr_reader :checkpointed_data
     attr_accessor :version
 
     def package?
@@ -332,6 +336,10 @@ module Redfish
 
     def version_hash
       calculate_version_hash
+    end
+
+    def checkpoint_data!
+      @checkpointed_data = Mash.from(self.data.to_h)
     end
 
     private

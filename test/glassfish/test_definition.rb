@@ -287,6 +287,31 @@ class Redfish::TestDefinition < Redfish::TestCase
                  }
   end
 
+  def test_checkpoint_data
+    Redfish::Config.default_glassfish_home = 'Y'
+
+    domain = Redfish.domain('appserver')
+
+    assert_equal domain.data, {}
+    assert_equal domain.checkpointed_data, {}
+
+    domain.data['a'] = 4
+    domain.data['b'] = 'p'
+
+    assert_equal domain.data, {'a' => 4, 'b' => 'p'}
+    assert_equal domain.checkpointed_data, {}
+
+    domain.checkpoint_data!
+
+    assert_equal domain.data, {'a' => 4, 'b' => 'p'}
+    assert_equal domain.checkpointed_data, {'a' => 4, 'b' => 'p'}
+
+    domain.data['a'] = 5
+
+    assert_equal domain.data, {'a' => 5, 'b' => 'p'}
+    assert_equal domain.checkpointed_data, {'a' => 4, 'b' => 'p'}
+  end
+
   def test_export_to_file
     definition = Redfish::DomainDefinition.new('appserver')
 
