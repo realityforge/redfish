@@ -138,7 +138,7 @@ module Redfish
       task "#{domain.task_prefix}:export" => ["#{domain.task_prefix}:pre_build"] do
         filename = "#{Redfish::Config.base_directory}/generated/redfish/definitions/#{domain.key}.json"
         info("Exporting '#{domain.name}' domain with key '#{domain.key}' to #{filename}")
-        domain.export_to_file(filename, :expand => domain.complete?)
+        domain.export_to_file(filename, :expand => domain.complete?, :checkpointed_data => !domain.complete?)
       end
     end
 
@@ -162,7 +162,7 @@ module Redfish
 
       buildr_project = get_buildr_project("generating #{domain_name} domain package", options)
       buildr_project.package(:json).enhance(["#{domain.task_prefix}:pre_build"]) do |t|
-        domain.export_to_file(t.to_s)
+        domain.export_to_file(t.to_s, :checkpointed_data => true)
       end
     end
 

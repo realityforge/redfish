@@ -262,13 +262,13 @@ module Redfish
       @volume_map.dup
     end
 
-    def resolved_data
+    def resolved_data(options = {})
       data = Redfish::Mash.new
       data.merge!(Redfish.domain_by_key(self.extends).resolved_data) if self.extends
       self.pre_artifacts.each do |filename|
         data.merge!(JSON.load(File.new(resolve_file(filename))))
       end
-      data.merge!(self.data)
+      data.merge!(options[:checkpointed_data] ? self.checkpointed_data : self.data)
       self.post_artifacts.each do |filename|
         data.merge!(JSON.load(File.new(resolve_file(filename))))
       end
@@ -309,7 +309,7 @@ module Redfish
     end
 
     def export_to_file(filename, options = {})
-      data = self.resolved_data
+      data = self.resolved_data(:checkpointed_data => options[:checkpointed_data])
       if options[:expand]
         Redfish::Interpreter::PreInterpreter.pre_interpret(data)
         data = Redfish::Interpreter::Interpolater.interpolate(self.to_task_context, data.to_h)
