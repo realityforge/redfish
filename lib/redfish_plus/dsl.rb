@@ -335,7 +335,7 @@ module RedfishPlus
       set(domain, 'configs.config.server-config.security-service.auth-realm.file.name', realm)
     end
 
-    def add_admin_thread_pool(domain, min = 5, max = 50, options = {'maxqueuesize' => 256})
+    def add_admin_thread_pool(domain, min = 5, max = 15, options = {'maxqueuesize' => 256})
       add_thread_pool(domain, 'admin-thread-pool', min, max, options)
     end
 
