@@ -339,7 +339,6 @@ module Redfish #nodoc
         psort(data['properties']).each_pair do |key, config|
           interpret_property(run_context, key, config)
         end
-        restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
 
         if managed?(data['auth_realms'])
           run_context.task('auth_realm_cleaner', 'expected' => auth_realms.keys).action(:clean)
@@ -356,6 +355,8 @@ module Redfish #nodoc
         if managed?(data['thread_pools'])
           run_context.task('thread_pool_cleaner', 'expected' => thread_pools.keys).action(:clean)
         end
+
+        restart_domain_if_required(run_context, domain_options.merge(:context_only => true))
 
         if managed?(data['libraries'])
           Redfish::Tasks::Glassfish::Library::LIBRARY_TYPES.each do |library_type|
