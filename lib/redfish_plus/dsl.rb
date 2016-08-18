@@ -431,7 +431,7 @@ module RedfishPlus
 
     def custom_resource(domain, name, value, restype = nil)
       domain.data['custom_resources'][name]['properties']['value'] = value
-      domain.data['custom_resources'][name]['properties']['restype'] = restype if restype
+      domain.data['custom_resources'][name]['restype'] = restype if restype
     end
 
     def custom_resource_from_env(domain, name, env_key = nil, restype = nil)
