@@ -30,7 +30,7 @@ module Redfish
         attribute :transport_protocol_class, :kind_of => String, :required => nil
         attribute :debug, :type => :boolean
         attribute :enabled, :type => :boolean, :default => true
-        attribute :description, :kind_of => String, :default => ''
+        attribute :description, :kind_of => String, :default => nil
         attribute :properties, :kind_of => Hash, :default => {}
         attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
@@ -75,7 +75,7 @@ module Redfish
           args << '--debug' << self.debug.to_s
           args << '--enabled' << self.enabled.to_s
           args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
-          args << '--description' << self.description.to_s
+          args << '--description' << self.description.to_s if self.description
           args << '--mailhost' << self.host.to_s
           args << '--mailuser' << self.user.to_s
           args << '--fromaddress' << self.from.to_s
