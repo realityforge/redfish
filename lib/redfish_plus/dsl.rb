@@ -515,5 +515,20 @@ module RedfishPlus
       domain.data['jdbc_connection_pools'][connection_pool]['properties']['User'] = "${#{prefix}_DB_USERNAME}"
       domain.data['jdbc_connection_pools'][connection_pool]['properties']['Password'] = "${#{prefix}_DB_PASSWORD}"
     end
+
+    def javamail_resource(domain, resource_name, options = {})
+      key = options[:key] || domain.name
+      constant_prefix = ::Redfish::Naming.uppercase_constantize(domain.name)
+      cname = ::Redfish::Naming.uppercase_constantize(key)
+      prefix = cname == constant_prefix ? constant_prefix : "#{constant_prefix}_#{cname}"
+
+      domain.data['environment_vars']["#{prefix}_MAIL_HOST"] = nil
+      domain.data['environment_vars']["#{prefix}_MAIL_USER"] = nil
+      domain.data['environment_vars']["#{prefix}_MAIL_FROM"] = nil
+
+      domain.data['javamail_resources'][resource_name]['host'] = "${#{prefix}_MAIL_HOST}"
+      domain.data['javamail_resources'][resource_name]['user'] = "${#{prefix}_MAIL_USER}"
+      domain.data['javamail_resources'][resource_name]['from'] = "${#{prefix}_MAIL_FROM}"
+    end
   end
 end
