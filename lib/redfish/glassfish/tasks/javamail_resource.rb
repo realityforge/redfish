@@ -24,11 +24,11 @@ module Redfish
         attribute :host, :kind_of => String, :required => true
         attribute :user, :kind_of => String, :required => true
         attribute :from, :kind_of => String, :required => true
-        attribute :store_protocol, :kind_of => String, :required => nil
-        attribute :store_protocol_class, :kind_of => String, :required => nil
-        attribute :transport_protocol, :kind_of => String, :required => nil
-        attribute :transport_protocol_class, :kind_of => String, :required => nil
-        attribute :debug, :type => :boolean
+        attribute :store_protocol, :kind_of => String, :default => 'imap'
+        attribute :store_protocol_class, :kind_of => String, :default => 'com.sun.mail.imap.IMAPStore'
+        attribute :transport_protocol, :kind_of => String, :default => 'smtp2'
+        attribute :transport_protocol_class, :kind_of => String, :default => 'com.sun.mail.smtp.SMTPTransport2'
+        attribute :debug, :type => :boolean, :default => false
         attribute :enabled, :type => :boolean, :default => true
         attribute :description, :kind_of => String, :default => nil
         attribute :properties, :kind_of => Hash, :default => {}
