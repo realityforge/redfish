@@ -59,6 +59,10 @@ module RedfishPlus
         disable_jms_service(domain)
       end
 
+      if features.include?(:mail)
+        domain.data['javamail_resources']["#{::Redfish::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
+      end
+
       if features.include?(:jms) || features.include?(:jdbc)
         setup_orb_to_support_resource_adapter(domain)
       end
