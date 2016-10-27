@@ -25,13 +25,20 @@ module Redfish
           run_context.listeners << listener
         end
 
-        Redfish::Interpreter.interpret(run_context, definition.resolved_data.to_h)
+        data = definition.resolved_data
+        if options[:update_only]
+          Redfish::Interpreter::PreInterpreter.mark_as_unmanaged(data)
+        end
+
+        Redfish::Interpreter.interpret(run_context, data.to_h)
 
         begin
           run_context.converge
         rescue Exception => e
-          log_file = "#{task_context.domain_directory}/logs/server.log"
-          puts IO.read(log_file) if File.exist?(log_file)
+          if options[:update_only]
+            log_file = "#{task_context.domain_directory}/logs/server.log"
+            puts IO.read(log_file).split("\n").last(100).join("\n") if File.exist?(log_file)
+          end
           raise e
         end
 

@@ -83,6 +83,11 @@ module Redfish
         task "#{domain.task_prefix}:create" => ["#{domain.task_prefix}:pre_build"] do
           Redfish::Driver.configure_domain(domain, :listeners => [Listener.new])
         end
+
+        desc "Update a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
+        task "#{domain.task_prefix}:update" => ["#{domain.task_prefix}:pre_build"] do
+          Redfish::Driver.configure_domain(domain, :listeners => [Listener.new], :update_only => true)
+        end
       end
 
       if domain.dockerize?
