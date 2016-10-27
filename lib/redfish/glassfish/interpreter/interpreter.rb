@@ -385,6 +385,8 @@ module Redfish #nodoc
       end
 
       def interpret_jvm_options(run_context, config)
+        return unless (config['managed'].nil? ? true : !!config['managed'])
+
         options = config['options'] || []
         defines = config['defines'] || {}
         default_defines = config['default_defines'].nil? ? true : config['default_defines']
