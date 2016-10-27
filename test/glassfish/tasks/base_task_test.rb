@@ -117,60 +117,8 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
     data['config'] = {}
     data['config']['diff_on_completion'] = false
 
-    if add_excludes_unless_defined
-      %w(
-        libraries realm_types thread_pools iiop_listeners context_services managed_thread_factories
-        managed_executor_services managed_scheduled_executor_services auth_realms jms_hosts
-        jdbc_connection_pools resource_adapters jms_resources custom_resources javamail_resources
-        applications system_properties
-      ).each do |key|
-        unless data.has_key?(key) && data[key].has_key?('managed')
-          data[key] = {} unless data.has_key?(key)
-          data[key]['managed'] = false
-        end
-      end
-
-      data['logging'] = {} unless data.has_key?('logging')
-      logging = data['logging']
-      logging['levels'] = {} unless logging.has_key?('levels')
-      logging['levels']['managed'] = false unless logging['levels'].has_key?('managed')
-      logging['attributes'] = {} unless logging.has_key?('attributes')
-      logging['attributes']['managed'] = false unless logging['attributes'].has_key?('managed')
-
-      if data.has_key?('applications')
-        data['applications'].each_pair do |key, application_config|
-          next if key == 'managed' && (application_config.is_a?(TrueClass) || application_config.is_a?(FalseClass))
-          application_config['web_env_entries'] = {} unless application_config.has_key?('web_env_entries')
-          application_config['web_env_entries']['managed'] = false unless application_config['web_env_entries'].has_key?('managed')
-        end
-      end
-
-      if data.has_key?('jdbc_connection_pools')
-        data['jdbc_connection_pools'].each_pair do |key, config|
-          next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
-          config['resources'] = {} unless config.has_key?('resources')
-          config['resources']['managed'] = false unless config['resources'].has_key?('managed')
-        end
-      end
-      if data.has_key?('resource_adapters')
-        data['resource_adapters'].each_pair do |key, config|
-          next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
-          if config.has_key?('connection_pools')
-            config['connection_pools'].each_pair do |pool_key, pool_config|
-              next if pool_key == 'managed' && (pool_config.is_a?(TrueClass) || pool_config.is_a?(FalseClass))
-
-              pool_config['resources'] = {} unless pool_config.has_key?('resources')
-              pool_config['resources']['managed'] = false unless pool_config['resources'].has_key?('managed')
-            end
-          else
-            config['connection_pools'] = {}
-          end
-          config['connection_pools']['managed'] = false unless config['connection_pools'].has_key?('managed')
-          config['admin_objects'] = {} unless config.has_key?('admin_objects')
-          config['admin_objects']['managed'] = false unless config['admin_objects'].has_key?('managed')
-        end
-      end
-    end
+    data['jvm_options']['managed'] = true
+    Redfish::Interpreter::PreInterpreter.mark_as_unmanaged(data) if add_excludes_unless_defined
 
     exclude_domain_create = options[:exclude_domain_create].nil? ? false : !!options[:exclude_domain_create]
     domain_dir_exists = options[:domain_dir_exists].nil? ? false : !!options[:domain_dir_exists]
