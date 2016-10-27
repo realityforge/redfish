@@ -288,7 +288,15 @@ AS_ADMIN_PASSWORD=#{context.domain_password}
           args << "--kill=#{self.kill}"
           args << '--domaindir' << context.domains_directory.to_s if context.domains_directory
 
-          args << context.domain_name.to_s
+          # Derive the domain name form the property cache if present
+          # as when doing an "update" of an existing domain the domain
+          # name of the updated should be used
+          domain_name =
+            context.property_cache? ?
+              context.property_cache['property.administrative.domain.name'] :
+              context.domain_name.to_s
+
+          args << domain_name
 
           context.exec('restart-domain', args, options)
 
