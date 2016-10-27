@@ -173,10 +173,12 @@ module Redfish #nodoc
 
         domain_options = domain_options(data['domain'] || {})
 
-        run_context.task('domain', domain_options).action(:create)
-        run_context.task('domain', domain_options).action(:start)
-        run_context.task('domain', domain_options).action(:enable_secure_admin) if run_context.app_context.domain_secure
-        run_context.task('domain', domain_options).action(:ensure_active)
+        if managed?(data['domain'])
+          run_context.task('domain', domain_options).action(:create)
+          run_context.task('domain', domain_options).action(:start)
+          run_context.task('domain', domain_options).action(:enable_secure_admin) if run_context.app_context.domain_secure
+          run_context.task('domain', domain_options).action(:ensure_active)
+        end
         run_context.task('property_cache').action(:create)
 
         interpret_system_facilities(run_context, data, domain_options)
@@ -281,7 +283,9 @@ module Redfish #nodoc
         end
         run_context.task('property_cache').action(:destroy)
 
-        run_context.task('domain', domain_options).action(:complete)
+        if managed?(data['domain'])
+          run_context.task('domain', domain_options).action(:complete)
+        end
       end
 
       private
