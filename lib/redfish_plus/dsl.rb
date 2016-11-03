@@ -438,12 +438,12 @@ module RedfishPlus
       domain.data['custom_resources'][name]['restype'] = restype if restype
     end
 
-    def custom_resource_from_env(domain, name, env_key = nil, restype = nil)
+    def custom_resource_from_env(domain, name, env_key = nil, restype = nil, default_value = nil)
       components = name.split('/')
       components = [components.first] + components[2..components.size] if components.size > 2 && components[1] == 'env'
       env_key = components.join('_').upcase if env_key.nil?
       custom_resource(domain, name, "${#{env_key}}", restype)
-      RedfishPlus.environment_variable(domain, env_key)
+      environment_variable(domain, env_key, 'UNSPECIFIED', default_value)
     end
 
     def jms_connection_factory(domain, name)
