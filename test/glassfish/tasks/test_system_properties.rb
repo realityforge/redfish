@@ -106,6 +106,34 @@ class Redfish::Tasks::Glassfish::TestSystemProperties < Redfish::Tasks::Glassfis
     assert !t.context.property_cache.any_property_start_with?('servers.server.server.system-property.G.')
   end
 
+  def test_set_when_attributes_no_match_but_delete_unknown_properties_is_false
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+
+    t.context.cache_properties('servers.server.server.system-property.X.name' => 'X',
+                               'servers.server.server.system-property.X.value' => 'Y',
+                               'servers.server.server.system-property.A.name' => 'A',
+                               'servers.server.server.system-property.A.value' => 'B',
+                               'servers.server.server.system-property.G.name' => 'G',
+                               'servers.server.server.system-property.G.value' => 'GV')
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('create-system-properties'),
+                                 equals(%w(P=Q)),
+                                 equals({})).
+      returns('')
+
+    t.properties = {'X' => 'Y', 'P' => 'Q'}
+    t.delete_unknown_properties = false
+    t.perform_action(:set)
+
+    ensure_task_updated_by_last_action(t)
+
+    assert t.context.property_cache.any_property_start_with?('servers.server.server.system-property.X.')
+    assert t.context.property_cache.any_property_start_with?('servers.server.server.system-property.P.')
+    assert t.context.property_cache.any_property_start_with?('servers.server.server.system-property.A.')
+    assert t.context.property_cache.any_property_start_with?('servers.server.server.system-property.G.')
+  end
+
   def test_set_when_attributes_no_match_and_no_property_cache
     executor = Redfish::Executor.new
     t = new_task(executor)

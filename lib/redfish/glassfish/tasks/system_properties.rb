@@ -21,6 +21,8 @@ module Redfish
         private
 
         attribute :properties, :kind_of => Hash, :default => {}
+        # Specifies whether the unknown properties should be deleted.
+        attribute :delete_unknown_properties, :type => :boolean, :default => true
 
         action :set do
           existing = current_properties
@@ -34,7 +36,7 @@ module Redfish
           todelete = []
           existing.keys.each do |k|
             todelete << k unless expected[k]
-          end
+          end if self.delete_unknown_properties
 
           unless todelete.empty? && tocreate.empty?
             todelete.each do |key|

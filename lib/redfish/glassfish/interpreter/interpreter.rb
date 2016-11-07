@@ -305,9 +305,7 @@ module Redfish #nodoc
 
         run_context.task('property_cache').action(:create)
 
-        if managed?(data['system_properties'])
-          interpret_system_properties(run_context, data['system_properties'] || {})
-        end
+        interpret_system_properties(run_context, managed?(data['system_properties']), data['system_properties'] || {})
 
         libraries = psort(data['libraries'])
         libraries.values.each do |config|
@@ -421,8 +419,11 @@ module Redfish #nodoc
         run_context.task('log_attributes', 'default_attributes' => default_attributes, 'attributes' => psort(config)).action(:set)
       end
 
-      def interpret_system_properties(run_context, config)
-        run_context.task('system_properties', 'properties' => psort(config)).action(:set)
+      def interpret_system_properties(run_context, managed, config)
+        run_context.task('system_properties',
+                         'delete_unknown_properties' => managed,
+                         'properties' => psort(config)).
+          action(:set)
       end
 
       def interpret_realm_types(run_context, realm_types)
