@@ -310,9 +310,18 @@ module RedfishPlus
     end
 
     def add_file_realm(domain, name, file)
-      domain.data['auth_realms'][name]['classname'] = 'com.sun.enterprise.security.auth.realm.file.FileRealm'
-      domain.data['auth_realms'][name]['properties']['jaas-context'] = 'fileRealm'
-      domain.data['auth_realms'][name]['properties']['file'] = file
+      add_realm(domain,
+                name,
+                'com.sun.enterprise.security.auth.realm.file.FileRealm',
+                'jaas-context' => 'fileRealm',
+                'file' => file)
+    end
+
+    def add_realm(domain, name, classname, properties)
+      domain.data['auth_realms'][name]['classname'] = classname
+      properties.each_pair do |k, v|
+        domain.data['auth_realms'][name]['properties'][k] = v
+      end
     end
 
     def add_file_realm_user(domain, realm_name, username, password, groups = [])
