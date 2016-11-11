@@ -483,16 +483,18 @@ module Redfish #nodoc
 
         run_context.task('auth_realm', params(params).merge('name' => key)).action(:create)
 
-        users = psort(config['users'])
-        users.each_pair do |username, user_config|
-          interpret_file_realm_user(run_context, key, username, user_config)
-        end
+        if 'com.sun.enterprise.security.auth.realm.file.FileRealm' == params(params)['classname']
+          users = psort(config['users'])
+          users.each_pair do |username, user_config|
+            interpret_file_realm_user(run_context, key, username, user_config)
+          end
 
-        if managed?(config['users'])
-          run_context.task('file_user_cleaner',
-                           'realm_name' => key,
-                           'expected' => users.keys).
-            action(:clean)
+          if managed?(config['users'])
+            run_context.task('file_user_cleaner',
+                             'realm_name' => key,
+                             'expected' => users.keys).
+              action(:clean)
+          end
         end
       end
 
