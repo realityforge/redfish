@@ -45,38 +45,40 @@ module Redfish #nodoc
           logging['attributes'] = {} unless logging.has_key?('attributes')
           logging['attributes']['managed'] = false unless logging['attributes'].has_key?('managed')
 
-          if data.has_key?('applications')
-            data['applications'].each_pair do |key, application_config|
-              next if key == 'managed' && (application_config.is_a?(TrueClass) || application_config.is_a?(FalseClass))
-              application_config['web_env_entries'] = {} unless application_config.has_key?('web_env_entries')
-              application_config['web_env_entries']['managed'] = false unless application_config['web_env_entries'].has_key?('managed')
-            end
+          data['applications'] = {} unless data.has_key?('applications')
+          data['applications']['managed'] = false unless data['applications'].has_key?('managed')
+
+          data['applications'].each_pair do |key, application_config|
+            next if key == 'managed' && (application_config.is_a?(TrueClass) || application_config.is_a?(FalseClass))
+            application_config['web_env_entries'] = {} unless application_config.has_key?('web_env_entries')
+            application_config['web_env_entries']['managed'] = false unless application_config['web_env_entries'].has_key?('managed')
           end
 
-          if data.has_key?('jdbc_connection_pools')
-            data['jdbc_connection_pools'].each_pair do |key, config|
-              next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
-              config['resources'] = {} unless config.has_key?('resources')
-              config['resources']['managed'] = false unless config['resources'].has_key?('managed')
-            end
-          end
-          if data.has_key?('resource_adapters')
-            data['resource_adapters'].each_pair do |key, config|
-              next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
-              if config.has_key?('connection_pools')
-                config['connection_pools'].each_pair do |pool_key, pool_config|
-                  next if pool_key == 'managed' && (pool_config.is_a?(TrueClass) || pool_config.is_a?(FalseClass))
+          data['jdbc_connection_pools'] = {} unless data.has_key?('jdbc_connection_pools')
+          data['jdbc_connection_pools']['managed'] = false unless data['jdbc_connection_pools'].has_key?('managed')
 
-                  pool_config['resources'] = {} unless pool_config.has_key?('resources')
-                  pool_config['resources']['managed'] = false unless pool_config['resources'].has_key?('managed')
-                end
-              else
-                config['connection_pools'] = {}
+          data['jdbc_connection_pools'].each_pair do |key, config|
+            next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
+            config['resources'] = {} unless config.has_key?('resources')
+            config['resources']['managed'] = false unless config['resources'].has_key?('managed')
+          end
+          data['resource_adapters'] = {} unless data.has_key?('resource_adapters')
+          data['resource_adapters'].each_pair do |key, config|
+            next if key == 'managed' && (config.is_a?(TrueClass) || config.is_a?(FalseClass))
+
+            if config.has_key?('connection_pools')
+              config['connection_pools'].each_pair do |pool_key, pool_config|
+                next if pool_key == 'managed' && (pool_config.is_a?(TrueClass) || pool_config.is_a?(FalseClass))
+
+                pool_config['resources'] = {} unless pool_config.has_key?('resources')
+                pool_config['resources']['managed'] = false unless pool_config['resources'].has_key?('managed')
               end
-              config['connection_pools']['managed'] = false unless config['connection_pools'].has_key?('managed')
-              config['admin_objects'] = {} unless config.has_key?('admin_objects')
-              config['admin_objects']['managed'] = false unless config['admin_objects'].has_key?('managed')
+            else
+              config['connection_pools'] = {}
             end
+            config['connection_pools']['managed'] = false unless config['connection_pools'].has_key?('managed')
+            config['admin_objects'] = {} unless config.has_key?('admin_objects')
+            config['admin_objects']['managed'] = false unless config['admin_objects'].has_key?('managed')
           end
         end
 
