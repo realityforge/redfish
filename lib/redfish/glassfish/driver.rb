@@ -25,12 +25,7 @@ module Redfish
           run_context.listeners << listener
         end
 
-        data = definition.resolved_data
-        if options[:update_only]
-          Redfish::Interpreter::PreInterpreter.mark_as_unmanaged(data)
-        end
-
-        Redfish::Interpreter.interpret(run_context, data.to_h)
+        Redfish::Interpreter.interpret(run_context, definition.resolved_data.to_h, options)
 
         begin
           run_context.converge

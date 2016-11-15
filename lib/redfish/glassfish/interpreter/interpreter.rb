@@ -162,10 +162,11 @@ module Redfish #nodoc
   module Interpreter
     class << self
 
-      def interpret(run_context, input)
+      def interpret(run_context, input, options = {})
         mash = Mash.from(input)
 
         Redfish::Interpreter::PreInterpreter.pre_interpret(mash)
+        Redfish::Interpreter::PreInterpreter.mark_as_unmanaged(mash) if options[:update_only]
 
         data = Redfish::Interpreter::Interpolater.interpolate(run_context.app_context, mash.to_h)
 
