@@ -37,8 +37,8 @@ module Redfish
         # e.g.
         #    collect_property_sets('resources.jdbc-connection-pool.MyDbPool.', property_map)
         #
-        def collect_property_sets(property_prefix, property_map)
-          self.properties.each_pair do |key, value|
+        def collect_property_sets(property_prefix, property_map, properties = self.properties)
+          properties.each_pair do |key, value|
             property_map["property.#{key}"] = as_property_value(value)
           end
 
@@ -49,7 +49,7 @@ module Redfish
               context.property_cache.get_keys_starting_with(full_prefix) :
               load_properties("#{full_prefix}*").keys
 
-          self.properties.keys.each do |k|
+          properties.keys.each do |k|
             extra_property_keys.delete("#{full_prefix}#{k}")
           end
 
