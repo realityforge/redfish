@@ -201,7 +201,7 @@ class Redfish::Tasks::Glassfish::TestJmsResource < Redfish::Tasks::Glassfish::Ba
 
     t.options = {'name' => 'MyConnectionFactory',
                  'restype' => 'javax.jms.ConnectionFactory',
-                 'properties' => {'UserName' => 'bob'},
+                 'properties' => {'UserName' => 'bob', 'transaction_support' => 'LocalTransaction'},
                  'description' => 'Blah blee'}
 
     executor.expects(:exec).with(equals(t.context),
@@ -216,6 +216,9 @@ class Redfish::Tasks::Glassfish::TestJmsResource < Redfish::Tasks::Glassfish::Ba
     assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.description', 'Blah blee')
     assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.enabled', 'true')
     assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.property.UserName', 'bob')
+    # transaction_support should not be passed through and instead is processed by pre_interpreter to
+    # copy them as connector pool properties
+    assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.property.transaction_support', nil)
     assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.deployment-order', '100')
     assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.object-type', 'user')
     assert_cached_property(t, 'resources.connector-resource.MyConnectionFactory.jndi-name', 'MyConnectionFactory')

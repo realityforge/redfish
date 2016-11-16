@@ -16,6 +16,10 @@ module Redfish
   module Tasks
     module Glassfish
       class JmsResource < BaseResourceTask
+        DESTINATION_PROPERTIES = %w(Name Description)
+        FACTORY_PROPERTIES = %w(ClientId AddressList UserName Password ReconnectEnabled ReconnectAttempts ReconnectInterval AddressListBehavior AddressListIterations)
+        POOL_PROPERTIES = %w(steady_pool_size max_pool_size max_wait pool_resize idle_timeout leak_timeout validate_at_most_once_period_in_seconds max_connection_usage_count creation_retry_attempts creation_retry_interval is_connection_validation_required fail_connection leak_reclaim lazy_connection_enlistment lazy_connection_association associate_with_thread match_connections ping pooling transaction_support)
+
         private
 
         attribute :name, :kind_of => String, :required => true, :identity_field => true
@@ -41,9 +45,9 @@ module Redfish
 
         def valid_properties
           if %w(javax.jms.Topic javax.jms.Queue).include?(self.restype)
-            %w(Name Description)
+            DESTINATION_PROPERTIES
           else
-            %w(ClientId AddressList UserName Password ReconnectEnabled ReconnectAttempts ReconnectInterval AddressListBehavior AddressListIterations)
+            FACTORY_PROPERTIES + POOL_PROPERTIES
           end
         end
 
@@ -70,7 +74,15 @@ module Redfish
         def properties_to_set_in_create
           property_map = {}
 
-          collect_property_sets(resource_property_prefix, property_map)
+          if %w(javax.jms.Topic javax.jms.Queue).include?(self.restype)
+            collect_property_sets(resource_property_prefix, property_map)
+          else
+            props = {}
+            self.properties.keys.select{|k| FACTORY_PROPERTIES.include?(k)}.each do |k|
+              props[k] = self.properties[k]
+            end
+            collect_property_sets(resource_property_prefix, property_map, props)
+          end
 
           property_map['description'] = self.description
           property_map['enabled'] = self.enabled

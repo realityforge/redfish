@@ -94,7 +94,11 @@ module Redfish #nodoc
               # Force the creation of the resource with next line
               pool['resources'][key]
               jms_config['properties'].each_pair do |property_key, property_value|
-                pool['resources'][key]['properties'][property_key] = property_value
+                if Redfish::Tasks::Glassfish::JmsResource::FACTORY_PROPERTIES.include?(property_key)
+                  pool['resources'][key]['properties'][property_key] = property_value
+                else
+                  pool[property_key] = property_value
+                end
               end
             else
               admin_object = data['resource_adapters']['jmsra']['admin_objects'][key]
