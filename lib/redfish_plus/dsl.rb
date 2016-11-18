@@ -54,7 +54,7 @@ module RedfishPlus
       common_domain_setup(domain)
 
       if features.include?(:jms)
-        setup_jms_host(domain, 'EMBEDDED')
+        setup_jms_host(domain, 'LOCAL')
       else
         disable_jms_service(domain)
       end
