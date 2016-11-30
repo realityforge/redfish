@@ -60,7 +60,7 @@ module RedfishPlus
       end
 
       if features.include?(:mail)
-        domain.data['javamail_resources']["#{::Redfish::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
+        domain.data['javamail_resources']["#{::Reality::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
       end
 
       if features.include?(:jms) || features.include?(:jdbc)
@@ -514,8 +514,8 @@ module RedfishPlus
     end
 
     def jdbc_resource(domain, name, resource_name)
-      constant_prefix = ::Redfish::Naming.uppercase_constantize(domain.name)
-      cname = ::Redfish::Naming.uppercase_constantize(name)
+      constant_prefix = ::Reality::Naming.uppercase_constantize(domain.name)
+      cname = ::Reality::Naming.uppercase_constantize(name)
       prefix = cname == constant_prefix ? constant_prefix : "#{constant_prefix}_#{cname}"
 
       connection_pool = "#{resource_name}ConnectionPool"
@@ -541,8 +541,8 @@ module RedfishPlus
 
     def javamail_resource(domain, resource_name, options = {})
       key = options[:key] || domain.name
-      constant_prefix = ::Redfish::Naming.uppercase_constantize(domain.name)
-      cname = ::Redfish::Naming.uppercase_constantize(key)
+      constant_prefix = ::Reality::Naming.uppercase_constantize(domain.name)
+      cname = ::Reality::Naming.uppercase_constantize(key)
       prefix = cname == constant_prefix ? constant_prefix : "#{constant_prefix}_#{cname}"
 
       domain.data['environment_vars']["#{prefix}_MAIL_HOST"] = nil

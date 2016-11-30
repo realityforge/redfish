@@ -107,7 +107,7 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
   end
 
   def registered_name
-    Redfish::Naming.underscore(task_name)
+    Reality::Naming.underscore(task_name)
   end
 
   def perform_interpret(context, data, task_ran, expected_task_action, options = {})
