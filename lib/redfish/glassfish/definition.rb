@@ -18,7 +18,7 @@ module Redfish
       options = options.dup
       @key = key
       @name = key
-      @data = Redfish::Mash.new
+      @data = Reality::Mash.new
       checkpoint_data!
       @version = nil
       @file_map = {}
@@ -263,7 +263,7 @@ module Redfish
     end
 
     def resolved_data(options = {})
-      data = Redfish::Mash.new
+      data = Reality::Mash.new
       data.merge!(Redfish.domain_by_key(self.extends).resolved_data) if self.extends
       self.pre_artifacts.each do |filename|
         data.merge!(JSON.load(File.new(resolve_file(filename))))
@@ -339,7 +339,7 @@ module Redfish
     end
 
     def checkpoint_data!
-      @checkpointed_data = Mash.from(self.data.to_h)
+      @checkpointed_data = Reality::Mash.from(self.data.to_h)
     end
 
     private
