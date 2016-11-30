@@ -444,7 +444,6 @@ SCRIPT
           else
             FileUtils.cp path, docker_cache_path
           end
-          FileUtils.cp_r File.expand_path(File.dirname(__FILE__) + '/..') + '/.', "#{dir}/redfish/lib"
           f.write "  domain.file('#{key}', '/opt/redfish/files/#{key}/#{short_name}')\n"
         end
         self.volume_map.keys.each do |key|
