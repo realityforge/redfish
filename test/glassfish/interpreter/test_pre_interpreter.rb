@@ -317,7 +317,7 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
   private
 
   def assert_pre_interpret(expected, input)
-    output = Redfish::Interpreter::PreInterpreter.pre_interpret(Redfish::Mash.from(input))
+    output = Redfish::Interpreter::PreInterpreter.pre_interpret(Reality::Mash.from(input))
     assert_equal output.to_h, expected
   end
 end

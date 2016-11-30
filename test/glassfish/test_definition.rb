@@ -27,7 +27,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     Redfish::Config.default_glassfish_home = 'Y'
     assert_equal definition.name, 'appserver'
-    assert definition.data.is_a?(Redfish::Mash)
+    assert definition.data.is_a?(Reality::Mash)
     assert_equal definition.secure?, true
     assert_equal definition.complete?, true
     assert_equal definition.local?, true
@@ -170,7 +170,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition.key, 'appserver'
     assert_equal definition.name, 'appserver'
-    assert definition.data.is_a?(Redfish::Mash)
+    assert definition.data.is_a?(Reality::Mash)
     assert_equal definition.resolved_data,
                  {
                    'a' => 1,
@@ -212,7 +212,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition2.key, 'appserver2'
     assert_equal definition2.name, 'appserver'
-    assert definition2.data.is_a?(Redfish::Mash)
+    assert definition2.data.is_a?(Reality::Mash)
     assert_equal definition2.secure?, definition.secure?
     assert_equal definition2.local?, true
     assert_equal definition2.complete?, true
