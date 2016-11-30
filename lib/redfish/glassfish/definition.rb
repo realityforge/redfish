@@ -13,7 +13,7 @@
 #
 
 module Redfish
-  class DomainDefinition < BaseElement
+  class DomainDefinition < Reality::BaseElement
     def initialize(key, options = {}, &block)
       options = options.dup
       @key = key

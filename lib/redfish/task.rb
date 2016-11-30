@@ -73,7 +73,7 @@ module Redfish
     end
   end
 
-  class Task < Redfish::BaseElement
+  class Task < Reality::BaseElement
     def Task.inherited(mod)
       TaskManager.register_task(mod)
     end

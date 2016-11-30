@@ -13,42 +13,5 @@
 #
 
 module Redfish
-  Logger = ::Logger.new(STDOUT)
-  Logger.level = ::Logger::INFO
-  Logger.formatter = proc { |severity, datetime, progname, msg| "#{msg}\n"}
-
-  def self.debug(message)
-    Logger.debug(message)
-  end
-
-  def self.info(message)
-    Logger.info(message)
-  end
-
-  def self.warn(message)
-    Logger.warn(message)
-  end
-
-  def self.error(message)
-    Logger.error(message)
-    raise message
-  end
-
-  class BaseElement
-    def initialize(options = {})
-      self.options = options
-      yield self if block_given?
-    end
-
-    def options=(options)
-      options.each_pair do |k, v|
-        keys = k.to_s.split('.')
-        target = self
-        keys[0, keys.length - 1].each do |target_accessor_key|
-          target = target.send target_accessor_key.to_sym
-        end
-        target.send "#{keys.last}=", v
-      end
-    end
-  end
+  Reality::Logging.configure(Redfish)
 end
