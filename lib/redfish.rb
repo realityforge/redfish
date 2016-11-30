@@ -18,6 +18,7 @@ require 'tempfile'
 require 'json'
 require 'digest/md5'
 require 'reality/naming'
+require 'rubygems'
 
 require 'redfish/version'
 require 'redfish/core'

@@ -399,6 +399,16 @@ SCRIPT
     def setup_docker_redfish_dir(dir)
       FileUtils.mkdir_p "#{dir}/redfish/lib"
       FileUtils.cp_r File.expand_path(File.dirname(__FILE__) + '/../..') + '/.', "#{dir}/redfish/lib"
+
+      spec = Gem::Specification::load(File.expand_path(File.dirname(__FILE__) + '/../../../redfish.gemspec'))
+      spec.dependencies.select{|dependency| dependency.type == :runtime }.each do |dep|
+        dep_spec = Gem.loaded_specs[dep.name]
+        dep_spec.require_paths.each do |path|
+          lib_path = dep_spec.gem_dir + '/' + path + '/.'
+          FileUtils.cp_r lib_path, "#{dir}/redfish/lib"
+        end
+      end
+
       export_to_file("#{dir}/redfish/domain.json")
       write_redfish_script(dir)
       write_run_script(dir)
