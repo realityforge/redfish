@@ -169,6 +169,9 @@ module Redfish
       buildr_project.package(:json).enhance(["#{domain.task_prefix}:pre_build"]) do |t|
         domain.export_to_file(t.to_s, :checkpointed_data => true)
       end
+      buildr_project.package(:json_sources).enhance(["#{domain.task_prefix}:pre_build"]) do |t|
+        domain.export_to_file(t.to_s, :checkpointed_data => true)
+      end
     end
 
     def self.get_buildr_project(reason, options = {})
@@ -185,6 +188,14 @@ end
 if Redfish::Util.is_buildr_present?
   class Buildr::Project
     def package_as_json(file_name)
+      file(file_name)
+    end
+
+    def package_as_json_sources_spec(spec)
+      spec.merge(:type => :json, :classifier => :sources)
+    end
+
+    def package_as_json_sources(file_name)
       file(file_name)
     end
   end
