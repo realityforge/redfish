@@ -99,6 +99,7 @@ class Redfish::TestDefinition < Redfish::TestCase
     assert_equal definition.enable_rake_integration?, false
     assert_equal definition.packaged?, true
     assert_equal definition.dockerize?, true
+    assert_equal definition.base_image_name, 'stocksoftware/redfish:latest'
     assert_equal definition.file_map, {'a' => '/tmp/a.txt'}
     assert_equal definition.volume_map, {'Z' => volume_dir}
     assert_equal definition.version, '1.21'
@@ -108,6 +109,9 @@ class Redfish::TestDefinition < Redfish::TestCase
 
     assert_equal definition.glassfish_home_defined?, true
     assert_equal definition.domains_directory_defined?, true
+
+    definition.base_image_name = 'stocksoftware/redfish:jdk8'
+    assert_equal definition.base_image_name, 'stocksoftware/redfish:jdk8'
 
     context = definition.to_task_context
 
@@ -589,8 +593,25 @@ class Redfish::TestDefinition < Redfish::TestCase
     version_hash
   end
 
+  def test_base_image_name_requires_dockerize
+    assert_redfish_error('base_image_name invoked on domain appserver which should not be dockerized') do
+      Redfish::DomainDefinition.new('appserver').base_image_name
+    end
+    assert_redfish_error('base_image_name= invoked on domain appserver which should not be dockerized') do
+      Redfish::DomainDefinition.new('appserver').base_image_name = 'X'
+    end
+  end
+
+  def test_image_name_requires_dockerize
+    assert_redfish_error('image_name invoked on domain appserver which should not be dockerized') do
+      Redfish::DomainDefinition.new('appserver').image_name
+    end
+  end
+
   def test_docker_build_command
     domain = Redfish::DomainDefinition.new('appserver')
+    domain.dockerize = true
+
     assert_equal domain.docker_build_command('/my/dir'), 'docker build --pull --rm=true -t appserver /my/dir'
     assert_equal domain.docker_build_command('/my/dir', :quiet => true), 'docker build --pull -q --rm=true -t appserver /my/dir'
 
@@ -600,6 +621,8 @@ class Redfish::TestDefinition < Redfish::TestCase
 
   def test_docker_run_command
     domain = Redfish::DomainDefinition.new('appserver')
+    domain.dockerize = true
+
     assert_equal domain.docker_run_command, 'docker run -ti --rm -P --name appserver appserver'
     domain.docker_dns = '10.0.9.9'
     assert_equal domain.docker_run_command, 'docker run -ti --rm -P --dns=10.0.9.9 --name appserver appserver'
@@ -620,6 +643,7 @@ class Redfish::TestDefinition < Redfish::TestCase
 
   def test_image_name
     domain = Redfish::DomainDefinition.new('appserver')
+    domain.dockerize = true
 
     assert_equal domain.image_name, 'appserver'
 
@@ -683,6 +707,19 @@ end
 Redfish::Driver.configure_domain(domain, :listeners => [Redfish::BasicListener.new])
 CONTENT
     assert_docker_file('redfish/domain.json', JSON.pretty_generate({}))
+  end
+
+  def test_setup_docker_dir_with_different_image
+    Redfish::Config.default_glassfish_home = '/opt/glassfish'
+
+    dir = "#{temp_dir}/docker"
+
+    domain = Redfish::DomainDefinition.new('appserver')
+    domain.dockerize = true
+    domain.base_image_name = 'stocksoftware/redfish:jdk8'
+
+    domain.setup_docker_dir(dir)
+    assert_docker_file('Dockerfile', /^FROM stocksoftware\/redfish\:jdk8\n/)
   end
 
   def test_setup_docker_dir_with_files_volumes_and_env_vars

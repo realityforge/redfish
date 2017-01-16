@@ -39,6 +39,7 @@ end
 
 
 class Redfish::TestCase < Minitest::Test
+  include Reality::Logging::Assertions
   include Test::Unit::Assertions
 
   def setup
@@ -91,6 +92,12 @@ class Redfish::TestCase < Minitest::Test
                          'admin',
                          nil,
                          {:domains_directory => test_domains_dir}.merge(options))
+  end
+
+  def assert_redfish_error(expected_message, &block)
+    assert_logging_error(Redfish, expected_message) do
+      yield block
+    end
   end
 end
 

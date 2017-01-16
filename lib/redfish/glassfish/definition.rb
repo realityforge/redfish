@@ -34,6 +34,7 @@ module Redfish
       @rake_integration = true
       @admin_port = 4848
       @admin_username = 'admin'
+      @base_image_name = 'stocksoftware/redfish:latest'
       @admin_password = Redfish::Util.generate_password
       @admin_password_random = true
       @glassfish_home = nil
@@ -207,7 +208,18 @@ module Redfish
       @dockerize.nil? ? false : @dockerize
     end
 
+    def base_image_name=(base_image_name)
+      Redfish.error("base_image_name= invoked on domain #{self.name} which should not be dockerized") unless dockerize?
+      @base_image_name = base_image_name
+    end
+
+    def base_image_name
+      Redfish.error("base_image_name invoked on domain #{self.name} which should not be dockerized") unless dockerize?
+      @base_image_name
+    end
+
     def image_name
+      Redfish.error("image_name invoked on domain #{self.name} which should not be dockerized") unless dockerize?
       "#{self.name}#{self.version.nil? ? '' : ":#{self.version}"}"
     end
 
@@ -367,7 +379,7 @@ module Redfish
       File.open("#{dir}/Dockerfile", 'wb') do |f|
         volumes = self.volume_map.keys.collect { |key| "/srv/glassfish/volumes/#{key}" }.join(' ')
         f.write <<SCRIPT
-FROM stocksoftware/redfish:latest
+FROM #{self.base_image_name}
 USER root
 COPY ./redfish /opt/redfish
 RUN chmod -R a+r /opt/redfish && find /opt/redfish -type d -exec chmod a+x {} \\; && chmod a+x /opt/redfish/run
