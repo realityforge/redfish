@@ -257,8 +257,8 @@ module RedfishPlus
       domain.ports << 8080
     end
 
-    def setup_standard_jvm_options(domain, min_memory = '2048m', max_memory = '2048m', max_stack_size = '350k')
-      domain.data['jvm_options']['options'] = %W(-XX:NewRatio=2 -Xss#{max_stack_size} -Xms#{min_memory} -Xmx#{max_memory} -server -XX:+UnlockDiagnosticVMOptions)
+    def setup_standard_jvm_options(domain, min_memory = '2g', max_memory = '2g', max_stack_size = '350k')
+      domain.data['jvm_options']['options'] = %W(-XX:NewRatio=2 -Xss#{max_stack_size} -Xms#{min_memory} -Xmx#{max_memory} -server -XX:+UnlockDiagnosticVMOptions -XX:+UseG1GC -XX:+UseStringDeduplication)
     end
 
     def shutdown_on_complete(domain)
