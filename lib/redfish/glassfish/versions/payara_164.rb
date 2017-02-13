@@ -17,7 +17,7 @@ module Redfish
     class Payara164 < BaseVersion
 
       def initialize
-        super('28', :payara, '4.1.1.4')
+        super('28', :payara, '4.1.1.164')
       end
 
       def support_log_jdbc_calls?
