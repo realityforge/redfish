@@ -460,8 +460,7 @@ module RedfishPlus
     end
 
     def replicant_client_config(domain, prefix)
-      custom_resource_from_env(domain, "#{prefix}/ApplicationEndpoint")
-      custom_resource_from_env(domain, "#{prefix}/SubscriptionManagerEndpoint")
+      custom_resource_from_env(domain, "#{prefix}/url")
       custom_resource_from_env(domain, "#{prefix}/repositoryDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/subscriptionsDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/shouldValidateRepositoryOnLoad", nil, 'java.lang.Boolean', 'false')
