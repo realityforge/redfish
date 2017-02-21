@@ -49,6 +49,10 @@ module RedfishPlus
       [:jms, :jdbc]
     end
 
+    def configure_local_mail_port(domain)
+      domain.data['javamail_resources']["#{::Reality::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
+    end
+
     def setup_for_local_development(domain, options = {})
       features = options[:features] || all_features
       domain.package = false
@@ -61,10 +65,6 @@ module RedfishPlus
         setup_jms_host(domain, 'LOCAL')
       else
         disable_jms_service(domain)
-      end
-
-      if features.include?(:mail)
-        domain.data['javamail_resources']["#{::Reality::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
       end
 
       if features.include?(:jms) || features.include?(:jdbc)
