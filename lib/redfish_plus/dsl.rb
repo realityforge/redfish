@@ -45,8 +45,12 @@ module RedfishPlus
       disable_noisy_database_logging(domain)
     end
 
+    def all_features
+      [:jms, :jdbc]
+    end
+
     def setup_for_local_development(domain, options = {})
-      features = options[:features] || []
+      features = options[:features] || all_features
       domain.package = false
 
       base_setup_for_local_development(domain)
