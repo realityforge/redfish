@@ -70,6 +70,8 @@ module RedfishPlus
       if features.include?(:jms) || features.include?(:jdbc)
         setup_orb_to_support_resource_adapter(domain)
       end
+
+      domain.data['jvm_options']['options'] += '-ea'
     end
 
     def common_domain_setup(domain)
