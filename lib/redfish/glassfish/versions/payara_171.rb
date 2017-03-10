@@ -14,7 +14,7 @@
 
 module Redfish
   module Versions
-    class Payara164 < BaseVersion
+    class Payara171 < BaseVersion
 
       def initialize
         super('137', :payara, '4.1.1.171_0_1')
@@ -141,4 +141,4 @@ module Redfish
   end
 end
 
-Redfish::VersionManager.register_version(Redfish::Versions::Payara164.new)
+Redfish::VersionManager.register_version(Redfish::Versions::Payara171.new)
