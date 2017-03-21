@@ -127,7 +127,7 @@ module Redfish
         desc "Remove docker image for GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
         task "#{domain.task_prefix}:docker:rm" do
           unless `docker images -q #{domain.image_name}`.empty?
-            sh("docker rmi $(docker images -q #{domain.image_name})")
+            sh("docker rmi -f $(docker images -q #{domain.image_name})")
           end
         end
 
@@ -135,6 +135,15 @@ module Redfish
         task "#{domain.task_prefix}:docker:rm_all" do
           unless `docker images -q #{domain.name}`.empty?
             sh("docker rmi $(docker images -q #{domain.name})")
+          end
+        end
+
+        if BuildrPlus::Docker.push_image?
+          desc 'Tag current image and push to docker hub'
+          task "#{domain.task_prefix}:tag_and_push" => ["#{domain.task_prefix}:docker:build"] do
+            info("Pushing image for #{BuildrPlus::Docker.organisation}:#{domain.image_name}")
+            sh("docker tag #{Redfish.domain_by_key('docker').image_name} #{BuildrPlus::Docker.organisation}/#{domain.image_name}")
+            sh("docker push #{BuildrPlus::Docker.organisation}/#{domain.image_name}")
           end
         end
       end
