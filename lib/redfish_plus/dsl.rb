@@ -71,7 +71,7 @@ module RedfishPlus
         setup_orb_to_support_resource_adapter(domain)
       end
 
-      domain.data['jvm_options']['options'] << '-ea' << '-da:org.glassfish.common.util...'
+      domain.data['jvm_options']['options'] << '-ea'
     end
 
     def common_domain_setup(domain)
