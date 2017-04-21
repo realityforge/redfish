@@ -468,8 +468,6 @@ module RedfishPlus
       custom_resource_from_env(domain, "#{prefix}/subscriptionsDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/shouldValidateRepositoryOnLoad", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/requestDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
-      add_managed_scheduled_executor_service(domain, "#{prefix}/ManagedScheduledExecutorService")
-      add_context_service(domain, "#{prefix}/ContextService")
     end
 
     def jms_connection_factory(domain, name)
