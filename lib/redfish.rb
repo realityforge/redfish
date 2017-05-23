@@ -54,6 +54,7 @@ require 'redfish/glassfish/versions/payara_162'
 require 'redfish/glassfish/versions/payara_164'
 require 'redfish/glassfish/versions/payara_171'
 require 'redfish/glassfish/versions/payara_171_1'
+require 'redfish/glassfish/versions/payara_172'
 
 require 'redfish/glassfish/tasks/asadmin_task'
 require 'redfish/glassfish/tasks/base_cleaner_task'
