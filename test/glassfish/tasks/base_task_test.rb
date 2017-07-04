@@ -282,7 +282,7 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
   end
 
   def raw_property_prefix
-    Redfish::Tasks.const_get(task_name).const_get(:PROPERTY_PREFIX)
+    Redfish::Tasks::Glassfish.const_get(task_name).const_get(:PROPERTY_PREFIX)
   end
 
   def create_fake_elements(context, names, property_prefix = raw_property_prefix, attributes = %w(p q r s t u v))
