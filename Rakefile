@@ -10,7 +10,7 @@ task :default => :test
 
 desc 'Test Task'
 Rake::TestTask.new do |t|
-  files = FileList['test/helper.rb', 'test/test_*.rb', 'test/*/test_*.rb']
+  files = FileList['test/**/test_*.rb']
   t.loader = :rake
   t.test_files = files
   t.libs << '.'
