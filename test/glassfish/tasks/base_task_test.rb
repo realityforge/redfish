@@ -117,6 +117,9 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
     data['config'] = {}
     data['config']['diff_on_completion'] = false
 
+    data['domain'] ||= {}
+
+    data['jvm_options'] ||= {}
     data['jvm_options']['managed'] = true
     Redfish::Interpreter::PreInterpreter.mark_as_unmanaged(data) if add_excludes_unless_defined
 
