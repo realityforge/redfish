@@ -132,7 +132,7 @@ class Redfish::Tasks::Glassfish::TestRealmTypes < Redfish::Tasks::Glassfish::Bas
     FileUtils.mkdir_p File.dirname(filename)
     FileUtils.touch filename
 
-    setup_interpreter_expects(executor, context, '')
+    setup_interpreter_expects(executor, context, 'property.administrative.domain.name=domain1')
 
     executor.expects(:exec).
       with(equals(context),
