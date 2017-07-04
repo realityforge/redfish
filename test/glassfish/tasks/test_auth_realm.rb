@@ -29,7 +29,13 @@ class Redfish::Tasks::Glassfish::TestAuthRealm < Redfish::Tasks::Glassfish::Base
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :create)
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-file-users'),
+                                 equals(%w(--authrealmname MyAuthRealm)),
+                                 equals({:terse => true, :echo => false})).
+      returns('')
+
+    perform_interpret(context, data, true, :create, :additional_unchanged_task_count => 1)
   end
 
   def test_interpret_create_when_exists
@@ -40,7 +46,13 @@ class Redfish::Tasks::Glassfish::TestAuthRealm < Redfish::Tasks::Glassfish::Base
 
     setup_interpreter_expects(executor, context, to_properties_content)
 
-    perform_interpret(context, data, false, :create, :additional_unchanged_task_count => expected_local_properties.size)
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-file-users'),
+                                 equals(%w(--authrealmname MyAuthRealm)),
+                                 equals({:terse => true, :echo => false})).
+      returns('')
+
+    perform_interpret(context, data, false, :create, :additional_unchanged_task_count => expected_local_properties.size + 1)
   end
 
   def test_to_s
@@ -291,6 +303,12 @@ class Redfish::Tasks::Glassfish::TestAuthRealm < Redfish::Tasks::Glassfish::Base
                                  equals({})).
       returns('')
 
+    executor.expects(:exec).with(equals(context),
+                                 equals('list-file-users'),
+                                 equals(%w(--authrealmname MyAuthRealm)),
+                                 equals({:terse => true, :echo => false})).
+      returns('')
+
     existing.each do |element|
       executor.expects(:exec).with(equals(context),
                                    equals('delete-auth-realm'),
@@ -299,7 +317,7 @@ class Redfish::Tasks::Glassfish::TestAuthRealm < Redfish::Tasks::Glassfish::Base
         returns('')
     end
 
-    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size)
+    perform_interpret(context, data, true, :create, :additional_task_count => 1 + existing.size, :additional_unchanged_task_count => 1)
   end
 
   def test_cleaner_deletes_unexpected_element
