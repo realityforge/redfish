@@ -45,8 +45,16 @@ module RedfishPlus
       disable_noisy_database_logging(domain)
     end
 
+    def all_features
+      [:jms, :jdbc]
+    end
+
+    def configure_local_mail_port(domain)
+      domain.data['javamail_resources']["#{::Reality::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
+    end
+
     def setup_for_local_development(domain, options = {})
-      features = options[:features] || []
+      features = options[:features] || all_features
       domain.package = false
 
       base_setup_for_local_development(domain)
@@ -59,13 +67,11 @@ module RedfishPlus
         disable_jms_service(domain)
       end
 
-      if features.include?(:mail)
-        domain.data['javamail_resources']["#{::Reality::Naming.underscore(domain.name)}/mail/session"]['properties']['mail.smtp.port'] = '10025'
-      end
-
       if features.include?(:jms) || features.include?(:jdbc)
         setup_orb_to_support_resource_adapter(domain)
       end
+
+      domain.data['jvm_options']['options'] << '-ea'
     end
 
     def common_domain_setup(domain)
@@ -455,14 +461,13 @@ module RedfishPlus
       environment_variable(domain, env_key, 'UNSPECIFIED', default_value)
     end
 
-    def replicant_client_config(domain, prefix)
-      custom_resource_from_env(domain, "#{prefix}/ApplicationEndpoint")
-      custom_resource_from_env(domain, "#{prefix}/SubscriptionManagerEndpoint")
+    def replicant_client_config(domain, host_application, replicant_application)
+      prefix = "#{host_application}/replicant/client/#{replicant_application}"
+      custom_resource_from_env(domain, "#{prefix}/url")
       custom_resource_from_env(domain, "#{prefix}/repositoryDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/subscriptionsDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/shouldValidateRepositoryOnLoad", nil, 'java.lang.Boolean', 'false')
       custom_resource_from_env(domain, "#{prefix}/requestDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
-      add_managed_scheduled_executor_service(domain, "#{prefix}/ManagedScheduledExecutorService")
     end
 
     def jms_connection_factory(domain, name)
