@@ -118,6 +118,7 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
     data['config']['diff_on_completion'] = false
 
     data['domain'] ||= {}
+    data['domain']['managed'] = true
 
     data['jvm_options'] ||= {}
     data['jvm_options']['managed'] = true
