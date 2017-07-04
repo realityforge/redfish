@@ -17,7 +17,7 @@ require File.expand_path('../../../helper', __FILE__)
 class Redfish::TestPreInterpreter < Redfish::TestCase
   def test_pre_interpret_no_data
     input = {}
-    expected = {'jms_resources' => {}, 'properties' => {}}
+    expected = { 'jms_resources' => {}, 'properties' => {} }
     assert_pre_interpret(expected, input)
   end
 
@@ -129,8 +129,8 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
       'jms_resources' =>
         {
           'managed' => true,
-          'myapp/jms/MyTopic' => {'properties' => {'Name' => 'MyTopic'}, 'restype' => 'javax.jms.Topic'},
-          'myapp/jms/MyQueue' => {'properties' => {'Name' => 'MyQueue'}, 'restype' => 'javax.jms.Queue'}
+          'myapp/jms/MyTopic' => { 'properties' => { 'Name' => 'MyTopic' }, 'restype' => 'javax.jms.Topic' },
+          'myapp/jms/MyQueue' => { 'properties' => { 'Name' => 'MyQueue' }, 'restype' => 'javax.jms.Queue' }
         },
       'resource_adapters' =>
         {
@@ -138,8 +138,8 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
             {
               'admin_objects' =>
                 {
-                  'myapp/jms/MyTopic' => {'restype' => 'javax.jms.Topic', 'properties' => {'Name' => 'MyTopic'}},
-                  'myapp/jms/MyQueue' => {'restype' => 'javax.jms.Queue', 'properties' => {'Name' => 'MyQueue'}}
+                  'myapp/jms/MyTopic' => { 'restype' => 'javax.jms.Topic', 'properties' => { 'Name' => 'MyTopic' } },
+                  'myapp/jms/MyQueue' => { 'restype' => 'javax.jms.Queue', 'properties' => { 'Name' => 'MyQueue' } }
                 }
             }
         },
@@ -214,7 +214,8 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
                   'ReconnectAttempts' => 3,
                   'ReconnectEnabled' => true,
                   'ReconnectInterval' => 5000,
-                  'UserName' => 'MyAppUser'},
+                  'UserName' => 'MyAppUser'
+                },
               'restype' => 'javax.jms.ConnectionFactory'
             },
           'myapp/jms/TopicConnectionFactory' =>
@@ -245,7 +246,8 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
                   'ReconnectAttempts' => 3,
                   'ReconnectEnabled' => true,
                   'ReconnectInterval' => 5000,
-                  'UserName' => 'MyAppUser'},
+                  'UserName' => 'MyAppUser'
+                },
               'restype' => 'javax.jms.QueueConnectionFactory'
             }
         },
