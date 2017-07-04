@@ -90,7 +90,7 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
                   {
                     'AddressListBehavior' => 'random',
                     'AddressListIterations' => '3',
-                    'BrokerStartTimeOut' => '60',
+                    'BrokerStartTimeOut' => '60000',
                     'ReconnectAttempts' => '3',
                     'ReconnectEnabled' => 'true',
                     'ReconnectInterval' => '60',

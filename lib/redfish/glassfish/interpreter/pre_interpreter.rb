@@ -121,6 +121,8 @@ module Redfish #nodoc
           data['properties'].each_pair do |key, value|
             simple_value = value.is_a?(Hash) ? value['value'] : value
             mapped_property = property_map[key]
+            #init-timeout-in-seconds needs to be converted to BrokerStartTimeOut which is in millis
+            simple_value = (simple_value.to_i * 1000).to_s if mapped_property == 'BrokerStartTimeOut'
             if mapped_property
               data['resource_adapters']['jmsra']['properties'][mapped_property] = simple_value
             end
