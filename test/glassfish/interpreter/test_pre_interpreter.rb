@@ -260,52 +260,67 @@ class Redfish::TestPreInterpreter < Redfish::TestCase
                   'myapp/jms/ConnectionFactory-Connection-Pool' =>
                     {
                       'connection_definition_name' => 'javax.jms.ConnectionFactory',
-                      'resources' => {'myapp/jms/ConnectionFactory' => {}},
-                      'properties' =>
+                      'resources' =>
                         {
-                          'AddressList' => 'mq://mq.example.com:7676/jms',
-                          'AddressListBehavior' => 'random',
-                          'AddressListIterations' => '3',
-                          'ClientId' => 'MyApp',
-                          'Password' => 'secret',
-                          'ReconnectAttempts' => 3,
-                          'ReconnectEnabled' => true,
-                          'ReconnectInterval' => 5000,
-                          'UserName' => 'MyAppUser'
+                          'myapp/jms/ConnectionFactory' =>
+                            {
+                              'properties' =>
+                                {
+                                  'AddressList' => 'mq://mq.example.com:7676/jms',
+                                  'AddressListBehavior' => 'random',
+                                  'AddressListIterations' => '3',
+                                  'ClientId' => 'MyApp',
+                                  'Password' => 'secret',
+                                  'ReconnectAttempts' => 3,
+                                  'ReconnectEnabled' => true,
+                                  'ReconnectInterval' => 5000,
+                                  'UserName' => 'MyAppUser'
+                                }
+                            }
                         }
                     },
                   'myapp/jms/TopicConnectionFactory-Connection-Pool' =>
                     {
                       'connection_definition_name' => 'javax.jms.TopicConnectionFactory',
-                      'resources' => {'myapp/jms/TopicConnectionFactory' => {}},
-                      'properties' =>
+                      'resources' =>
                         {
-                          'AddressList' => 'mq://mq.example.com:7676/jms',
-                          'AddressListBehavior' => 'random',
-                          'AddressListIterations' => '3',
-                          'ClientId' => 'MyApp',
-                          'Password' => 'secret',
-                          'ReconnectAttempts' => 3,
-                          'ReconnectEnabled' => true,
-                          'ReconnectInterval' => 5000,
-                          'UserName' => 'MyAppUser'
+                          'myapp/jms/TopicConnectionFactory' =>
+                            {
+                              'properties' =>
+                                {
+                                  'AddressList' => 'mq://mq.example.com:7676/jms',
+                                  'AddressListBehavior' => 'random',
+                                  'AddressListIterations' => '3',
+                                  'ClientId' => 'MyApp',
+                                  'Password' => 'secret',
+                                  'ReconnectAttempts' => 3,
+                                  'ReconnectEnabled' => true,
+                                  'ReconnectInterval' => 5000,
+                                  'UserName' => 'MyAppUser'
+                                }
+                            }
                         }
                     },
                   'myapp/jms/QueueConnectionFactory-Connection-Pool' =>
                     {
                       'connection_definition_name' => 'javax.jms.QueueConnectionFactory',
-                      'resources' => {'myapp/jms/QueueConnectionFactory' => {}},
-                      'properties' =>
+                      'resources' =>
                         {
-                          'AddressList' => 'mq://mq.example.com:7676/jms',
-                          'AddressListBehavior' => 'random',
-                          'AddressListIterations' => '3',
-                          'ClientId' => 'MyApp',
-                          'Password' => 'secret',
-                          'ReconnectAttempts' => 3,
-                          'ReconnectEnabled' => true,
-                          'ReconnectInterval' => 5000,
-                          'UserName' => 'MyAppUser'
+                          'myapp/jms/QueueConnectionFactory' =>
+                            {
+                              'properties' =>
+                                {
+                                  'AddressList' => 'mq://mq.example.com:7676/jms',
+                                  'AddressListBehavior' => 'random',
+                                  'AddressListIterations' => '3',
+                                  'ClientId' => 'MyApp',
+                                  'Password' => 'secret',
+                                  'ReconnectAttempts' => 3,
+                                  'ReconnectEnabled' => true,
+                                  'ReconnectInterval' => 5000,
+                                  'UserName' => 'MyAppUser'
+                                }
+                            }
                         }
                     }
                 }
