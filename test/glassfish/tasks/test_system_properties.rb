@@ -46,7 +46,7 @@ class Redfish::Tasks::Glassfish::TestSystemProperties < Redfish::Tasks::Glassfis
                                  equals({})).
       returns('')
 
-    perform_interpret(context, data, true, :set)
+    perform_interpret(context, data, true, :set, :system_properties_updates => false)
   end
 
   def test_interpret_set_when_matches
@@ -57,7 +57,7 @@ class Redfish::Tasks::Glassfish::TestSystemProperties < Redfish::Tasks::Glassfis
 
     setup_interpreter_expects(executor, context, "servers.server.server.system-property.X.name=X\nservers.server.server.system-property.X.value=Y")
 
-    perform_interpret(context, data, false, :set)
+    perform_interpret(context, data, false, :set, :system_properties_updates => false)
   end
 
   def test_to_s

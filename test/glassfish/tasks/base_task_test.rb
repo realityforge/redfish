@@ -184,14 +184,15 @@ class Redfish::Tasks::Glassfish::BaseTaskTest < Redfish::TestCase
     complete_task_count = 1
 
     property_cache_reload_updates = !!options[:property_cache_reload_updates]
+    system_properties_updates = options[:system_properties_updates].nil? ? true : !!options[:system_properties_updates]
 
     property_cache_actions = 2 + (property_cache_reload_updates ? 1 : 0)
     property_cache_reload = (property_cache_reload_updates ? 0 : 1)
+    system_properties = system_properties_updates ? 1 : 0
 
     expected_updated = domain_create_count + (task_ran ? 1 : 0) + property_cache_actions + additional_task_count
-    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated} - Actual:\n#{updated_records.collect { |a| a.to_s }.join("\n")}"
-
-    expected_unchanged = (task_ran ? 0 : 1) + property_cache_reload + (domain_dir_exists ? 1 : 0) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
+    assert_equal updated_records.size, expected_updated, "Expected Updated Count #{expected_updated}\n\nExpected Updated:\n#{updated_records.collect { |a| a.to_s }.join("\n")}\n\nExpected Unchanged :\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
+    expected_unchanged = system_properties + (task_ran ? 0 : 1) + property_cache_reload + (domain_dir_exists ? 1 : 0) + additional_unchanged_task_count + domain_restart_check + jvm_options_task_count + complete_task_count
     assert_equal unchanged_records.size, expected_unchanged, "Expected Unchanged Count #{expected_unchanged} - Actual:\n#{unchanged_records.collect { |a| a.to_s }.join("\n")}"
 
     assert_property_cache_records(updated_records, property_cache_reload_updates)
