@@ -14,10 +14,10 @@
 
 module Redfish
   module Versions
-    class Payara172 < BaseVersion
+    class Payara173 < BaseVersion
 
       def initialize
-        super('24', :payara, '4.1.1.173')
+        super('24', :payara, '4.1.2.173')
       end
 
       def support_log_jdbc_calls?
@@ -142,4 +142,4 @@ module Redfish
   end
 end
 
-Redfish::VersionManager.register_version(Redfish::Versions::Payara172.new)
+Redfish::VersionManager.register_version(Redfish::Versions::Payara173.new)
