@@ -461,14 +461,6 @@ module RedfishPlus
       environment_variable(domain, env_key, 'UNSPECIFIED', default_value)
     end
 
-    def replicant_client_config(domain, host_application, replicant_application)
-      prefix = "#{host_application}/replicant/client/#{replicant_application}"
-      custom_resource_from_env(domain, "#{prefix}/url")
-      custom_resource_from_env(domain, "#{prefix}/subscriptionsDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
-      custom_resource_from_env(domain, "#{prefix}/shouldValidateRepositoryOnLoad", nil, 'java.lang.Boolean', 'false')
-      custom_resource_from_env(domain, "#{prefix}/requestDebugOutputEnabled", nil, 'java.lang.Boolean', 'false')
-    end
-
     def jms_connection_factory(domain, name)
       domain.data['jms_resources'][name]['restype'] = 'javax.jms.ConnectionFactory'
     end
