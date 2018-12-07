@@ -2,8 +2,6 @@ language: ruby
 rvm:
   - 2.3.1
 jdk:
-  - openjdk6
-  - openjdk7
   - oraclejdk8
 git:
   depth: 10
