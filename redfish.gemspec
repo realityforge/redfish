@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.summary            = %q{A lightweight library for configuring GlassFish/Payara servers.}
   s.description        = %q{A lightweight library for configuring GlassFish/Payara servers.}
 
-  s.rubyforge_project  = %q{redfish}
 
   s.files              = `git ls-files`.split("\n")
   s.test_files         = `git ls-files -- {spec}/*`.split("\n")
