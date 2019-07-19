@@ -172,7 +172,7 @@ module RedfishPlus
     end
 
     def add_default_context_service(domain)
-      add_context_service(domain, 'concurrent/__defaultContextService', 'enabled' => 'false')
+      add_context_service(domain, 'concurrent/__defaultContextService', 'object_type' => 'system-all')
     end
 
     def add_context_service(domain, name, options = {})
@@ -186,7 +186,7 @@ module RedfishPlus
     end
 
     def add_default_managed_thread_factory(domain)
-      add_managed_thread_factory(domain, 'concurrent/__defaultManagedThreadFactory', 'enabled' => 'false')
+      add_managed_thread_factory(domain, 'concurrent/__defaultManagedThreadFactory', 'object_type' => 'system-all')
     end
 
     def add_managed_thread_factory(domain, name, options = {})
@@ -201,16 +201,7 @@ module RedfishPlus
     end
 
     def add_default_managed_executor_service(domain)
-      add_managed_executor_service(domain,
-                                   'concurrent/__defaultManagedExecutorService',
-                                   'enabled' => 'false',
-                                   'long_running_tasks' => 'false',
-                                   'hung_after_seconds' => '1',
-                                   'core_pool_size' => '0',
-                                   'maximum_pool_size' => '1',
-                                   'keep_alive_seconds' => '1',
-                                   'thread_lifetime_seconds' => '1',
-                                   'task_queue_capacity' => '1')
+      add_managed_executor_service(domain, 'concurrent/__defaultManagedExecutorService', 'object_type' => 'system-all')
     end
 
     def add_managed_executor_service(domain, name, options = {})
@@ -225,14 +216,7 @@ module RedfishPlus
     end
 
     def add_default_managed_scheduled_executor_service(domain)
-      add_managed_scheduled_executor_service(domain,
-                                             'concurrent/__defaultManagedScheduledExecutorService',
-                                             'enabled' => 'false',
-                                             'long_running_tasks' => 'false',
-                                             'hung_after_seconds' => '1',
-                                             'core_pool_size' => '0',
-                                             'keep_alive_seconds' => '1',
-                                             'thread_lifetime_seconds' => '1')
+      add_managed_scheduled_executor_service(domain, 'concurrent/__defaultManagedScheduledExecutorService', 'object_type' => 'system-all')
     end
 
     def add_managed_scheduled_executor_service(domain, name, options = {})

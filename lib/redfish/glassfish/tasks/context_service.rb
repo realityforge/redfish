@@ -30,6 +30,7 @@ module Redfish
         attribute :context_info, :kind_of => String, :default => 'Classloader,JNDI,Security,WorkArea'
         # Descriptive details about the resource.
         attribute :description, :kind_of => String, :default => ''
+        attribute :object_type, :kind_of => String, :default => 'user'
         attribute :properties, :kind_of => Hash, :default => {}
         attribute :deployment_order, :kind_of => Fixnum, :default => 100
 
@@ -46,7 +47,7 @@ module Redfish
         end
 
         def properties_to_record_in_create
-          {'object-type' => 'user', 'jndi-name' => self.name, 'deployment-order' => '100'}
+          {'object-type' => self.object_type, 'jndi-name' => self.name, 'deployment-order' => '100'}
         end
 
         def properties_to_set_in_create
@@ -63,6 +64,7 @@ module Redfish
         end
 
         def do_create
+          raise "Unable to create context-service where object_type is not 'user'" unless self.object_type == 'user'
           args = []
 
           args << '--enabled' << self.enabled.to_s
