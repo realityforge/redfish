@@ -248,7 +248,7 @@ module RedfishPlus
 
     # Standard configuration used across all of our GlassFish instances
     def standard_domain_setup(domain)
-      set_payara_domain_template(domain)
+      set_appserver_domain_template(domain)
       set_user_prefs_dir(domain)
       set_tmpdir(domain)
       disable_update_tool(domain)
