@@ -1,6 +1,6 @@
 # Redfish
 
-[![Build Status](https://api.travis-ci.com/realityforge/redfish.svg?branch=master)](http://travis-ci.org/realityforge/redfish)
+[![Build Status](https://api.travis-ci.com/realityforge/redfish.svg?branch=master)](http://travis-ci.com/realityforge/redfish)
 
 Redfish is a lightweight ruby library for configuring GlassFish or Payara servers.
 
