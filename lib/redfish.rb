@@ -49,6 +49,7 @@ require 'redfish/glassfish/interpreter/interpolater'
 require 'redfish/glassfish/interpreter/interpreter'
 
 require 'redfish/glassfish/versions/version_manager'
+require 'redfish/glassfish/versions/payara_5_2020_3'
 require 'redfish/glassfish/versions/payara_154'
 require 'redfish/glassfish/versions/payara_162'
 require 'redfish/glassfish/versions/payara_164'
