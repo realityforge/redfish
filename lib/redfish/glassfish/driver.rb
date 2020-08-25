@@ -25,7 +25,21 @@ module Redfish
           run_context.listeners << listener
         end
 
-        Redfish::Interpreter.interpret(run_context, definition.resolved_data.to_h, options)
+        data = definition.resolved_data.to_h
+        system_properties = data['system_properties'] || {}
+        values = {}
+        system_properties.keys.sort.each do |k|
+          values[k] = p[k] if p[k] == 'UNSPECIFIED' && data['environment_vars'][k].nil?
+        end
+        unless values.empty?
+          message = "Error: UNSPECIFIED or blank system properties detected. Invalid system properties:\n"
+          values.keys.sort.each do |k|
+            message << "  * #{k}\n"
+          end
+          raise message
+        end
+
+        Redfish::Interpreter.interpret(run_context, data, options)
 
         begin
           run_context.converge
