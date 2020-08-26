@@ -29,7 +29,7 @@ module Redfish
         system_properties = data['system_properties'] || {}
         values = {}
         system_properties.keys.sort.each do |k|
-          values[k] = p[k] if p[k] == 'UNSPECIFIED' && data['environment_vars'][k].nil?
+          values[k] = system_properties[k] if system_properties[k] == 'UNSPECIFIED' && (data['environment_vars'].nil? || data['environment_vars'][k].nil?)
         end
         unless values.empty?
           message = "Error: UNSPECIFIED or blank system properties detected. Invalid system properties:\n"
