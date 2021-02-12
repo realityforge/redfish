@@ -620,7 +620,7 @@ module Redfish #nodoc
         params = config.dup
         if params['restype'].nil?
           params['restype'] = 'java.lang.Boolean' if params['value'].is_a?(TrueClass) || params['value'].is_a?(FalseClass)
-          params['restype'] = 'java.lang.Integer' if params['value'].is_a?(Fixnum)
+          params['restype'] = 'java.lang.Integer' if params['value'].is_a?(Integer)
           params['restype'] = 'java.lang.Long' if params['value'].is_a?(Bignum)
           params['restype'] = 'java.lang.Float' if params['value'].is_a?(Float)
         end

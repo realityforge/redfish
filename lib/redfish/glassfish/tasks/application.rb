@@ -39,7 +39,7 @@ module Redfish
         attribute :async_replication, :type => :boolean, :default => true
 
         attribute :properties, :kind_of => Hash, :default => {}
-        attribute :deployment_order, :kind_of => Fixnum, :default => 100
+        attribute :deployment_order, :kind_of => Integer, :default => 100
 
         action :create do
           @path = nil
