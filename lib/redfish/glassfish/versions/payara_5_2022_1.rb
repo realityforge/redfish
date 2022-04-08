@@ -161,4 +161,4 @@ module Redfish
   end
 end
 
-Redfish::VersionManager.register_version(Redfish::Versions::Payara5_2020_3.new)
+Redfish::VersionManager.register_version(Redfish::Versions::Payara5_2022_1.new)
