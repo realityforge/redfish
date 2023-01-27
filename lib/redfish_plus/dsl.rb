@@ -119,7 +119,6 @@ module RedfishPlus
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.reconnect-attempts', '3')
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.reconnect-enabled', 'true')
       set_and_require_restart(domain, 'configs.config.server-config.jms-service.reconnect-interval-in-seconds', '5')
-      set_and_require_restart(domain, 'configs.config.server-config.jms-service.reconnect-interval-in-seconds', '5')
 
       # Assume at this stage that if jms_host is configured then it is for mdb container
       configure_mdb_container(domain)
