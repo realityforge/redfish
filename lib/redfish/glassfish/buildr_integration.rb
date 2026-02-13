@@ -141,7 +141,7 @@ module Redfish
         end
       end
 
-      desc "Export GlassFish configation based on #{domain.name} domain definition"
+      desc "Export GlassFish configuration based on #{domain.name} domain definition"
       task "#{domain.task_prefix}:export" => ["#{domain.task_prefix}:pre_build"] do
         filename = "#{Redfish::Config.base_directory}/generated/redfish/definitions/#{domain.key}.json"
         info("Exporting '#{domain.name}' domain with key '#{domain.key}' to #{filename}")
