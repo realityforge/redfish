@@ -158,7 +158,6 @@ class Redfish::Tasks::Glassfish::TestRealmTypes < Redfish::Tasks::Glassfish::Bas
       returns("false\n").
       at_least(DOMAIN_RESTART_IF_REQUIRED_ACTIONS - DOMAIN_CONTEXT_ONLY_RESTART_IF_REQUIRED_ACTIONS)
 
-
     perform_interpret(context,
                       data,
                       true,

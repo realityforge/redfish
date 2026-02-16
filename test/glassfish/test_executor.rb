@@ -92,7 +92,6 @@ class Redfish::TestExecutor < Redfish::TestCase
 
     assert_equal true, executor.send(:needs_user_change?, context_with_users)
 
-
     Etc.expects(:getlogin).returns('glassfish')
     group = 'group'
     group.expects(:name).returns(group)

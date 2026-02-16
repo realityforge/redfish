@@ -689,7 +689,6 @@ AS_ADMIN_PASSWORD=secret1
       returns(false).
       in_sequence(s)
 
-
     t.max_mx_wait_time = 1
 
     begin

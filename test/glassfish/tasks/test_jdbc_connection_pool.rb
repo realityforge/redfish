@@ -178,7 +178,6 @@ class Redfish::Tasks::Glassfish::TestJdbcConnectionPool < Redfish::Tasks::Glassf
 
     t.options = resource_parameters
 
-
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-jdbc-connection-pool'),
                                  equals(['--datasourceclassname=net.sourceforge.jtds.jdbcx.JtdsDataSource', '--initsql=', '--sqltracelisteners=', '--driverclassname=', '--validationclassname=', '--validationtable=', '--steadypoolsize=8', '--maxpoolsize=32', '--maxwait=60000', '--poolresize=2', '--idletimeout=300', '--validateatmostonceperiod=0', '--leaktimeout=0', '--statementleaktimeout=0', '--creationretryattempts=0', '--creationretryinterval=10', '--statementtimeout=-1', '--maxconnectionusagecount=0', '--statementcachesize=0', '--isisolationguaranteed=true', '--isconnectvalidatereq=true', '--failconnection=false', '--allownoncomponentcallers=false', '--nontransactionalconnections=false', '--statementleakreclaim=false', '--leakreclaim=false', '--lazyconnectionenlistment=false', '--lazyconnectionassociation=false', '--associatewiththread=false', '--matchconnections=false', '--ping=true', '--pooling=true', '--wrapjdbcobjects=true', '--restype=javax.sql.DataSource', '--isolationlevel=', '--validationmethod=auto-commit', '--property', 'Instance=MSSQLSERVER:ServerName=db\\.example\\.com:User=sa:Password=password:PortNumber=1234:DatabaseName=MYDB', '--description', 'Audit Connection Pool', 'APool']),
@@ -198,7 +197,6 @@ class Redfish::Tasks::Glassfish::TestJdbcConnectionPool < Redfish::Tasks::Glassf
     t.context.cache_properties({'domain.version' => '116'})
 
     t.options = resource_parameters
-
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('create-jdbc-connection-pool'),
@@ -263,7 +261,6 @@ class Redfish::Tasks::Glassfish::TestJdbcConnectionPool < Redfish::Tasks::Glassf
     t.context.cache_properties(cache_values.merge('domain.version' => DOMAIN_VERSION))
 
     t.options = resource_parameters
-
 
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),

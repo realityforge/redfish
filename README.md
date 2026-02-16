@@ -22,7 +22,6 @@ replace setup.sh infrastructure, (D) for docker integration.
 * When tmpfs support is improved for osx clients talking to Linux servers add something like the following for
   all builds.
 
-
     --tmpfs /tmp:rw,noexec,nosuid,size=65536k --tmpfs /srv/glassfish:rw,noexec,nosuid,size=65536k --read-only
 
 * Disable writing the shared memory mapped files for performance counters via `-XX:+PerfDisableSharedMem`

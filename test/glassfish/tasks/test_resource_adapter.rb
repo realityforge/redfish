@@ -309,7 +309,6 @@ class Redfish::Tasks::Glassfish::TestResourceAdapter < Redfish::Tasks::Glassfish
     t.context.property_cache["#{Redfish::Tasks::Glassfish::AdminObject::PROPERTY_PREFIX}SubElement5.resource-adapter-name"] = 'Element2'
     t.context.property_cache["#{Redfish::Tasks::Glassfish::AdminObject::PROPERTY_PREFIX}SubElement6.resource-adapter-name"] = 'Element3'
 
-
     t.expected = existing[1,existing.size]
 
     executor.expects(:exec).with(equals(t.context),

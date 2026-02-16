@@ -37,7 +37,6 @@ module Redfish
   Logger.formatter = proc { |severity, datetime, progname, msg| "#{msg}\n"}
 end
 
-
 class Redfish::TestCase < Minitest::Test
   include Reality::Logging::Assertions
   include Test::Unit::Assertions

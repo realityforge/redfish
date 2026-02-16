@@ -205,7 +205,6 @@ class Redfish::Tasks::Glassfish::TestConnectorConnectionPool < Redfish::Tasks::G
 
     t.options = resource_parameters
 
-
     executor.expects(:exec).with(equals(t.context),
                                  equals('set'),
                                  equals(["#{property_prefix}property.Password=password"]),
