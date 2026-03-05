@@ -440,8 +440,11 @@ module RedfishPlus
       environment_variable(domain, env_key, 'UNSPECIFIED', default_value)
     end
 
-    def jms_connection_factory(domain, name)
+    def jms_connection_factory(domain, name, properties = {})
       domain.data['jms_resources'][name]['restype'] = 'javax.jms.ConnectionFactory'
+      properties.each_pair do |k, v|
+        domain.data['jms_resources'][name]['properties'][k] = v
+      end
     end
 
     def jms_destination(domain, name, physical_name, is_queue)
