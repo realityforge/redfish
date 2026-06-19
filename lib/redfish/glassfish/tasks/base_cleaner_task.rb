@@ -83,7 +83,7 @@ module Redfish
         end
 
         def registered_name
-          Reality::Naming.underscore(task_name)
+          Redfish::Util.underscore(task_name)
         end
       end
     end

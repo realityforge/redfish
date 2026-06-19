@@ -13,5 +13,5 @@
 #
 
 module Redfish
-  Reality::Logging.configure(Redfish)
+  Redfish::Logging.configure(Redfish)
 end

@@ -22,6 +22,14 @@ module Redfish
         size.times.map { set[rand(set.length)] }.join
       end
 
+      def underscore(input_word)
+        split_into_words(input_word).join('_').downcase
+      end
+
+      def uppercase_constantize(word)
+        underscore(word).upcase
+      end
+
       def is_buildr_present?
         return true if defined?(::Buildr)
         begin
@@ -30,6 +38,17 @@ module Redfish
           # ignored
         end
         defined?(::Buildr)
+      end
+
+      private
+
+      def split_into_words(word)
+        word = word.to_s.dup
+        word.gsub!(/^[_-]/, '')
+        word.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+        word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+        word.tr!('-', '_')
+        word.split('_')
       end
     end
   end

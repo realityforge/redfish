@@ -38,7 +38,7 @@ module Redfish
 end
 
 class Redfish::TestCase < Minitest::Test
-  include Reality::Logging::Assertions
+  include Redfish::Logging::Assertions
   include Test::Unit::Assertions
 
   def setup

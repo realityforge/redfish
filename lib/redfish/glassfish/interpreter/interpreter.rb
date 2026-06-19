@@ -163,7 +163,7 @@ module Redfish #nodoc
     class << self
 
       def interpret(run_context, input, options = {})
-        mash = Reality::Mash.from(input)
+        mash = Redfish::Mash.from(input)
 
         Redfish::Interpreter::PreInterpreter.pre_interpret(mash)
         Redfish::Interpreter::PreInterpreter.mark_as_unmanaged(mash) if options[:update_only]

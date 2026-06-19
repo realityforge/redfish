@@ -13,12 +13,12 @@
 #
 
 module Redfish
-  class DomainDefinition < Reality::BaseElement
+  class DomainDefinition < Redfish::BaseElement
     def initialize(key, options = {}, &block)
       options = options.dup
       @key = key
       @name = key
-      @data = Reality::Mash.new
+      @data = Redfish::Mash.new
       checkpoint_data!
       @version = nil
       @file_map = {}
@@ -275,7 +275,7 @@ module Redfish
     end
 
     def resolved_data(options = {})
-      data = Reality::Mash.new
+      data = Redfish::Mash.new
       data.merge!(Redfish.domain_by_key(self.extends).resolved_data) if self.extends
       self.pre_artifacts.each do |filename|
         data.merge!(JSON.load(File.new(resolve_file(filename))))
@@ -351,7 +351,7 @@ module Redfish
     end
 
     def checkpoint_data!
-      @checkpointed_data = Reality::Mash.from(self.data.to_h)
+      @checkpointed_data = Redfish::Mash.from(self.data.to_h)
     end
 
     private
