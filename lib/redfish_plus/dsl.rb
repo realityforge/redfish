@@ -146,7 +146,9 @@ module RedfishPlus
     end
 
     def set_jsp_caching(domain, value)
-      set(domain, 'configs.config.server-config.web-container.jsp-caching-enabled', value.to_s)
+      # Doesn't work if running create-domain under java 21, because the module is not loaded at this point.
+      # Will work with update-domain
+      # set(domain, 'configs.config.server-config.web-container.jsp-caching-enabled', value.to_s)
     end
 
     # Orb required to use Resource adapters for MDBs and JDBC connection pools
