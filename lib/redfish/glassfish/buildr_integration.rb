@@ -37,19 +37,19 @@ module Redfish
   class Buildr
     class Listener
       def on_task_start(execution_record)
-        trace("Redfish Task #{execution_record} starting")
+        trace("Redfish Task #{description(execution_record)} starting")
       end
 
       def on_task_complete(execution_record)
         if execution_record.action_performed_update? && is_task_interesting?(execution_record)
-          info("Redfish Task #{execution_record} performed action")
+          info("Redfish Task #{description(execution_record)} performed action")
         else
-          trace("Redfish Task #{execution_record} completed")
+          trace("Redfish Task #{description(execution_record)} completed")
         end
       end
 
       def on_task_error(execution_record)
-        info("Redfish Task #{execution_record} resulted in error")
+        info("Redfish Task #{description(execution_record)} resulted in error")
       end
 
       def is_task_interesting?(execution_record)
@@ -57,6 +57,10 @@ module Redfish
         return false if execution_record.action == :create && execution_record.task.class.registered_name == 'property_cache'
         return false if execution_record.action == :destroy && execution_record.task.class.registered_name == 'property_cache'
         true
+      end
+
+      def description(execution_record)
+        "#{execution_record.task.class.registered_name}.#{execution_record.action}"
       end
     end
 
