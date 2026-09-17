@@ -32,7 +32,7 @@ class Redfish::Tasks::Glassfish::TestApplication < Redfish::Tasks::Glassfish::Ba
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
-      returns("Command deploy executed successfully.\n")
+      returns("Command deploydir executed successfully.\n")
     executor.expects(:exec).with(equals(context),
                                  equals('get'),
                                  equals(['applications.application.MyApplication.property.org.glassfish.*']),
@@ -79,7 +79,7 @@ class Redfish::Tasks::Glassfish::TestApplication < Redfish::Tasks::Glassfish::Ba
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
-      returns("Command deploy executed successfully.\n")
+      returns("Command deploydir executed successfully.\n")
     executor.expects(:exec).with(equals(t.context), equals('get'),
                                  equals(["#{property_prefix}deployment-order"]),
                                  equals(:terse => true, :echo => false)).
@@ -177,7 +177,7 @@ class Redfish::Tasks::Glassfish::TestApplication < Redfish::Tasks::Glassfish::Ba
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
-      returns("Command deploy executed successfully.\n")
+      returns("Command deploydir executed successfully.\n")
     executor.expects(:exec).with(equals(t.context),
                                  equals('get'),
                                  equals(['applications.application.MyApplication.property.org.glassfish.*']),
@@ -277,7 +277,12 @@ class Redfish::Tasks::Glassfish::TestApplication < Redfish::Tasks::Glassfish::Ba
   def test_create_element_where_cache_present_and_element_present
     t = new_task
 
-    t.context.cache_properties(expected_properties)
+    internal_properties =
+      {
+        "#{property_prefix}property.org.glassfish.ejb.container.application_unique_id" => '96073498887454720',
+        "#{property_prefix}property.org.glassfish.persistence.app_name_property" => 'MyApplication'
+      }
+    t.context.cache_properties(expected_properties.merge(internal_properties))
 
     t.options = resource_parameters
 
@@ -286,6 +291,29 @@ class Redfish::Tasks::Glassfish::TestApplication < Redfish::Tasks::Glassfish::Ba
     ensure_task_not_updated_by_last_action(t)
 
     ensure_expected_cache_values(t)
+    internal_properties.each_pair { |key, value| assert_cached_property(t, key, value) }
+  end
+
+  def test_create_element_manages_explicit_glassfish_property
+    executor = Redfish::Executor.new
+    t = new_task(executor)
+    property_name = 'org.glassfish.custom'
+    property_key = "#{property_prefix}property.#{property_name}"
+    t.context.cache_properties(expected_properties.merge(property_key => 'old'))
+
+    parameters = resource_parameters
+    parameters['properties'] = parameters['properties'].merge(property_name => 'new')
+    t.options = parameters
+
+    executor.expects(:exec).with(equals(t.context),
+                                 equals('set'),
+                                 equals(["#{property_key}=new"]),
+                                 equals(:terse => true, :echo => false))
+
+    t.perform_action(:create)
+
+    ensure_task_updated_by_last_action(t)
+    assert_cached_property(t, property_key, 'new')
   end
 
   def test_delete_element_where_cache_not_present_and_element_not_present
@@ -372,7 +400,7 @@ class Redfish::Tasks::Glassfish::TestApplication < Redfish::Tasks::Glassfish::Ba
                                  equals('deploydir'),
                                  equals(['--name', 'MyApplication', '--enabled=true', '--force=true', '--type', 'war', '--contextroot=/myapp', '--generatermistubs=true', '--availabilityenabled=true', '--lbenabled=true', '--keepstate=true', '--verify=true', '--precompilejsp=true', '--asyncreplication=true', '--deploymentplan', "#{self.temp_dir}/myapp-plan.jar", '--deploymentorder', '100', '--property', 'java-web-start-enabled=false', "#{self.temp_dir}/myapp"]),
                                  equals({})).
-      returns("Command deploy executed successfully.\n")
+      returns("Command deploydir executed successfully.\n")
     executor.expects(:exec).with(equals(context),
                                  equals('get'),
                                  equals(['applications.application.MyApplication.property.org.glassfish.*']),

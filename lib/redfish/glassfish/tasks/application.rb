@@ -62,6 +62,9 @@ module Redfish
           property_map = {}
 
           collect_property_sets(resource_property_prefix, property_map)
+          property_map.delete_if do |key, _|
+            key.start_with?('property.org.glassfish.') && !self.properties.has_key?(key.delete_prefix('property.'))
+          end
 
           property_map['enabled'] = self.enabled
           property_map['async-replication'] = self.async_replication
@@ -123,8 +126,9 @@ module Redfish
           args << '--property' << encode_parameters(self.properties) unless self.properties.empty?
           args << resolved_location.to_s
 
-          output = context.exec(is_location_a_directory? ? 'deploydir' : 'deploy', args)
-          if output =~ /Command deploy failed./ || !(output =~ /Command deploy executed successfully\./)
+          command = is_location_a_directory? ? 'deploydir' : 'deploy'
+          output = context.exec(command, args)
+          if output =~ /Command #{command} failed./ || !(output =~ /Command #{command} executed successfully\./)
             raise "Failed to deploy application #{self.name}. Output follows:\n#{output}"
           end
         end
