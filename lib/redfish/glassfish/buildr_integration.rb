@@ -90,9 +90,11 @@ module Redfish
           end
         end
 
-        desc "Update a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
-        task "#{domain.task_prefix}:update" => ["#{domain.task_prefix}:pre_build"] do
-          Redfish::Driver.configure_domain(domain, :listeners => [Listener.new], :update_only => true)
+        if domain.support_update_task?
+          desc "Update a local GlassFish instance based on '#{domain.name}' domain definition with key '#{domain.key}'"
+          task "#{domain.task_prefix}:update" => ["#{domain.task_prefix}:pre_build"] do
+            Redfish::Driver.configure_domain(domain, :listeners => [Listener.new], :update_only => true)
+          end
         end
       end
 
@@ -145,11 +147,13 @@ module Redfish
         end
       end
 
-      desc "Export GlassFish configuration based on #{domain.name} domain definition"
-      task "#{domain.task_prefix}:export" => ["#{domain.task_prefix}:pre_build"] do
-        filename = "#{Redfish::Config.base_directory}/generated/redfish/definitions/#{domain.key}.json"
-        info("Exporting '#{domain.name}' domain with key '#{domain.key}' to #{filename}")
-        domain.export_to_file(filename, :expand => domain.complete?, :checkpointed_data => !domain.complete?)
+      if domain.support_export_task?
+        desc "Export GlassFish configuration based on #{domain.name} domain definition"
+        task "#{domain.task_prefix}:export" => ["#{domain.task_prefix}:pre_build"] do
+          filename = "#{Redfish::Config.base_directory}/generated/redfish/definitions/#{domain.key}.json"
+          info("Exporting '#{domain.name}' domain with key '#{domain.key}' to #{filename}")
+          domain.export_to_file(filename, :expand => domain.complete?, :checkpointed_data => !domain.complete?)
+        end
       end
     end
 

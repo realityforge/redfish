@@ -103,13 +103,25 @@ module Redfish
       !!@complete
     end
 
-    attr_writer :local
+    attr_writer :complete
 
     def local?
       @local.nil? ? true : !!@local
     end
 
-    attr_writer :complete
+    attr_writer :local
+
+    def support_update_task?
+      @support_update_task.nil? ? false : !!@support_update_task
+    end
+
+    attr_writer :support_update_task
+
+    def support_export_task?
+      @support_export_task.nil? ? false : !!@support_export_task
+    end
+
+    attr_writer :support_export_task
 
     # If true use SSL when communicating with the domain for administration. Assumes the domain is in secure mode.
     def secure?
